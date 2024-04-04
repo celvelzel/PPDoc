@@ -1,12 +1,18 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+    <invoiceView></invoiceView>
   </div>
 </template>
+
+<script>
+import invoiceView from "@/views/InvoiceView.vue";
+export default {
+  name: 'App',
+  components: {
+    invoiceView
+  }
+}
+</script>
 
 <style>
 #app {
