@@ -30,12 +30,13 @@ public class PdfToImage
             List<MultipartFile> imageFiles = new ArrayList<MultipartFile>();
 
             // 写入数据到临时文件
-            //test
-            PdfToImageUtils.pdf2ImageUtil(pdfInputStream, imageFiles, "png");
+            // 写入数据到图片list
+            PdfToImageUtils.pdf2ImageList(pdfInputStream, imageFiles, "png");
             log.info("pdf转image完成");
 
             pdfInputStream.close();
 
+            //传入图片list，调用paddleOcr模块进行识别
             Map<String, String> userInfoMap = PaddleOcr.ocrTest(imageFiles);
             return userInfoMap;
         } catch (IOException e)
@@ -46,7 +47,7 @@ public class PdfToImage
     }
 
 
-    //传入pdf,先转图片list，再进行ocr
+    //传入单个pdf,先转图片list，再进行ocr
     public static List pdf2OcrText(MultipartFile file)
     {
         try
@@ -57,7 +58,7 @@ public class PdfToImage
             List<MultipartFile> imageFiles = new ArrayList<MultipartFile>();
 
             // 写入数据到图片list
-            PdfToImageUtils.pdf2ImageUtil(pdfInputStream, imageFiles, "png");
+            PdfToImageUtils.pdf2ImageList(pdfInputStream, imageFiles, "png");
             log.info("pdf转image完成");
 
 

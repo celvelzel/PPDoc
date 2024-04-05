@@ -88,20 +88,14 @@
             <!-- 引入 PDFBox 相关的依赖 结束 -->
         </dependency>
         <dependency>
-            <groupId>com.github.cliftonlabs</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20210307</version> <!-- 请检查最新版本 -->
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.konghq/unirest-java -->
         <dependency>
-            <groupId>com.konghq</groupId>
+            <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
-            <version>3.14.5</version>
+            <version>1.4.9</version>
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>

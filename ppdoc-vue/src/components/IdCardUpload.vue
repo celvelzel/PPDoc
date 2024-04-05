@@ -61,26 +61,8 @@
             </el-form-item>
           </el-form>
         </el-col>
-
-        <!-- 输出结果和按钮 -->
         <el-col :span="12">
-          <el-input
-              type="textarea" readonly="true" :rows="10" placeholder="输出结果" v-model="outputResult"
-          ></el-input>
-          <el-form label-width="80px" style="margin-top: 10px;">
-            <el-form-item label="待抽取字段" label-width="85px" rows="4">
-              <el-input type="textarea"
-                        :autosize="{ minRows: 2, maxRows: 4}"
-                        v-model="fields"
-                        placeholder="多个字段需要用逗号分隔，如姓名，性别，年龄"
-              ></el-input>
-            </el-form-item>
-            <br><br>
-            <el-form-item>
-              <el-button type="primary" @click="exportResult">导出结果</el-button>
-              <el-button @click="clearHistory">清空历史会话</el-button>
-            </el-form-item>
-          </el-form>
+          <extract-info :allinfo="userInfoForm.allInfo"/>
         </el-col>
       </el-row>
     </el-main>
@@ -88,9 +70,10 @@
 </template>
 
 <script>
-import axios from 'axios'
+import ExtractInfo from "@/components/ExtractInfo.vue";
 
 export default {
+  components: {ExtractInfo},
   data() {
     return {
       userInfoForm: {
@@ -102,8 +85,6 @@ export default {
         birthday: '',
         allInfo: ''
       },
-      fields: "",
-      outputResult: '',
       dialogImageUrl: '',
       dialogVisible: false,
       fileList: []
@@ -167,37 +148,6 @@ export default {
     onSubmit() {
       // 这里可以发送axios请求，将表单数据保存到数据库中
     },
-    exportResult() {
-      // 这里可以添加导出结果的处理逻辑
-      console.log('导出结果');
-      // 获取待抽取字段的值
-      var fieldsToExtract = this.fields;
-      var ocr_text = this.userInfoForm.allInfo;
-      const postData = {
-        fields: fieldsToExtract,
-        ocr_text: ocr_text
-      };
-
-      // 发送请求到后端 API
-      axios.post('/extractinfo', postData)
-          .then(response => {
-            // 处理后端返回的响应
-
-            console.log('导出结果请求成功');
-            this.outputResult = JSON.stringify(response.data);
-            // 这里可以进行文件下载或其他操作
-          })
-          .catch(error => {
-            // 处理错误情况
-            console.error('导出结果请求失败', error);
-          });
-    },
-    clearHistory() {
-      // 这里可以添加清空历史会话的处理逻辑
-      this.outputResult = '';
-      this.fields.field = '';
-      console.log('清空历史会话');
-    }
   }
 };
 </script>

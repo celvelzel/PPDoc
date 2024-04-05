@@ -20,7 +20,7 @@ public class PdfToImageUtils
     * 接受pdf输入流
     * 输出multipartfile list类型的图片列表
     * */
-    public static void pdf2ImageUtil(InputStream pdfInputStream, List<MultipartFile> files, String format) {
+    public static void pdf2ImageList(InputStream pdfInputStream, List<MultipartFile> files, String format) {
         try
         {
             // 加载PDF文档
