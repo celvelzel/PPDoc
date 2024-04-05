@@ -6,9 +6,9 @@
         PPDoc
       </el-header>
       <el-container>
-        <el-aside class="custom-side" width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-aside class="custom-side" width="201px" style="background-color: rgb(238, 241, 246)">
           <el-menu :default-openeds="['1', '3']" style="text-align: left;font-size: 14px;color: #333;display: flex;padding: 0px">
-            <el-submenu index="1" style="background: #2c3e50">
+            <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 文档录入

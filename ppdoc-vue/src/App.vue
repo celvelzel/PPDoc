@@ -1,15 +1,15 @@
 <template>
   <div id="app">
-    <invoiceView></invoiceView>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import invoiceView from "@/views/InvoiceView.vue";
+
 export default {
   name: 'App',
   components: {
-    invoiceView
+
   }
 }
 </script>
