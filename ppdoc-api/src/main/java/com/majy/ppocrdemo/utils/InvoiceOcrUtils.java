@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Slf4j
@@ -36,7 +36,7 @@ public class InvoiceOcrUtils
         for (int index = 0; index < files.size(); index++)
         {
             byte[] bytes = files.get(index).getBytes();
-            map.add("images", ImageToBase64(bytes));
+            map.add("images", Base64Utils.encodeToString(bytes));
         }
         //构建请求
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
@@ -51,6 +51,7 @@ public class InvoiceOcrUtils
         log.info("OCR结果：" + jsons);
         return jsons;
     }
+
     public static Map<String, String> getStringStringMap(List<List> jsons)
     {
         StringBuilder result = new StringBuilder();
@@ -98,5 +99,29 @@ public class InvoiceOcrUtils
         invoiceMap.put("allInfo", allInfo);
         return invoiceMap;
     }
-}
 
+
+    //测试类
+    public static void main(String[] args)
+    {
+        String text = "发票代码：044032200111发票号码：28164546国统开票日期：2022年12月03日深圳市税务局机器编号：校验码：09976900364593599737917001472768名称：太极计算机股份有限公司0009＊0/3>9<<1*8＊＊3636<<</-0-购纳税人识别号：9１１１0000１0１137049C**/08*/3518670>+31641-2>5/<-买码地址、电话:>9*>5-38955>7<04+30<6<>41*63方区开户行及账号：<+623+07*1-642014<9/19*9>310单位项目名称规格型号数量单价金额税率税额免税*餐饮服务*餐饮服务283.00283.00***1合计¥283.00贰佰捌拾叁圆整价税合计(大写)（小写）¥283.00名称：深圳市珍湘味饮食文化有限公司销备纳税人识别号：91440300MA5G4A9QXN售地址、电话：107523975507深圳市福田区莲花街道彩虹社区莲花支路1011号润鹏花园莲花路1092号11方注开户行及账号：中国民生银行深圳彩田支行161984645开票人：汪永香91440300MA5G4A9QXN复核：陈凌收款人：汪燕珍销售方：（章发票专用章";
+
+        Pattern pattern = Pattern.compile(
+                "(发票代码：)(.*?)(发票号码：)(.*?)(开票日期：)(.*?)(机器编号：)(.*?)(校验码：)(.*?)(名称：)(.*?)(纳税人识别号：)(.*?)(开户行及账号：)(.*?)"
+        );
+        Matcher matcher = pattern.matcher(text);
+
+        if (matcher.find())
+        {
+            System.out.println("发票代码：" + matcher.group(2));
+            System.out.println("发票号码：" + matcher.group(4));
+            System.out.println("开票日期：" + matcher.group(6));
+            System.out.println("机器编号：" + matcher.group(8));
+            System.out.println("校验码：" + matcher.group(10));
+            System.out.println("名称：" + matcher.group(12));
+            System.out.println("纳税人识别号：" + matcher.group(14));
+            System.out.println("开户行及账号：" + matcher.group(16));
+        }
+    }
+
+}

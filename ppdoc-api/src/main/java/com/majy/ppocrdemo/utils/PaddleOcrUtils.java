@@ -1,6 +1,9 @@
 package com.majy.ppocrdemo.utils;
 
+import com.mashape.unirest.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +60,32 @@ public class PaddleOcrUtils
         //记录日志，记录ocr的结果
         log.info("OCR结果：" + jsons);
         return jsons;
+    }
+
+
+    public static JSONObject requestOcr(String imgPath) throws IOException
+    {
+        HttpHeaders headers = new HttpHeaders();
+        //设置请求头格式
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        //构建请求参数
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+
+        byte[] bytes = Files.readAllBytes(Paths.get(imgPath));
+        map.add("images", ImageToBase64(bytes));
+        //构建请求
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+
+        //发送请求, springboot内置的restTemplate
+        //通过8868端口调用ppocr的服务
+        Map jsons = restTemplate.postForEntity("http://127.0.0.1:8868/predict/ocr_system", request, Map.class).getBody();
+        //记录日志，记录ocr的结果
+        //log.info("OCR结果：" + jsons);
+        //Map转成JSONObject
+        JSONObject jsonObject = new JSONObject(jsons);
+        return jsonObject;
     }
 
     public static Map<String, String> getStringStringMap(List<MultipartFile> files) throws IOException

@@ -2,6 +2,7 @@ package com.majy.ppocrdemo.controller;
 
 import com.majy.ppocrdemo.utils.InvoiceOcrUtils;
 import com.majy.ppocrdemo.utils.PaddleOcrUtils;
+import com.majy.ppocrdemo.utils.PdfToImageUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +15,10 @@ import java.util.Map;
 public class InvoiceOcr
 {
     @PostMapping("/invoices")
-    public static Map invoiceOcr(List<MultipartFile> files) throws IOException
+    public static Map invoiceOcr(MultipartFile file) throws IOException
     {
-        List jsons = PaddleOcrUtils.getOcrText(files);
+
+        List jsons = PdfToImage.pdf2OcrText(file);
         return InvoiceOcrUtils.getStringStringMap(jsons);
     }
 }

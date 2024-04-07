@@ -23,28 +23,33 @@
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
         </el-col>
-        <el-col :span="24">
-          <!-- 发票信息表单 -->
-          <el-form ref="form" :model="invoiceForm" label-width="80px">
-            <el-form-item label="发票代码">
-              <el-input v-model="invoiceForm.invoiceCode"></el-input>
-            </el-form-item>
-            <el-form-item label="发票号码">
-              <el-input v-model="invoiceForm.invoiceNumber"></el-input>
-            </el-form-item>
-            <el-form-item label="发票金额">
-              <el-input v-model="invoiceForm.invoiceAmount"></el-input>
-            </el-form-item>
-            <el-form-item label="发票日期">
-              <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="所有文本">
-              <el-input v-model="invoiceForm.allInfo"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="onSubmit">提交</el-button>
-            </el-form-item>
-          </el-form>
+        <el-col :span="12">
+          <el-row>
+            <!-- 发票信息表单 -->
+            <el-form ref="form" :model="invoiceForm" label-width="80px">
+              <el-form-item label="发票代码">
+                <el-input v-model="invoiceForm.invoiceCode"></el-input>
+              </el-form-item>
+              <el-form-item label="发票号码">
+                <el-input v-model="invoiceForm.invoiceNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="发票金额">
+                <el-input v-model="invoiceForm.invoiceAmount"></el-input>
+              </el-form-item>
+              <el-form-item label="发票日期">
+                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="invoiceForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-row>
+          <el-row>
+            <extract-info :allinfo="invoiceForm.allInfo"/>
+          </el-row>
         </el-col>
       </el-row>
     </el-main>
@@ -54,13 +59,16 @@
 <script>
 // import axios from 'axios'
 
+import ExtractInfo from "@/components/ExtractInfo.vue";
+
 export default {
+  components: {ExtractInfo},
   data() {
     return {
       imageUrl: '',  // 发票图片预览地址
       fileList: [],  // 上传的文件列表
       invoiceForm: {  // 发票信息表单
-        invoiceCode:'',
+        invoiceCode: '',
         invoiceNumber: '',
         invoiceAmount: '',
         invoiceDate: ''
@@ -116,18 +124,15 @@ export default {
   max-width: 100%;
   height: auto;
 }
+
 .el-col {
-  border : 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
   background-color: #f5f5f5;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
 }
 </style>
 
