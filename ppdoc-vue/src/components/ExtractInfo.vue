@@ -2,10 +2,7 @@
 <template>
   <!-- 输出结果和按钮 -->
   <el-col>
-    <el-input
-        type="textarea" readonly="true" :rows="10" placeholder="输出结果" v-model="outputResult"
-    ></el-input>
-    <el-form label-width="80px" style="margin-top: 10px;">
+    <el-form label-width="80px" style="margin-top: 10px;margin-bottom: 10px">
       <el-form-item label="待抽取字段" label-width="85px" rows="4">
         <el-input type="textarea"
                   :autosize="{ minRows: 2, maxRows: 4}"
@@ -13,12 +10,14 @@
                   placeholder="多个字段需要用逗号分隔，如姓名，性别，年龄"
         ></el-input>
       </el-form-item>
-      <br><br>
       <el-form-item>
         <el-button type="primary" @click="exportResult">提取结果</el-button>
         <el-button @click="clearHistory">清空历史会话</el-button>
       </el-form-item>
     </el-form>
+    <el-input
+        type="textarea" readonly="true" :rows="10" placeholder="输出结果" v-model="outputResult"
+    ></el-input>
   </el-col>
 </template>
 
@@ -78,6 +77,7 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .el-col {
   background-color: #fff;
   padding: 20px;
@@ -92,9 +92,6 @@ body {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.el-form-item {
-  margin-bottom: 15px;
-}
 
 .el-upload {
   margin-top: 10px;

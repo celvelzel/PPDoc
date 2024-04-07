@@ -37,7 +37,16 @@
                 <el-input v-model="invoiceForm.invoiceAmount"></el-input>
               </el-form-item>
               <el-form-item label="发票日期">
-                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate"></el-date-picker>
+                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate" style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="购买方名称">
+                <el-input v-model="invoiceForm.purchaserName"></el-input>
+              </el-form-item>
+              <el-form-item label="销售方名称">
+                <el-input v-model="invoiceForm.sellerName"></el-input>
+              </el-form-item>
+              <el-form-item label="项目名称">
+                <el-input v-model="invoiceForm.projectName"></el-input>
               </el-form-item>
               <el-form-item label="所有文本">
                 <el-input v-model="invoiceForm.allInfo"></el-input>
@@ -71,7 +80,11 @@ export default {
         invoiceCode: '',
         invoiceNumber: '',
         invoiceAmount: '',
-        invoiceDate: ''
+        invoiceDate: '',
+        allInfo: '',
+        purchaserName: '',
+        sellerName: '',
+        projectName: ''
       }
     };
   },

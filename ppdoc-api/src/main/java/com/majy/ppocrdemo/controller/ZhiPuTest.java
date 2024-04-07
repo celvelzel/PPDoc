@@ -2,31 +2,18 @@ package com.majy.ppocrdemo.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.google.gson.JsonObject;
 import com.zhipu.oapi.ClientV4;
 import com.zhipu.oapi.Constants;
-import com.zhipu.oapi.service.v4.embedding.EmbeddingApiResponse;
-import com.zhipu.oapi.service.v4.embedding.EmbeddingRequest;
-import com.zhipu.oapi.service.v4.file.FileApiResponse;
-import com.zhipu.oapi.service.v4.file.QueryFileApiResponse;
-import com.zhipu.oapi.service.v4.file.QueryFilesRequest;
-import com.zhipu.oapi.service.v4.fine_turning.*;
-import com.zhipu.oapi.service.v4.image.CreateImageRequest;
-import com.zhipu.oapi.service.v4.image.ImageApiResponse;
 import com.zhipu.oapi.service.v4.model.*;
 import io.reactivex.Flowable;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +56,7 @@ public class ZhiPuTest
     {
         String ocrTextValue = "姓名马冀远性别男民族汉出生2013年05月06日住址湖南省长沙市开福区巡道街幸福小区居民组公民身份证号码430512198908131367";
         String fieldsValue = "[姓名],[性别]";
-        String res = testSseInvoke(ocrTextValue,fieldsValue);
+        String res = sseInvoke(ocrTextValue,fieldsValue);
 
         // 正则表达式，用于匹配 JSON 对象
         String jsonRegex = "\\{\\s*[\"\\w\\s]*:[ \"'].*?[\"]\\s*[,}]\\s*\\}";
@@ -108,14 +95,14 @@ public class ZhiPuTest
         String ocrTextValue = jsonObject.getString("ocr_text");
 
 
-        String res = testSseInvoke(ocrTextValue,fieldsValue);
+        String res = sseInvoke(ocrTextValue,fieldsValue);
         return res;
     }
 
     /**
      * sse调用
      */
-    private static String  testSseInvoke(String ocr_result, String keyInfo) {
+    public static String sseInvoke(String ocr_result, String keyInfo) {
         List<ChatMessage> messages = new ArrayList<>();
 
         /**

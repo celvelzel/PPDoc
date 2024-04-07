@@ -110,6 +110,7 @@ public class PaddleOcrUtils
                     result.append(json.get(i).get("text").toString().trim().replace(" ", ""));
                 }
             }
+            //拼接后不带空格的文字
             String trim = result.toString().trim();
             System.out.println("=================拼接后的文字是=========================");
             System.out.println(trim);
@@ -278,7 +279,7 @@ public class PaddleOcrUtils
         for (Map map : maps)
         {
             String str = map.get("text").toString().trim().replace(" ", "");
-            // 之里注意了，这里的双斜杆，是因为这里是java，\会转义，所以使用双鞋干\\，去掉试一试就知道了
+            // 这里的双斜杆，是因为这里是java，\会转义，所以使用双斜杠\\
             String pattern = "\\d{17}[\\d|x|X]|\\d{15}";
             Pattern r = Pattern.compile(pattern);
             Matcher m = r.matcher(str);
