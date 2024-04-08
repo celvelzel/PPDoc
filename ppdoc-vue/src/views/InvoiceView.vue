@@ -19,7 +19,7 @@
 
 <script>
 import InvoiceUpload from "@/components/InvoiceUpload.vue";
-import MyMenu from"@/components/MyMenu.vue"
+import MyMenu from "@/components/MyMenu.vue"
 
 export default {
   components: {
