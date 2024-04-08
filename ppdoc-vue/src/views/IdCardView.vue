@@ -3,7 +3,7 @@
   <div>
     <el-container style="height: 700px; border: 1px solid #eee">
       <el-header style="font-size: 35px;background-color: #B3C0D1; color: #333;text-align: left;line-height: 60px">
-        PPDoc
+        身份证录入
       </el-header>
       <el-container>
         <el-aside class="custom-side" width="200px" style="background-color: rgb(238, 241, 246)">

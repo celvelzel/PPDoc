@@ -1,5 +1,6 @@
 package com.majy.ppocrdemo.controller;
 
+import com.majy.ppocrdemo.utils.PaddleOcrUtils;
 import com.majy.ppocrdemo.utils.PdfToEditablePdfUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mock.web.MockMultipartFile;
@@ -26,7 +27,7 @@ public class PdfToEditablePdf
             OutputStream editablePdfOutputStream = new FileOutputStream(tempFile);
 
             //传入pdf文件，获取ocr结果json文件
-            List ocr_context = PdfToImage.pdf2OcrText(file);
+            List ocr_context = PaddleOcrUtils.pdfToOcrText(file);
 
 
             PdfToEditablePdfUtils.pdf2EditablePdfUtil(pdfInputStream, editablePdfOutputStream, ocr_context);

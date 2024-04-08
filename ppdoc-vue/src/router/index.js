@@ -18,12 +18,17 @@ const routes = [
     {
         path: '/invoice',
         name: 'invoice',
-        component: () => import(/* webpackChunkName: "about" */ '../views/InvoiceView.vue')
+        component: () => import('../views/InvoiceView.vue')
     },
     {
         path:'/idcard',
         name:'idcard',
-        component:()=>import(/* webpackChunkName: "about" */ '../views/IdCardView.vue')
+        component:()=>import('../views/IdCardView.vue')
+    },
+    {
+        path:'/license',
+        name:'license',
+        component:()=>import('../views/LicenseView.vue')
     }
 ]
 

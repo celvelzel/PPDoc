@@ -1,11 +1,11 @@
 package com.majy.ppocrdemo.controller;
 
+import com.majy.ppocrdemo.utils.IdCardOcrUtils;
 import com.majy.ppocrdemo.utils.PaddleOcrUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +21,7 @@ public class PaddleOcr
      * @return 返回一个Map，其中包含有关上传文件的OCR识别信息
      */
     @PostMapping("/images")
-    public static Map<String, String> ocrTest(List<MultipartFile> files) throws IOException
+    public static String paddleOcr(List<MultipartFile> files) throws IOException
     {
         // 遍历文件列表，将每个文件保存到本地。
         for (MultipartFile file : files)
@@ -30,9 +30,10 @@ public class PaddleOcr
             file.transferTo(new File("<LOCAL_PATH_REDACTED>" + originalFilename)); // 保存文件到指定目录
         }
 
-        // 使用PaddleOcrUtils工具对上传的文件进行OCR处理，并获取识别结果。
-        Map<String, String> userInfoMap = PaddleOcrUtils.getStringStringMap(files);
-        return userInfoMap;
+        List<List> jsons = PaddleOcrUtils.getOcrText(files);
+
+        // 需要对识别结果进行拼接，转字符串
+        return(PaddleOcrUtils.jsonToString(jsons));
     }
 }
 

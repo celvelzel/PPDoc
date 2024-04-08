@@ -11,46 +11,35 @@ import java.util.regex.Pattern;
 
 
 @Slf4j
-public class InvoiceOcrUtils
+public class InvoiceOcrUtils extends PaddleOcrUtils
 {
     //全局变量
     private static final String NO_INFO_FOUND = "未找到";
 
     public static Map<String, String> getStringStringMap(List<List> jsons)
     {
-        StringBuilder result = new StringBuilder();
-        //遍历每一页的ocr结果
-        for (List<Map> json : jsons)
-        {
-            for (int i = 0; i < json.size(); i++)
-            {
-                log.info("当前的文字是：" + json.get(i).get("text"));
-                // 这里通过trim()和replace()双重保险去除文字中的空格
-                result.append(json.get(i).get("text").toString().trim().replace(" ", ""));
-            }
-        }
-        String trim = result.toString().trim();
-        log.info("=================拼接后的文字是=========================");
-        log.info(trim);
+        //调用父类的jsonToString方法，拼接OCR结果
+        String trim = jsonToString(jsons);
+
         String allInfo = trim;
         List<Map> maps = jsons.get(0);
         String invoiceNumber = invoiceNumber(trim);
         String invoiceCode = invoiceCode(trim);
         String invoiceDate = invoiceDate(trim);
         String invoiceAmount = invoiceAmount(trim);
-        Map<String, String> invoiceInfoMap = invokeLLM(trim);
 
+        Map<String, String> invoiceInfoMap = new HashMap<>();
+        invoiceInfoMap.put("invoiceNumber", invoiceNumber);
+        invoiceInfoMap.put("invoiceCode", invoiceCode);
+        invoiceInfoMap.put("invoiceDate", invoiceDate);
+        invoiceInfoMap.put("invoiceAmount", invoiceAmount);
+        invoiceInfoMap.put("allInfo", allInfo);
 
-        Map<String, String> invoiceMap = new HashMap<>();
-        invoiceMap.put("invoiceNumber", invoiceNumber);
-        invoiceMap.put("invoiceCode", invoiceCode);
-        invoiceMap.put("invoiceDate", invoiceDate);
-        invoiceMap.put("invoiceAmount", invoiceAmount);
-        invoiceMap.put("projectName", invoiceInfoMap.get("projectName"));
-        invoiceMap.put("purchaserName", invoiceInfoMap.get("purchaserName"));
-        invoiceMap.put("sellerName", invoiceInfoMap.get("sellerName"));
-        invoiceMap.put("allInfo", allInfo);
-        return invoiceMap;
+        //调用LLM
+        Map<String, String> invoiceLLMMap = invokeLLM(trim);
+        invoiceInfoMap.putAll(invoiceLLMMap);
+
+        return invoiceInfoMap;
     }
 
 

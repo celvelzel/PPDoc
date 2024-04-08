@@ -3,10 +3,9 @@
   <el-container>
     <el-main>
       <el-row>
-
       </el-row>
       <el-row type="flex" justify="space-between">
-        <el-col :span="12">
+        <el-col :span="10">
           <!-- 发票pdf上传组件 -->
           <el-upload action="http://localhost:8080/invoices"
                      :on-preview="handlePictureCardPreview"
@@ -23,7 +22,7 @@
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="14">
           <el-row>
             <!-- 发票信息表单 -->
             <el-form ref="form" :model="invoiceForm" label-width="80px">
@@ -37,7 +36,8 @@
                 <el-input v-model="invoiceForm.invoiceAmount"></el-input>
               </el-form-item>
               <el-form-item label="发票日期">
-                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate" style="margin-right: 500px;"></el-date-picker>
+                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate"
+                                style="margin-right: 500px;"></el-date-picker>
               </el-form-item>
               <el-form-item label="购买方名称">
                 <el-input v-model="invoiceForm.purchaserName"></el-input>

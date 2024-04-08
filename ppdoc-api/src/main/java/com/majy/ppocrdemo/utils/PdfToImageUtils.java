@@ -1,4 +1,5 @@
 package com.majy.ppocrdemo.utils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -8,14 +9,38 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class PdfToImageUtils
 {
     private PdfToImageUtils()
     {
 
     }
+
+    public void pdf2image(MultipartFile file)
+    {
+        try
+        {
+            FileInputStream pdfInputStream = (FileInputStream) file.getInputStream();
+
+            //创建准备进行ocr操作的图片list
+            List<MultipartFile> imageFiles = new ArrayList<MultipartFile>();
+
+            // 写入数据到临时文件
+            // 写入数据到图片list
+            PdfToImageUtils.pdf2ImageList(pdfInputStream, imageFiles, "png");
+            log.info("pdf转image完成");
+
+            pdfInputStream.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     /*
     * 接受pdf输入流
     * 输出multipartfile list类型的图片列表

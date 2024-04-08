@@ -3,7 +3,7 @@
     <el-main>
       <el-row class="centered-row bg">
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/images"
+          <el-upload action="http://localhost:8080/idcards/image"
                      list-type="picture-card"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
@@ -15,7 +15,7 @@
           </el-dialog>
         </el-col>
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/pdfs"
+          <el-upload action="http://localhost:8080/idcards/pdf"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
