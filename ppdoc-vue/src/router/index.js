@@ -29,6 +29,11 @@ const routes = [
         path:'/license',
         name:'license',
         component:()=>import('../views/LicenseView.vue')
+    },
+    {
+        path:'/doc',
+        name:'doc',
+        component:()=>import('../views/DocView.vue')
     }
 ]
 

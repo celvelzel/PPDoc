@@ -7,22 +7,7 @@
       </el-header>
       <el-container>
         <el-aside class="custom-side" width="200px" style="background-color: rgb(238, 241, 246)">
-          <el-menu :default-openeds="['1', '3']"
-                   style="text-align: left;font-size: 14px;color: #333;display: flex;padding: 0px">
-            <el-submenu index="1">
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                文档录入
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="1-1">通用文档录入</el-menu-item>
-                <el-menu-item index="1-2">发票录入</el-menu-item>
-                <el-menu-item index="1-3">营业执照录入</el-menu-item>
-                <el-menu-item index="1-4">起诉状录入</el-menu-item>
-                <el-menu-item index="1-5">身份证录入</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-          </el-menu>
+          <MyMenu></MyMenu>
         </el-aside>
         <el-main>
           <IdCardUpload></IdCardUpload><!-- 身份证组件 -->
@@ -35,10 +20,12 @@
 <script>
 import IdCardUpload from "@/components/IdCardUpload.vue";
 import axios from 'axios'
+import MyMenu from"@/components/MyMenu.vue"
 
 export default {
   components: {
-    IdCardUpload
+    IdCardUpload,
+    MyMenu
   },
   data() {
     return {

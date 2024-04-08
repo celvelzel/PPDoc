@@ -25,7 +25,7 @@
         <el-col :span="14">
           <el-row>
             <!-- 发票信息表单 -->
-            <el-form ref="form" :model="licenseForm" label-width="80px">
+            <el-form ref="form" label-width="80px">
               <el-form-item label="统一社会信用代码">
                 <el-input v-model="licenseForm.licenseCode"></el-input>
               </el-form-item>
@@ -70,7 +70,7 @@
             </el-form>
           </el-row>
           <el-row>
-            <extract-info :allinfo="licenseForm.allInfo"/>
+            <extract-info :allinfo="licenseForm.allInfo"></extract-info>
           </el-row>
         </el-col>
       </el-row>
@@ -104,8 +104,7 @@ export default {
         licenseDomicile: '',
         allInfo: ''
       },
-      licenseOperationPeriod: [this.licenseForm.licenseOperationPeriodStart,
-        this.licenseForm.licenseOperationPeriodEnd]
+      licenseOperationPeriod:[]
     }
   },
   methods: {
@@ -127,6 +126,8 @@ export default {
       }
       console.log(response)
       this.licenseForm = response
+      this.licenseOperationPeriod = [this.licenseForm.licenseOperationPeriodStart,
+        this.licenseForm.licenseOperationPeriodEnd];
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
