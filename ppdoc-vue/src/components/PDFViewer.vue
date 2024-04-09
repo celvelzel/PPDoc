@@ -1,77 +1,46 @@
-<script>
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
-
-// OR THE FOLLOWING IMPORT FOR VUE 2
-// import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
-
-export default {
-  components: {
-    VuePdfEmbed
-  },
-  data() {
-    return {
-      isLoading: true,
-      page: null,
-      pageCount: 1,
-      pdfSource:
-          'c',
-      showAllPages: true
-    }
-  },
-  watch: {
-    showAllPages() {
-      this.page = this.showAllPages ? null : 1
-    }
-  },
-  methods: {
-    handleDocumentRender(args) {
-      console.log(args)
-      this.isLoading = false
-      this.pageCount = this.$refs.pdfRef.pageCount
-    },
-    handlePasswordRequest(callback, retry) {
-      callback(prompt(retry ? 'Enter password again' : 'Enter password'))
-    }
-  }
-}
-</script>
-
 <template>
   <div>
-    <div class="app-header">
-      <template v-if="isLoading"> Loading...</template>
-
-      <template v-else>
-        <span v-if="showAllPages"> {{ pageCount }} page(s) </span>
-
-        <span v-else>
-        <button :disabled="page <= 1" @click="page--">❮</button>
-
-        {{ page }} / {{ pageCount }}
-
-        <button :disabled="page >= pageCount" @click="page++">❯</button>
-      </span>
-
-        <label class="right">
-          <input v-model="showAllPages" type="checkbox"/>
-
-          Show all pages
-        </label>
-      </template>
-    </div>
-
-    <div class="app-content">
-      <vue-pdf-embed
-          ref="pdfRef"
-          :source="pdfSource"
-          :page="page"
-          @password-requested="handlePasswordRequest"
-          @rendered="handleDocumentRender"
-      ></vue-pdf-embed>
-    </div>
+    <!-- used `style="height: 100vh;"` because without it in the Firefox 89 and Chrome 91 (June 2021) the `vue-pdf-app` is not rendering on the page, just empty space without any errors (since `vue-pdf-app` does not have height and it is the top tag in the generated markup ) -->
+    <!-- or you can just wrap `vue-pdf-app` in <div> tag and set height for it via CSS (like in `Script tag (unpkg)` example below) -->
+<!--    https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf-->
+    <vue-pdf-app config="config" theme="light" style="height: 80vh;"
+                 pdf="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"></vue-pdf-app>
+    <link rel="resource" type="application/l10n" href="public/viewer.ftl">
   </div>
 </template>
 
-<style scoped>
+<script>
+import VuePdfApp from "vue-pdf-app";
+// import this to use default icons for buttons
+import "vue-pdf-app/dist/icons/main.css";
+
+export default {
+  components: {
+    VuePdfApp
+  },
+  props: {
+    PdfUrl: String,
+  },
+  data() {
+    return {
+      config: {
+        toolbar: {
+          toolbarViewerLeft: {
+            toolbarViewerLeft: false
+          },
+          toolbarViewerRight: {
+            presentationMode: false,
+            openFile: false,
+            print: false,
+            download: false,
+            viewBookmark: false,
+          }
+        },
+    }
+  }
+}
+}
+</script>
+<style>
 
 </style>

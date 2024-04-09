@@ -32,6 +32,7 @@
 
       <el-row :gutter="30" style="margin-top: 10px;">
         <el-col :span="12">
+          <PDFViewer></PDFViewer>
           <!-- 表单-->
           <el-form ref="form" label-width="80px">
             <el-form-item label="所有文本">
@@ -54,9 +55,10 @@
 <script>
 import {defineComponent} from "vue";
 import ExtractInfo from "@/components/ExtractInfo.vue";
+import PDFViewer from "@/components/PDFViewer.vue";
 
 export default defineComponent({
-  components: {ExtractInfo},
+  components: {ExtractInfo, PDFViewer},
   data() {
     return {
       allInfo: ""

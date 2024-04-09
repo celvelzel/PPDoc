@@ -38,13 +38,8 @@ const routes = [
     {
         path:'/pdf',
         name:'pdf',
-        component:()=>import('../views/PdfTest.vue')
+        component:()=>import('../views/PDFPreview.vue')
     },
-    {
-        path:'/pdfvuer',
-        name:'pdfvuer',
-        component:()=>import('../views/PdfVuer.vue')
-    }
 ]
 
 const router = new VueRouter({
