@@ -34,6 +34,16 @@ const routes = [
         path:'/doc',
         name:'doc',
         component:()=>import('../views/DocView.vue')
+    },
+    {
+        path:'/pdf',
+        name:'pdf',
+        component:()=>import('../views/PdfTest.vue')
+    },
+    {
+        path:'/pdfvuer',
+        name:'pdfvuer',
+        component:()=>import('../views/PdfVuer.vue')
     }
 ]
 
