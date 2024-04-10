@@ -3,18 +3,6 @@
     <el-main>
       <el-row class="centered-row bg">
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/idcards/image"
-                     list-type="picture-card"
-                     :on-preview="handlePictureCardPreview"
-                     :on-remove="handleRemove"
-                     :on-success="handleSuccessImage">
-            <i class="el-icon-plus"></i>
-          </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
-        </el-col>
-        <el-col class="centered-row">
           <el-upload action="http://localhost:8080/idcards/pdf"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
@@ -27,6 +15,18 @@
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传pdf文件</div>
           </el-upload>
+        </el-col>
+        <el-col class="centered-row">
+          <el-upload action="http://localhost:8080/idcards/image"
+                     list-type="picture-card"
+                     :on-preview="handlePictureCardPreview"
+                     :on-remove="handleRemove"
+                     :on-success="handleSuccessImage">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
         </el-col>
       </el-row>
 

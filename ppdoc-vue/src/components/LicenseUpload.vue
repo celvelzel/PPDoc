@@ -5,7 +5,7 @@
       <el-row>
       </el-row>
       <el-row type="flex" justify="space-between">
-        <el-col :span="10">
+        <el-col :span="12">
           <!-- 营业执照pdf上传组件 -->
           <el-upload action="http://localhost:8080/licenses"
                      :on-preview="handlePictureCardPreview"
@@ -21,8 +21,10 @@
             <!-- 发票图片预览组件 -->
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
+          <br>
+          <PDFViewer></PDFViewer>
         </el-col>
-        <el-col :span="14">
+        <el-col :span="12">
           <el-row>
             <!-- 发票信息表单 -->
             <el-form ref="form" label-width="80px">
@@ -81,9 +83,10 @@
 <script>
 //import axios from 'axios'
 import ExtractInfo from "@/components/ExtractInfo.vue";
+import PDFViewer from "@/components/PDFViewer.vue";
 
 export default {
-  components: {ExtractInfo},
+  components: {PDFViewer, ExtractInfo},
   data() {
     return {
       imageUrl: '',
@@ -154,6 +157,15 @@ export default {
 </script>
 
 <style scoped>
+.el-col {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
 .el-form-item__label {
   width: 150px;
   margin-bottom: 8px; /* 调整行间距 */

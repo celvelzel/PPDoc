@@ -3,19 +3,7 @@
     <el-main>
       <el-row class="centered-row bg">
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/images"
-                     list-type="picture-card"
-                     :on-preview="handlePictureCardPreview"
-                     :on-remove="handleRemove"
-                     :on-success="handleSuccessImage">
-            <i class="el-icon-plus"></i>
-          </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
-        </el-col>
-        <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/pdfs"
+          <el-upload action="http://localhost:8080/docs"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
@@ -28,24 +16,37 @@
             <div slot="tip" class="el-upload__tip">只能上传pdf文件</div>
           </el-upload>
         </el-col>
+        <el-col class="centered-row">
+          <el-upload action="http://localhost:8080/images"
+                     list-type="picture-card"
+                     :on-preview="handlePictureCardPreview"
+                     :on-remove="handleRemove"
+                     :on-success="handleSuccessImage">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </el-col>
       </el-row>
 
       <el-row :gutter="30" style="margin-top: 10px;">
         <el-col :span="12">
           <PDFViewer></PDFViewer>
-          <!-- 表单-->
+        </el-col>
+        <el-col :span="12">
+          <!-- OCR结果表单-->
           <el-form ref="form" label-width="80px">
             <el-form-item label="所有文本">
-              <el-input v-model="allInfo"></el-input>
+              <el-input v-model="docInfoForm.allInfo"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">提交表单</el-button>
               <el-button>取消</el-button>
             </el-form-item>
           </el-form>
-        </el-col>
-        <el-col :span="12">
-          <extract-info :allinfo="allInfo"/>
+          <GenerateSummary :allinfo="docInfoForm.allInfo"/>
+          <extract-info :allinfo="docInfoForm.allInfo"/>
         </el-col>
       </el-row>
     </el-main>
@@ -56,12 +57,19 @@
 import {defineComponent} from "vue";
 import ExtractInfo from "@/components/ExtractInfo.vue";
 import PDFViewer from "@/components/PDFViewer.vue";
+import GenerateSummary from "@/components/GenerateSummary.vue";
 
 export default defineComponent({
-  components: {ExtractInfo, PDFViewer},
+  components: {GenerateSummary, ExtractInfo, PDFViewer},
   data() {
     return {
-      allInfo: ""
+      docInfoForm: {
+        allInfo: ''
+      },
+      limit: 3,
+      dialogImageUrl: '',
+      dialogVisible: false,
+      fileList: [],
     }
   },
   methods: {
@@ -91,19 +99,12 @@ export default defineComponent({
         this.fileList.shift();
       }
       console.log(response)
-      this.userInfoForm = response
+      this.docInfoForm = response
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
       if (fileList.length == 0) {
-        this.userInfoForm = {
-          name: undefined,
-          nation: undefined,
-          address: undefined,
-          cardNumber: undefined,
-          sex: undefined,
-          birthday: undefined
-        }
+        this.allInfo =  ""
       }
     },
     handlePictureCardPreview(file) {

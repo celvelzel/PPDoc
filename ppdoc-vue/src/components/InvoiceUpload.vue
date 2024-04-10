@@ -5,7 +5,7 @@
       <el-row>
       </el-row>
       <el-row type="flex" justify="space-between">
-        <el-col :span="10">
+        <el-col :span="12">
           <!-- 发票pdf上传组件 -->
           <el-upload action="http://localhost:8080/invoices"
                      :on-preview="handlePictureCardPreview"
@@ -21,8 +21,12 @@
             <!-- 发票图片预览组件 -->
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
+          <br>
+          <PDFViewer></PDFViewer>
+          <br>
+          <GenerateSummary :allinfo="invoiceForm.allInfo"/>
         </el-col>
-        <el-col :span="14">
+        <el-col :span="12">
           <el-row>
             <!-- 发票信息表单 -->
             <el-form ref="form" :model="invoiceForm" label-width="80px">
@@ -69,9 +73,11 @@
 // import axios from 'axios'
 
 import ExtractInfo from "@/components/ExtractInfo.vue";
+import PDFViewer from "@/components/PDFViewer.vue";
+import GenerateSummary from "@/components/GenerateSummary.vue";
 
 export default {
-  components: {ExtractInfo},
+  components: {GenerateSummary, PDFViewer, ExtractInfo},
   data() {
     return {
       imageUrl: '',  // 发票图片预览地址
