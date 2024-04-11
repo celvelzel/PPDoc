@@ -1,6 +1,7 @@
 package com.majy.ppdoc.controller;
 
 import com.majy.ppdoc.utils.PaddleOcrUtils;
+import org.junit.Test;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 @RestController
 public class PaddleOcr
@@ -32,6 +34,14 @@ public class PaddleOcr
 
         // 需要对识别结果进行拼接，转字符串
         return(PaddleOcrUtils.jsonToString(jsons));
+    }
+
+    @Test
+    public void test(){
+        //获取所有的属性
+        String properties = System.getProperty("user.dir");
+        //遍历所有的属性
+        System.out.println(properties);
     }
 }
 

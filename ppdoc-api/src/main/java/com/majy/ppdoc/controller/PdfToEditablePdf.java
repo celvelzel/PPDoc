@@ -3,6 +3,7 @@ package com.majy.ppdoc.controller;
 import com.majy.ppdoc.utils.PaddleOcrUtils;
 import com.majy.ppdoc.utils.PdfToEditablePdfUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,8 +52,8 @@ public class PdfToEditablePdf
     }
 
 
-    //测试类
-    public static void main(String[] args)
+    @Test
+    public void test()
     {
         String filePath = "<LOCAL_PATH_REDACTED>";
         File file = new File(filePath);

@@ -544,7 +544,7 @@ class FluentResource {
       let value = parsePattern();
       let attributes = parseAttributes();
       if (value === null && Object.keys(attributes).length === 0) {
-        throw new SyntaxError("Expected message value or attributes");
+        throw new SyntaxError("Expected msg value or attributes");
       }
       return {
         id,
@@ -3141,6 +3141,32 @@ const PDFViewerApplication = {
     if (!this.pdfViewer.currentScaleValue) {
       this.pdfViewer.currentScaleValue = _ui_utils_js__WEBPACK_IMPORTED_MODULE_0__.DEFAULT_SCALE_VALUE;
     }
+    //获取url
+    var c_url=window.location.href;
+    //获取参数
+    if(c_url.indexOf("&")&&c_url.indexOf("=")){
+      var c_urlArray={}
+      var c_val=c_url.split('?')[1];
+      var c_valArray=c_val.split('&');
+      for(let i=0;i<c_valArray.length;i++){
+        let c_key=c_valArray[i].split('=')[0];
+        let c_value=c_valArray[i].split('=')[1];
+        c_urlArray[c_key]=c_value;
+      }
+      //默认缩放比例
+      if(c_urlArray['zoom']){
+        this.pdfViewer.currentScale=c_urlArray['zoom'];
+      }
+      //跳转至指定页码
+      if(c_urlArray['page']){
+        document.getElementById('pageNumber').value = this.pdfViewer.currentPageNumber = c_urlArray['page']*1;
+      }
+      //页面位置定位
+      if(c_urlArray['top']){
+        document.getElementById('viewerContainer').scrollTop=document.getElementById('viewerContainer').scrollTop+c_urlArray['top']*1;
+      }
+    }
+
   },
   _cleanup() {
     if (!this.pdfDocument) {
@@ -3478,9 +3504,10 @@ const PDFViewerApplication = {
         return;
       }
       const fileOrigin = new URL(file, window.location.href).origin;
-      if (fileOrigin !== viewerOrigin) {
-        throw new Error("file origin does not match viewer's");
-      }
+      //去掉跨域请求检查
+      // if (fileOrigin !== viewerOrigin) {
+      //   throw new Error("file origin does not match viewer's");
+      // }
     } catch (ex) {
       PDFViewerApplication.l10n.get("pdfjs-loading-error").then(msg => {
         PDFViewerApplication._documentError(msg, {
@@ -14876,7 +14903,7 @@ function getViewerConfiguration() {
     debuggerScriptPath: "./debugger.mjs"
   };
 }
-function webViewerLoad() {
+function webViewerLoad(fileUrl) {
   const config = getViewerConfiguration();
   const event = new CustomEvent("webviewerloaded", {
     bubbles: true,
@@ -14890,6 +14917,9 @@ function webViewerLoad() {
   } catch (ex) {
     console.error(`webviewerloaded: ${ex}`);
     document.dispatchEvent(event);
+  }
+  if(fileUrl){
+    config.defaultUrl = fileUrl;
   }
   _app_js__WEBPACK_IMPORTED_MODULE_5__.PDFViewerApplication.run(config);
 }
@@ -14989,7 +15019,7 @@ __webpack_async_result__();
 /************************************************************************/
 /******/ // The module cache
 /******/ var __webpack_module_cache__ = {};
-/******/ 
+/******/
 /******/ // The require function
 /******/ function __webpack_require__(moduleId) {
 /******/ 	// Check if module is in cache
@@ -15003,14 +15033,14 @@ __webpack_async_result__();
 /******/ 		// no module.loaded needed
 /******/ 		exports: {}
 /******/ 	};
-/******/ 
+/******/
 /******/ 	// Execute the module function
 /******/ 	__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 
+/******/
 /******/ 	// Return the exports of the module
 /******/ 	return module.exports;
 /******/ }
-/******/ 
+/******/
 /************************************************************************/
 /******/ /* webpack/runtime/async module */
 /******/ (() => {
@@ -15080,7 +15110,7 @@ __webpack_async_result__();
 /******/ 		queue && queue.d < 0 && (queue.d = 0);
 /******/ 	};
 /******/ })();
-/******/ 
+/******/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
 /******/ 	// define getter functions for harmony exports
@@ -15092,14 +15122,14 @@ __webpack_async_result__();
 /******/ 		}
 /******/ 	};
 /******/ })();
-/******/ 
+/******/
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
-/******/ 
+/******/
 /************************************************************************/
-/******/ 
+/******/
 /******/ // startup
 /******/ // Load entry module and return exports
 /******/ // This entry module used 'module' so it can't be inlined
@@ -15109,6 +15139,6 @@ __webpack_async_result__();
 /******/ var __webpack_exports__PDFViewerApplicationConstants = __webpack_exports__.PDFViewerApplicationConstants;
 /******/ var __webpack_exports__PDFViewerApplicationOptions = __webpack_exports__.PDFViewerApplicationOptions;
 /******/ export { __webpack_exports__PDFViewerApplication as PDFViewerApplication, __webpack_exports__PDFViewerApplicationConstants as PDFViewerApplicationConstants, __webpack_exports__PDFViewerApplicationOptions as PDFViewerApplicationOptions };
-/******/ 
+/******/
 
 //# sourceMappingURL=viewer.mjs.map

@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.List;
 
 import com.itextpdf.text.FontFactory;
+import org.junit.Test;
 
 
 @Slf4j
@@ -222,7 +223,8 @@ public class PdfToEditablePdfUtils
         pdf2Dpdf2(pdfPath, pdfZise, imgSize, rerJObject, DpdfPath);
     }
 
-    public static void main(String[] args) throws DocumentException, IOException
+    @Test
+    public void test() throws DocumentException, IOException
     {
         String jpgPath = "<LOCAL_PATH_REDACTED>";
         String dpdfFolder = "<LOCAL_PATH_REDACTED>";

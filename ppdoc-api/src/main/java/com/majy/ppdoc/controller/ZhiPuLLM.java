@@ -10,6 +10,7 @@ import com.zhipu.oapi.Constants;
 import com.zhipu.oapi.service.v4.model.*;
 import io.reactivex.Flowable;
 import org.json.JSONObject;
+import org.junit.Test;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,36 +53,6 @@ public class ZhiPuLLM
 
     private static final Logger logger = LoggerFactory.getLogger(ZhiPuLLM.class);
 
-    //测试类
-    public static void main(String[] args)
-    {
-        String ocrTextValue = "姓名马冀远性别男民族汉出生2013年05月06日住址湖南省长沙市开福区巡道街幸福小区居民组公民身份证号码430512198908131367";
-        String fieldsValue = "[姓名],[性别]";
-        String res = sseInvokeExtractInfo(ocrTextValue, fieldsValue);
-
-        // 正则表达式，用于匹配 JSON 对象
-        String jsonRegex = "\\{\\s*[\"\\w\\s]*:[ \"'].*?[\"]\\s*[,}]\\s*\\}";
-        Pattern pattern = Pattern.compile(jsonRegex, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(res);
-
-        // 查找所有匹配的 JSON 字符串
-        while (matcher.find())
-        {
-            // 构建完整的 JSON 字符串
-            StringBuilder jsonStringBuilder = new StringBuilder();
-            jsonStringBuilder.append("{");
-            jsonStringBuilder.append(matcher.group(0));
-            jsonStringBuilder.append("}");
-            String jsonStr = jsonStringBuilder.toString();
-
-            // 解析 JSON 字符串为 JSONObject
-            JSONObject jsonObj = new JSONObject(jsonStr);
-
-            // 输出解析后的 JSON 对象
-            System.out.println("解析后的 JSON 对象: " + jsonObj.toString());
-            break; // 如果只需要第一个 JSON 对象，可以取消注释并删除 break 语句
-        }
-    }
 
     @PostMapping("/extractinfo")
     public String zhiPuExtractInfo(@RequestBody String requestBody) throws Exception
@@ -121,10 +92,7 @@ public class ZhiPuLLM
     public static String sseInvokeExtractInfo(String ocr_result, String keyInfo)
     {
         List<ChatMessage> messages = new ArrayList<>();
-
-        /**
-         * prompt
-         */
+        // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(),
                 "你现在的任务是从OCR文字识别的结果中提取我指定的关键信息。" +
                         "\n" +
@@ -140,44 +108,11 @@ public class ZhiPuLLM
                         "下面正式开始：" +
                         "\n" +
                         "OCR文字：{" + ocr_result + "}要抽取的关键信息：[" + keyInfo + "]");
-//      ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(), "你能帮我查询2024年1月1日从北京南站到上海的火车票吗？");
-        // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
+        //ocr_text和keyInfo是前端传入的OCR识别结果文本和用户指定的关键词
 
         messages.add(chatMessage);
         String requestId = String.format(requestIdTemplate, System.currentTimeMillis());//生成一个请求ID，用于标识这次API调用
 
-        // 函数调用参数构建部分
-//        List<ChatTool> chatToolList = new ArrayList<>();
-//        ChatTool chatTool = new ChatTool();
-//        chatTool.setType(ChatToolType.FUNCTION.value());
-//        ChatFunctionParameters chatFunctionParameters = new ChatFunctionParameters();
-//        chatFunctionParameters.setType("object");
-//        Map<String, Object> properties = new HashMap<>();
-//        properties.put("departure", new HashMap<String, Object>() {{
-//            put("type", "string");
-//            put("description", "出发城市或车站");
-//        }});
-//        properties.put("destination", new HashMap<String, Object>() {{
-//            put("type", "string");
-//            put("description", "目的地城市或车站");
-//        }});
-//        properties.put("date", new HashMap<String, Object>() {{
-//            put("type", "string");
-//            put("description", "要查询的车次日期");
-//        }});
-//        List<String> required = new ArrayList<>();
-//        required.add("departure");
-//        required.add("destination");
-//        required.add("date");
-//        chatFunctionParameters.setProperties(properties);
-//        ChatFunction chatFunction = ChatFunction.builder()
-//                .name("query_train_info")
-//                .description("根据用户提供的信息，查询对应的车次")
-//                .parameters(chatFunctionParameters)
-//                .required(required)
-//                .build();
-//        chatTool.setFunction(chatFunction);
-//        chatToolList.add(chatTool);
 
         /* 构建一个ChatCompletionRequest对象，它包含了调用模型API所需的所有信息，
         如模型名称、是否使用流式响应、消息列表、请求ID、工具列表和工具选择策略。 */
@@ -258,14 +193,11 @@ public class ZhiPuLLM
         summaryOptions.put("4", "文档的详细摘要，包括所有主要部分和子部分的概要，每个部分用一段来描述，确保包含所有关键信息和细节，同时保持摘要的连贯性和易读性");
         summaryOptions.put("5", "针对专业或商务文档的执行摘要，包括文档的目的、关键发现、分析、建议和结论，以及任何对决策者或执行人员重要的信息，通常以清晰、简洁的格式呈现");
         String summaryOption = summaryOptions.get(summaryType);
-
-        /**
-         * prompt
-         */
+        //prompt
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(),
-                "你现在的任务是根据OCR文字识别的结果生成一份摘要。请根据我的要求总结文本的主要内容。" +
+                "你现在的任务是根据OCR文字识别的结果生成一份摘要。请根据我的要求总结文本的内容。" +
                         "请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，但您应该尽力理解文档的主要内容并提取关键信息。" +
-                        "请确保您的摘要准确、清晰，并包含所有重要细节。" +
+//                        "请确保您的摘要准确、清晰，并包含所有重要细节。" +
                         "如果OCR结果中有任何不确定或缺失的信息，请在摘要中明确指出" +
                         "\n" +
                         "我给出的OCR识别结果文本使用符号{}包围，包含所识别出来的文字，顺序在原始图片中从左至右、从上至下。" +
@@ -348,5 +280,36 @@ public class ZhiPuLLM
         {
             return new ChatMessageAccumulator(chunk.getChoices().get(0).getDelta(), null, chunk.getChoices().get(0), chunk.getUsage(), chunk.getCreated(), chunk.getId());
         });
+    }
+
+    @Test
+    public void test()
+    {
+        String ocrTextValue = "姓名马洋洋性别男民族汉出生2013年05月06日住址湖南省长沙市开福区巡道街幸福小区居民组公民身份证号码430512198908131367";
+        String fieldsValue = "[姓名],[性别]";
+        String res = sseInvokeExtractInfo(ocrTextValue, fieldsValue);
+
+        // 正则表达式，用于匹配 JSON 对象
+        String jsonRegex = "\\{\\s*[\"\\w\\s]*:[ \"'].*?[\"]\\s*[,}]\\s*\\}";
+        Pattern pattern = Pattern.compile(jsonRegex, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(res);
+
+        // 查找所有匹配的 JSON 字符串
+        while (matcher.find())
+        {
+            // 构建完整的 JSON 字符串
+            StringBuilder jsonStringBuilder = new StringBuilder();
+            jsonStringBuilder.append("{");
+            jsonStringBuilder.append(matcher.group(0));
+            jsonStringBuilder.append("}");
+            String jsonStr = jsonStringBuilder.toString();
+
+            // 解析 JSON 字符串为 JSONObject
+            JSONObject jsonObj = new JSONObject(jsonStr);
+
+            // 输出解析后的 JSON 对象
+            System.out.println("解析后的 JSON 对象: " + jsonObj.toString());
+            break; // 如果只需要第一个 JSON 对象，可以取消注释并删除 break 语句
+        }
     }
 }

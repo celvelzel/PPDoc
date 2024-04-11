@@ -44,14 +44,10 @@ export default {
       // 发送请求到后端 API
       axios.post('http://localhost:8080/generatesummary', postData)
           .then(response => {
-            // 处理后端返回的响应
-
             console.log('生成摘要请求成功');
             this.outputResult = JSON.stringify(response.data);
-            // 这里可以进行文件下载或其他操作
           })
           .catch(error => {
-            // 处理错误情况
             console.error('生成摘要请求失败', error);
           });
     },

@@ -2,6 +2,7 @@ package com.majy.ppdoc.utils;
 
 import com.majy.ppdoc.controller.ZhiPuLLM;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -255,7 +256,8 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         return invoiceLLMMap;
     }
 
-    public static void main(String[] args)
+    @Test
+    public void test()
     {
         String text = "经营范围：水处理设备、环保产品及零部件，空气调节设备及其零部件家用电器、燃气器具、电热水器具、太阳能设备、医疗器械的研究、批发、进出口、佣金代理（拍卖除外）并提供相关配套服务。\n" +
                 "住所：上海市黄浦区新码头街55号4幢3楼\n" +

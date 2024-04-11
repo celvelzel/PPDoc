@@ -2,6 +2,7 @@ package com.majy.ppdoc.utils;
 
 import com.majy.ppdoc.controller.ZhiPuLLM;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +166,8 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
 
 
     //测试类
-    public static void main(String[] args)
+    @Test
+    public void test()
     {
         String projectName = "";
         String purchaserName = "";

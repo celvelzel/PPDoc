@@ -23,6 +23,8 @@
           </el-upload>
           <br>
           <PDFViewer></PDFViewer>
+          <br>
+          <GenerateSummary :allinfo="licenseForm.allInfo"/>
         </el-col>
         <el-col :span="12">
           <el-row>
@@ -81,12 +83,12 @@
 </template>
 
 <script>
-//import axios from 'axios'
 import ExtractInfo from "@/components/ExtractInfo.vue";
 import PDFViewer from "@/components/PDFViewer.vue";
+import GenerateSummary from "@/components/GenerateSummary.vue";
 
 export default {
-  components: {PDFViewer, ExtractInfo},
+  components: {GenerateSummary, PDFViewer, ExtractInfo},
   data() {
     return {
       imageUrl: '',
@@ -115,7 +117,7 @@ export default {
       this.imageUrl = file.url;
     },
     handleSuccessPdf(response, file) {
-      // 假设服务器返回的响应数据中包含了文件的URL
+      // 如果包含了文件的URL
       const newFile = {
         name: file.name, // 文件名
         url: response.url // 服务器返回的文件URL

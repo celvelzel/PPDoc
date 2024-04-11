@@ -32,7 +32,11 @@
 
       <el-row :gutter="30" style="margin-top: 10px;">
         <el-col :span="12">
-          <PDFViewer></PDFViewer>
+
+          <!-- PDF预览组件-->
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="600" height="1050"></iframe>
+          <!-------------->
+
         </el-col>
         <el-col :span="12">
           <!-- OCR结果表单-->
@@ -45,8 +49,12 @@
               <el-button>取消</el-button>
             </el-form-item>
           </el-form>
+<!--          摘要生成组件-->
           <GenerateSummary :allinfo="docInfoForm.allInfo"/>
+<!--          ------------>
+<!--          提取信息组件-->
           <extract-info :allinfo="docInfoForm.allInfo"/>
+<!--          ------------>
         </el-col>
       </el-row>
     </el-main>
@@ -56,11 +64,10 @@
 <script>
 import {defineComponent} from "vue";
 import ExtractInfo from "@/components/ExtractInfo.vue";
-import PDFViewer from "@/components/PDFViewer.vue";
 import GenerateSummary from "@/components/GenerateSummary.vue";
 
 export default defineComponent({
-  components: {GenerateSummary, ExtractInfo, PDFViewer},
+  components: {GenerateSummary, ExtractInfo},
   data() {
     return {
       docInfoForm: {
@@ -70,6 +77,7 @@ export default defineComponent({
       dialogImageUrl: '',
       dialogVisible: false,
       fileList: [],
+      pdfUrl:"",
     }
   },
   methods: {
@@ -87,9 +95,11 @@ export default defineComponent({
      */
     handleSuccessPdf(response, file) {
       // 假设服务器返回的响应数据中包含了文件的URL
+      this.pdfUrl = response.data.url
+      console.log("文档的url是："+response.data.url)
       const newFile = {
         name: file.name, // 文件名
-        url: response.url // 服务器返回的文件URL
+        url: response.data.url // 服务器返回的文件URL
       };
       // 将新文件添加到fileList数组中
       this.fileList.push(newFile);
@@ -99,7 +109,9 @@ export default defineComponent({
         this.fileList.shift();
       }
       console.log(response)
-      this.docInfoForm = response
+      this.docInfoForm = response.data.data
+      // 更新数据的操作
+      this.$emit('dataUpdated')
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);

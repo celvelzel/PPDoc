@@ -50,10 +50,8 @@ export default {
       axios.post('http://localhost:8080/extractinfo', postData)
           .then(response => {
             // 处理后端返回的响应
-
             console.log('导出结果请求成功');
             this.outputResult = JSON.stringify(response.data);
-            // 这里可以进行文件下载或其他操作
           })
           .catch(error => {
             // 处理错误情况
