@@ -22,38 +22,40 @@
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
           <br>
-          <PDFViewer></PDFViewer>
+          <!-- PDF预览组件-->
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="600" height="570"></iframe>
+          <!-------------->
           <br>
-          <GenerateSummary :allinfo="invoiceForm.allInfo"/>
+          <GenerateSummary :allinfo="invoiceInfoForm.allInfo"/>
         </el-col>
         <el-col :span="12">
           <el-row>
             <!-- 发票信息表单 -->
-            <el-form ref="form" :model="invoiceForm" label-width="80px">
+            <el-form ref="form" :model="invoiceInfoForm" label-width="80px">
               <el-form-item label="发票代码">
-                <el-input v-model="invoiceForm.invoiceCode"></el-input>
+                <el-input v-model="invoiceInfoForm.invoiceCode"></el-input>
               </el-form-item>
               <el-form-item label="发票号码">
-                <el-input v-model="invoiceForm.invoiceNumber"></el-input>
+                <el-input v-model="invoiceInfoForm.invoiceNumber"></el-input>
               </el-form-item>
               <el-form-item label="发票金额">
-                <el-input v-model="invoiceForm.invoiceAmount"></el-input>
+                <el-input v-model="invoiceInfoForm.invoiceAmount"></el-input>
               </el-form-item>
               <el-form-item label="发票日期">
-                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceForm.invoiceDate"
+                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceInfoForm.invoiceDate"
                                 style="margin-right: 500px;"></el-date-picker>
               </el-form-item>
               <el-form-item label="购买方名称">
-                <el-input v-model="invoiceForm.purchaserName"></el-input>
+                <el-input v-model="invoiceInfoForm.purchaserName"></el-input>
               </el-form-item>
               <el-form-item label="销售方名称">
-                <el-input v-model="invoiceForm.sellerName"></el-input>
+                <el-input v-model="invoiceInfoForm.sellerName"></el-input>
               </el-form-item>
               <el-form-item label="项目名称">
-                <el-input v-model="invoiceForm.projectName"></el-input>
+                <el-input v-model="invoiceInfoForm.projectName"></el-input>
               </el-form-item>
               <el-form-item label="所有文本">
-                <el-input v-model="invoiceForm.allInfo"></el-input>
+                <el-input v-model="invoiceInfoForm.allInfo"></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -61,7 +63,7 @@
             </el-form>
           </el-row>
           <el-row>
-            <extract-info :allinfo="invoiceForm.allInfo"/>
+            <extract-info :allinfo="invoiceInfoForm.allInfo"/>
           </el-row>
         </el-col>
       </el-row>
@@ -73,16 +75,15 @@
 // import axios from 'axios'
 
 import ExtractInfo from "@/components/ExtractInfo.vue";
-import PDFViewer from "@/components/PDFViewer.vue";
 import GenerateSummary from "@/components/GenerateSummary.vue";
 
 export default {
-  components: {GenerateSummary, PDFViewer, ExtractInfo},
+  components: {GenerateSummary, ExtractInfo},
   data() {
     return {
       imageUrl: '',  // 发票图片预览地址
       fileList: [],  // 上传的文件列表
-      invoiceForm: {  // 发票信息表单
+      invoiceInfoForm: {  // 发票信息表单
         invoiceCode: '',
         invoiceNumber: '',
         invoiceAmount: '',
@@ -91,7 +92,8 @@ export default {
         purchaserName: '',
         sellerName: '',
         projectName: ''
-      }
+      },
+      pdfUrl:"",
     };
   },
   methods: {
@@ -99,10 +101,16 @@ export default {
       this.imageUrl = file.url;
     },
     handleSuccessPdf(response, file) {
-      // 假设服务器返回的响应数据中包含了文件的URL
+      // 假设服务器返回的响应数据中包含了发票的URL
+      this.pdfUrl = response.data.url;
+      console.log("发票的url是："+response.data.url);
+      this.invoiceInfoForm = response.data.data;
+      // 更新数据的操作
+      this.$emit('dataUpdated');
+
       const newFile = {
         name: file.name, // 文件名
-        url: response.url // 服务器返回的文件URL
+        url: response.data.url // 服务器返回的文件URL
       };
       // 将新文件添加到fileList数组中
       this.fileList.push(newFile);
@@ -111,8 +119,6 @@ export default {
         // 可以选择移除最早的文件
         this.fileList.shift();
       }
-      console.log(response)
-      this.invoiceForm = response
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);

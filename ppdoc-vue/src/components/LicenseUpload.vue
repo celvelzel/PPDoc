@@ -22,37 +22,39 @@
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
           <br>
-          <PDFViewer></PDFViewer>
+          <!-- PDF预览组件-->
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="600" height="750"></iframe>
+          <!-------------->
           <br>
-          <GenerateSummary :allinfo="licenseForm.allInfo"/>
+          <GenerateSummary :allinfo="licenseInfoForm.allInfo"/>
         </el-col>
         <el-col :span="12">
           <el-row>
             <!-- 发票信息表单 -->
             <el-form ref="form" label-width="80px">
               <el-form-item label="统一社会信用代码">
-                <el-input v-model="licenseForm.licenseCode"></el-input>
+                <el-input v-model="licenseInfoForm.licenseCode"></el-input>
               </el-form-item>
               <el-form-item label="证照编号">
-                <el-input v-model="licenseForm.licenseNumber"></el-input>
+                <el-input v-model="licenseInfoForm.licenseNumber"></el-input>
               </el-form-item>
               <el-form-item label="名称">
-                <el-input v-model="licenseForm.licenseEnterpriseName"></el-input>
+                <el-input v-model="licenseInfoForm.licenseEnterpriseName"></el-input>
               </el-form-item>
               <el-form-item label="类型">
-                <el-input v-model="licenseForm.licenseEnterpriseType"></el-input>
+                <el-input v-model="licenseInfoForm.licenseEnterpriseType"></el-input>
               </el-form-item>
               <el-form-item label="法定代表人">
-                <el-input v-model="licenseForm.licenseLegalRepresentative"></el-input>
+                <el-input v-model="licenseInfoForm.licenseLegalRepresentative"></el-input>
               </el-form-item>
               <el-form-item label="经营范围">
-                <el-input v-model="licenseForm.licenseBusinessScope"></el-input>
+                <el-input v-model="licenseInfoForm.licenseBusinessScope"></el-input>
               </el-form-item>
               <el-form-item label="注册资本">
-                <el-input v-model="licenseForm.licenseRegisteredCapital"></el-input>
+                <el-input v-model="licenseInfoForm.licenseRegisteredCapital"></el-input>
               </el-form-item>
               <el-form-item label="成立日期">
-                <el-date-picker type="date" placeholder="选择日期" v-model="licenseForm.licenseEstablishDate"
+                <el-date-picker type="date" placeholder="选择日期" v-model="licenseInfoForm.licenseEstablishDate"
                                 style="margin-right: 500px;"></el-date-picker>
               </el-form-item>
               <el-form-item label="营业期限">
@@ -63,10 +65,10 @@
                                 style="margin-right: 500px;"></el-date-picker>
               </el-form-item>
               <el-form-item label="住所">
-                <el-input v-model="licenseForm.licenseDomicile"></el-input>
+                <el-input v-model="licenseInfoForm.licenseDomicile"></el-input>
               </el-form-item>
               <el-form-item label="所有文本">
-                <el-input v-model="licenseForm.allInfo"></el-input>
+                <el-input v-model="licenseInfoForm.allInfo"></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -74,7 +76,7 @@
             </el-form>
           </el-row>
           <el-row>
-            <extract-info :allinfo="licenseForm.allInfo"></extract-info>
+            <extract-info :allinfo="licenseInfoForm.allInfo"></extract-info>
           </el-row>
         </el-col>
       </el-row>
@@ -84,18 +86,17 @@
 
 <script>
 import ExtractInfo from "@/components/ExtractInfo.vue";
-import PDFViewer from "@/components/PDFViewer.vue";
 import GenerateSummary from "@/components/GenerateSummary.vue";
 
 export default {
-  components: {GenerateSummary, PDFViewer, ExtractInfo},
+  components: {GenerateSummary, ExtractInfo},
   data() {
     return {
       imageUrl: '',
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
-      licenseForm: {  // 营业执照信息表单
+      licenseInfoForm: {  // 营业执照信息表单
         licenseCode: '',
         licenseNumber: '',
         licenseEnterpriseName: '',
@@ -109,7 +110,8 @@ export default {
         licenseDomicile: '',
         allInfo: ''
       },
-      licenseOperationPeriod:[]
+      licenseOperationPeriod:[],
+      pdfUrl:"",
     }
   },
   methods: {
@@ -117,7 +119,13 @@ export default {
       this.imageUrl = file.url;
     },
     handleSuccessPdf(response, file) {
-      // 如果包含了文件的URL
+      // 假设服务器返回的响应数据中包含了营业执照的URL
+      this.pdfUrl = response.data.url;
+      console.log("营业执照的url是："+response.data.url);
+      this.licenseInfoForm = response.data.data;
+      this.licenseOperationPeriod = [this.licenseInfoForm.licenseOperationPeriodStart,
+        this.licenseInfoForm.licenseOperationPeriodEnd];
+
       const newFile = {
         name: file.name, // 文件名
         url: response.url // 服务器返回的文件URL
@@ -129,10 +137,6 @@ export default {
         // 可以选择移除最早的文件
         this.fileList.shift();
       }
-      console.log(response)
-      this.licenseForm = response
-      this.licenseOperationPeriod = [this.licenseForm.licenseOperationPeriodStart,
-        this.licenseForm.licenseOperationPeriodEnd];
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);

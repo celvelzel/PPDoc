@@ -42,13 +42,11 @@ public class PaddleOcrUtils
 
             // 写入数据到图片list
             PdfToImageUtils.pdf2ImageList(pdfInputStream, imageFiles, "png");
-            log.info("pdf转image完成");
-
+            log.info("pdf转图片完成");
 
             //传入图片文件，调用ocr模块进行识别，返回json格式的识别结果
             List res = PaddleOcrUtils.getOcrText(imageFiles);
-            log.info("image导出ocr内容完成");
-
+            log.info("图片提取ocr文本完成");
 
             pdfInputStream.close();
 

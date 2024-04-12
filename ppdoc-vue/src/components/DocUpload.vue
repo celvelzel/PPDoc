@@ -87,16 +87,13 @@ export default defineComponent({
       console.log(response)
       this.userInfoForm = response
     },
-    /**
-     * PDF文件上传成功后的回调函数
-     * @param {Object} response 上传后的响应数据
-     * @param {Object} file 上传的文件对象
-     * @param {Array} fileList 文件列表
-     */
     handleSuccessPdf(response, file) {
-      // 假设服务器返回的响应数据中包含了文件的URL
-      this.pdfUrl = response.data.url
-      console.log("文档的url是："+response.data.url)
+      this.pdfUrl = response.data.url;
+      console.log("文档的url是："+response.data.url);
+      this.docInfoForm = response.data.data;
+      // 更新数据的操作
+      this.$emit('dataUpdated');
+
       const newFile = {
         name: file.name, // 文件名
         url: response.data.url // 服务器返回的文件URL
@@ -108,10 +105,6 @@ export default defineComponent({
         // 可以选择移除最早的文件
         this.fileList.shift();
       }
-      console.log(response)
-      this.docInfoForm = response.data.data
-      // 更新数据的操作
-      this.$emit('dataUpdated')
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);

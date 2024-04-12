@@ -1,30 +1,44 @@
 package com.majy.ppdoc.controller;
 
 import com.majy.ppdoc.utils.IdCardOcrUtils;
+import com.majy.ppdoc.utils.OSSUtils;
 import com.majy.ppdoc.utils.PaddleOcrUtils;
+import com.majy.ppdoc.utils.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-public class IdCardOcr
+public class IdCardOcr extends OcrController
 {
+
     @PostMapping("/idcards/pdf")
-    public static Map<String, String> idCardPdfOcr(MultipartFile file) throws IOException
+    public Result idCardPdfOcr(MultipartFile file) throws IOException
     {
+        // 调用父类方法，上传文件到OSS
+        URL urlResult = uploadFile(file);
+
+        // pdf识别，提取文字
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
-        return IdCardOcrUtils.getStringStringMap(jsons);
+        // 根据识别文本提取信息
+        Map<String, String> dataMap = IdCardOcrUtils.getStringStringMap(jsons);
+
+        //调用父类方法，构建返回结果
+        return getResuleSuccess(urlResult,dataMap);
     }
 
     @PostMapping("/idcards/image")
-    public static Map<String, String> idCardImageOcr(MultipartFile file) throws IOException
+    public Result idCardImageOcr(MultipartFile file) throws IOException
     {
-        //String originalFilename = file.getOriginalFilename(); // 获取文件原名
-        //file.transferTo(new File("<LOCAL_PATH_REDACTED>" + originalFilename)); // 保存文件到指定目录
+        //调用父类方法，上传文件到OSS
+        URL urlResult = uploadFile(file);
 
         //使用PaddleOcrUtils工具对上传的文件进行OCR处理，并获取识别结果。
         List<MultipartFile> files = new java.util.ArrayList<>();
@@ -32,6 +46,9 @@ public class IdCardOcr
         List<List> jsons = PaddleOcrUtils.getOcrText(files);
 
         // 对识别结果进行信息提取，转换为Map类型，并返回给前端。
-        return IdCardOcrUtils.getStringStringMap(jsons);
+        Map<String, String> dataMap = IdCardOcrUtils.getStringStringMap(jsons);
+
+        //调用父类方法，构建返回结果
+        return getResuleSuccess(urlResult,dataMap);
     }
 }

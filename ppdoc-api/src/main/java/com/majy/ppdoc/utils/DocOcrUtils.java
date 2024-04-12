@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DocUtils extends PaddleOcrUtils
+public class DocOcrUtils extends PaddleOcrUtils
 {
     public static Map<String, String> getStringStringMap(List<List> jsons){
         //调用父类的jsonToString方法，拼接OCR结果

@@ -3,7 +3,7 @@ package com.majy.ppdoc.utils;
 import com.aliyun.oss.*;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,10 +17,14 @@ import java.util.UUID;
 @Component
 public class OSSUtils
 {
-    private final String endPoint = "https://oss-cn-shenzhen.aliyuncs.com";
-    private final String accessKeyID = "<REDACTED_ALIYUN_ACCESS_KEY_ID>";
-    private final String accessKeySecret = "<REDACTED_SECRET>";
-    private final String bucketName = "examplebucket";
+    @Value("${aliyun.oss.endpoint}")
+    private String endPoint ;
+    @Value("${aliyun.oss.accessKeyId}")
+    private String accessKeyID ;
+    @Value("${aliyun.oss.accessKeySecret}")
+    private String accessKeySecret ;
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName ;
 
     public Result uploadFile(MultipartFile file) throws IOException
     {
@@ -80,6 +84,8 @@ public class OSSUtils
                     + "such as not being able to access the network.");
             log.info("Error Message:" + ce.getMessage());
         }
+        //文件访问路径
+//        String url = endPoint.split("//")[0] + "//" + bucketName + "." + endPoint.split("//")[1] + "/" + fileName;
         return signedUrl;
     }
 

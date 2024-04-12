@@ -29,7 +29,9 @@
           </el-dialog>
         </el-col>
       </el-row>
-
+      <!-- PDF预览组件-->
+      <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="1200" height="350"></iframe>
+      <!-------------->
       <el-row :gutter="30" style="margin-top: 10px;">
         <el-col :span="12">
           <!-- 表单-->
@@ -87,8 +89,8 @@ export default {
       },
       dialogImageUrl: '',
       dialogVisible: false,
-      fileList: []
-      //{name: 'test.pdf', url: ''}
+      fileList: [],
+      pdfUrl:"",
     };
   },
   methods: {
@@ -98,14 +100,10 @@ export default {
       console.log(response)
       this.userInfoForm = response
     },
-    /**
-     * PDF文件上传成功后的回调函数
-     * @param {Object} response 上传后的响应数据
-     * @param {Object} file 上传的文件对象
-     * @param {Array} fileList 文件列表
-     */
     handleSuccessPdf(response, file) {
-      // 假设服务器返回的响应数据中包含了文件的URL
+      this.pdfUrl = response.data.url;
+      console.log("文档的url是："+response.data.url);
+      this.userInfoForm = response.data.data;
       const newFile = {
         name: file.name, // 文件名
         url: response.url // 服务器返回的文件URL
@@ -117,8 +115,6 @@ export default {
         // 可以选择移除最早的文件
         this.fileList.shift();
       }
-      console.log(response)
-      this.userInfoForm = response
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
