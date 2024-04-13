@@ -35,31 +35,6 @@ public class PdfToEditablePdfUtils
 
     }
 
-    public static void img2Pdf(String imgPath, String pdfPath)
-    {
-        try
-        {
-            BufferedImage img = ImageIO.read(new File(imgPath));
-            FileOutputStream fos = new FileOutputStream(pdfPath);
-            Document doc = new Document((Rectangle) null, 0.0F, 0.0F, 0.0F, 0.0F);
-            doc.setPageSize(new Rectangle((float) img.getWidth(), (float) img.getHeight()));
-            Image image = Image.getInstance(imgPath);
-            float scalePercentage = 24.0F;
-            image.scalePercent(scalePercentage, scalePercentage);
-            PdfWriter.getInstance(doc, fos);
-            doc.open();
-            doc.add(image);
-            doc.close();
-        } catch (IOException var7)
-        {
-            var7.printStackTrace();
-        } catch (DocumentException var8)
-        {
-            var8.printStackTrace();
-        }
-
-    }
-
     /**
      * 将图片转换为PDF文件，并保存到指定文件夹中。
      *
@@ -204,24 +179,79 @@ public class PdfToEditablePdfUtils
 
     }
 
+    /**
+     * 请求PPOCR服务进行OCR识别，并将识别结果绘制在PDF文件中。
+     *
+     * @param imgPath   图像文件的路径。
+     * @param pdfFolder 生成的PDF文件存储的文件夹路径。
+     * @throws IOException 如果读取图像文件或处理PDF时发生错误。
+     */
     public static void requestPPOCR(String imgPath, String pdfFolder) throws IOException
     {
+        // 将图像转换为PDF文件，并获取PDF的尺寸
         float[] pdfZise = img2pdf2(imgPath, pdfFolder);
         //读取图片的宽和高
         BufferedImage image = ImageIO.read(new File(imgPath));
         int width = image.getWidth();
         int height = image.getHeight();
         float[] imgSize = new float[]{(float) width, (float) height};
-        log.info("图片尺寸：["+imgSize[0]+","+imgSize[1]+"]");
+        log.info("图片尺寸：[" + imgSize[0] + "," + imgSize[1] + "]");
 
-        //请求ppocr，获取OCR结果
+        // 使用PPOCR服务进行OCR识别，获取OCR识别结果
         JSONObject jsonObject = PaddleOcrUtils.requestOcr(imgPath);
         JSONObject rerJObject = jsonObject;
-        System.out.println(rerJObject.toString());
+        log.info(rerJObject.toString());
+        // 根据输入图像路径和文件夹路径，生成PDF路径和双层PDF路径
         String pdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + ".pdf";
         String DpdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + "_d.pdf";
+        // 根据OCR结果绘制双层PDF文件
         pdf2Dpdf2(pdfPath, pdfZise, imgSize, rerJObject, DpdfPath);
     }
+
+    /**
+     * 将图片转换为PDF文件。
+     *
+     * @param imgPath 图片文件的路径。
+     * @param pdfPath 生成的PDF文件的路径。
+     *                说明：此方法将指定路径的图片转换为指定路径的PDF文件，图片将按原尺寸添加到PDF中。
+     */
+    public static void img2Pdf(String imgPath, String pdfPath)
+    {
+        try
+        {
+            // 从图片路径读取图片
+            BufferedImage img = ImageIO.read(new File(imgPath));
+            // 创建PDF输出流
+            FileOutputStream fos = new FileOutputStream(pdfPath);
+            // 创建空的PDF文档，不设置边距
+            Document doc = new Document((Rectangle) null, 0.0F, 0.0F, 0.0F, 0.0F);
+            // 设置PDF文档的页面大小为图片大小
+            doc.setPageSize(new Rectangle((float) img.getWidth(), (float) img.getHeight()));
+            // 加载图片
+            Image image = Image.getInstance(imgPath);
+            // 缩放图片
+            float scalePercentage = 24.0F;
+            image.scalePercent(scalePercentage, scalePercentage);
+            // 创建PDF写入实例
+            PdfWriter.getInstance(doc, fos);
+            // 打开PDF文档
+            doc.open();
+            // 将图片添加到PDF文档中
+            doc.add(image);
+            // 关闭PDF文档
+            doc.close();
+        } catch (IOException var7)
+        {
+            // 处理IO异常
+            var7.printStackTrace();
+        } catch (DocumentException var8)
+        {
+            // 处理文档异常
+            var8.printStackTrace();
+        }
+
+    }
+
 
     @Test
     public void test() throws DocumentException, IOException

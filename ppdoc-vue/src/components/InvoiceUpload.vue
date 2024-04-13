@@ -41,7 +41,7 @@
               <el-form-item label="发票金额">
                 <el-input v-model="invoiceInfoForm.invoiceAmount"></el-input>
               </el-form-item>
-              <el-form-item label="发票日期">
+              <el-form-item label="开票日期">
                 <el-date-picker type="date" placeholder="选择日期" v-model="invoiceInfoForm.invoiceDate"
                                 style="margin-right: 500px;"></el-date-picker>
               </el-form-item>
