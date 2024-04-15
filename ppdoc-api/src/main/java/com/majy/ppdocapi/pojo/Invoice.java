@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Invoice
 {
-    private Integer invoiceId;
-    private Integer documentId;
-    private String invoiceUrl;
-    private String invoiceCode;
-    private String invoiceNumber;
-    private String invoiceAmount;
-    private String invoiceDate;
-    private String purchaserName;
-    private String sellerName;
-    private String projectName;
-    private String allInfo;
+    private Integer invoice_id;
+    private Integer document_id;
+    private String invoice_url;
+    private String invoice_code;
+    private String invoice_number;
+    private String invoice_amount;
+    private String invoice_date;
+    private String purchaser_name;
+    private String seller_name;
+    private String project_name;
+    private String all_info;
 }

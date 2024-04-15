@@ -10,18 +10,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class License
 {
-    private Integer licenseId;
-    private Integer documentId;
-    private String licenseUrl;
-    private String licenseCode;
-    private String licenseNumber;
-    private String licenseEnterpriseName;
-    private String licenseEnterpriseType;
-    private String licenseLegalRepresentative;
-    private String licenseBusinessScope;
-    private String licenseRegisteredCapital;
-    private String licenseEstablishDate;
-    private String licenseOperationPeriod;
-    private String licenseDomicile;
-    private String allInfo;
+    private Integer license_id;
+    private Integer document_id;
+    private String license_url;
+    private String license_code;
+    private String license_number;
+    private String license_enterprise_name;
+    private String license_enterprise_type;
+    private String license_legal_representative;
+    private String license_business_scope;
+    private String license_registered_capital;
+    private String license_establish_date;
+    private String license_operation_period;
+    private String license_domicile;
+    private String all_info;
 }

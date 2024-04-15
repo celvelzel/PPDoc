@@ -7,7 +7,7 @@
       <el-row type="flex" justify="space-between">
         <el-col :span="12">
           <!-- 发票pdf上传组件 -->
-          <el-upload action="http://localhost:8080/invoices"
+          <el-upload action="http://localhost:8080/invoices/upload"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"

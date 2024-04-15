@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 public class IdCard
 {
     private Integer id;
-    private Integer documentId;
+    private Integer document_id;
     private String name;
     private String nation;
     private String sex;
     private String address;
-    private String cardNumber;
-    private String allInfo;
+    private String card_number;
+    private String all_info;
 }

@@ -1,0 +1,14 @@
+package com.majy.ppdocapi.service;
+
+import com.majy.ppdocapi.pojo.Document;
+import com.majy.ppdocapi.pojo.PageBean;
+import org.springframework.stereotype.Service;
+
+public interface DocumentService
+{
+    PageBean page(Integer start, Integer pageSize);
+
+    void delete(Integer id);
+
+    void add(Document document);
+}

@@ -142,7 +142,7 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
         String sellerName = "";
         Map<String,String> invoiceInfoMap= new HashMap<>();
 
-        String LLMResult = ZhiPuLLM.sseInvokeExtractInfo(trim, "项目名称，购买方名称，销售方名称");
+        String LLMResult = ZhiPuUtils.sseInvokeExtractInfo(trim, "项目名称，购买方名称，销售方名称");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("项目名称.([\u4e00-\u9fa5]*)\\s*购买方名称.([\u4e00-\u9fa5]*)\\s*销售方名称.([\u4e00-\u9fa5]*)");
         Matcher matcher = pattern.matcher(LLMResult);

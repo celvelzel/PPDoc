@@ -1,8 +1,71 @@
 package com.majy.ppdocapi.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
+import com.majy.ppdocapi.pojo.Document;
+import com.majy.ppdocapi.pojo.Invoice;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface InvoiceMapper
 {
+    /**
+     * 添加数据
+     * @param invoice    发票对象
+     */
+    @Options(useGeneratedKeys = true, keyProperty = "invoice_id")
+    @Insert("insert into invoice(seller_name,all_info,invoice_url,invoice_date,purchaser_name,project_name,document_id,invoice_code,invoice_number,invoice_amount) values(#{seller_name},#{all_info},#{invoice_url},#{invoice_date},#{purchaser_name},#{project_name},#{document_id},#{invoice_code},#{invoice_number},#{invoice_amount})")
+    public void insert(Invoice invoice);
+
+    /**
+     * 根据发票id删除数据
+     * @param invoice_id    发票id
+     */
+    @Delete("delete from invoice where invoice_id = #{invoice_id}")
+    public void delete(Integer invoice_id);
+
+    /**
+     * 更新数据
+     * @param invoice    发票对象
+     */
+    @Update("update invoice set seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where invoice_id = #{invoice_id}")
+    public void update(Invoice invoice);
+
+    /**
+     * 查询所有数据
+     */
+    @Select("select * from invoice")
+    public List<Invoice> list();
+
+
+    /**
+     * 根据发票id查询数据
+     * @param invoice_id    发票id
+     * @return
+     */
+    @Select("select * from invoice where invoice_id = #{invoice_id}")
+    public Invoice getInvoiceById(Integer invoice_id);
+
+    /**
+     * 根据document_id查询发票数据
+     * @param document_id    document_id
+     * @return
+     */
+    @Select("select * from invoice where document_id = #{document_id}")
+    public Invoice getInvoiceByDocumentId(Integer document_id);
+
+    /**
+     * 根据document_id删除发票数据
+     * @param document_id    document_id
+     */
+    @Delete("delete from invoice where document_id = #{document_id}")
+    public void deleteByDocumentId(Integer document_id);
+
+    /**
+     * 根据document_id更新发票数据
+     * @param invoice    发票对象
+     */
+    @Update("update invoice set seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where document_id = #{document_id}")
+    public void updateByDocumentId(Invoice invoice);
+
 }

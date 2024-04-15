@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils;
+package com.majy.ppdocapi.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +12,10 @@ public class Result<T> {
     private int code;
     private String msg;
     private T data;
+
+    public static Result success(){
+        return new Result(200,"success",null);
+    }
 
     public Result(T data) {
         this.code = 200;

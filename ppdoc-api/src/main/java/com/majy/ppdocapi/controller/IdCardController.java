@@ -2,8 +2,9 @@ package com.majy.ppdocapi.controller;
 
 import com.majy.ppdocapi.utils.IdCardOcrUtils;
 import com.majy.ppdocapi.utils.PaddleOcrUtils;
-import com.majy.ppdocapi.utils.Result;
+import com.majy.ppdocapi.pojo.Result;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class IdCardOcr extends OcrController
+@RequestMapping("/idcards")
+public class IdCardController extends OcrController
 {
 
-    @PostMapping("/idcards/pdf")
+    @PostMapping("/pdf/upload")
     public Result idCardPdfOcr(MultipartFile file) throws IOException
     {
         // 调用父类方法，上传文件到OSS
@@ -31,7 +33,7 @@ public class IdCardOcr extends OcrController
         return getResuleSuccess(urlResult,dataMap);
     }
 
-    @PostMapping("/idcards/image")
+    @PostMapping("/image/upload")
     public Result idCardImageOcr(MultipartFile file) throws IOException
     {
         //调用父类方法，上传文件到OSS

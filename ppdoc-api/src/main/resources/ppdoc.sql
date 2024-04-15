@@ -8,7 +8,6 @@ CREATE TABLE users (
 CREATE TABLE document (
     document_id INT PRIMARY KEY AUTO_INCREMENT,
     document_url VARCHAR(255),
---     user_id INT,
     document_type VARCHAR(255),
     all_info TEXT,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP

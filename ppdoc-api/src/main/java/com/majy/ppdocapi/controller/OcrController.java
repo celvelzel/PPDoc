@@ -1,7 +1,7 @@
 package com.majy.ppdocapi.controller;
 
 import com.majy.ppdocapi.utils.OSSUtils;
-import com.majy.ppdocapi.utils.Result;
+import com.majy.ppdocapi.pojo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -16,29 +16,49 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
     },
     {
+        path: '/doc',
+        name: 'doc',
+        component: () => import('../views/DocView.vue')
+    },
+    {
         path: '/invoice',
         name: 'invoice',
         component: () => import('../views/InvoiceView.vue')
     },
     {
-        path:'/idcard',
-        name:'idcard',
-        component:()=>import('../views/IdCardView.vue')
+        path: '/idcard',
+        name: 'idcard',
+        component: () => import('../views/IdCardView.vue')
     },
     {
-        path:'/license',
-        name:'license',
-        component:()=>import('../views/LicenseView.vue')
+        path: '/license',
+        name: 'license',
+        component: () => import('../views/LicenseView.vue')
     },
     {
-        path:'/doc',
-        name:'doc',
-        component:()=>import('../views/DocView.vue')
+        path: '/invoice/upload',
+        name: 'invoiceUpload',
+        component: () => import('../views/InvoiceUploadView.vue')
     },
     {
-        path:'/pdf',
-        name:'pdf',
-        component:()=>import('../views/PDFPreview.vue')
+        path: '/idcard/upload',
+        name: 'idcardUpload',
+        component: () => import('../views/IdCardUploadView.vue')
+    },
+    {
+        path: '/license/upload',
+        name: 'licenseUpload',
+        component: () => import('../views/LicenseUploadView.vue')
+    },
+    {
+        path: '/doc/upload',
+        name: 'docUpload',
+        component: () => import('../views/DocUploadView.vue')
+    },
+    {
+        path: '/pdf',
+        name: 'pdf',
+        component: () => import('../views/PDFPreview.vue')
     },
 ]
 

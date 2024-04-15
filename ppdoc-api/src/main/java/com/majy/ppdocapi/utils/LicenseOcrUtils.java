@@ -234,7 +234,7 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         String licenseLegalRepresentative = "";
         Map<String, String> invoiceLLMMap = new HashMap<>();
 
-        String LLMResult = ZhiPuLLM.sseInvokeExtractInfo(trim, "经营范围，住所，法定代表人");
+        String LLMResult = ZhiPuUtils.sseInvokeExtractInfo(trim, "经营范围，住所，法定代表人");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("经营范围.(.*)\\s*住所.(.*)\\s*法定代表人.(.*)");
         Matcher matcher = pattern.matcher(LLMResult);

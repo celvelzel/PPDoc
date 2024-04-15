@@ -7,7 +7,7 @@
       <el-row type="flex" justify="space-between">
         <el-col :span="12">
           <!-- 营业执照pdf上传组件 -->
-          <el-upload action="http://localhost:8080/licenses"
+          <el-upload action="http://localhost:8080/licenses/upload"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
