@@ -56,11 +56,10 @@ export default {
 <template>
   <div>
     <el-table :data="tableData" border>
-      <el-table-column prop="document_id" label="文档编号" width="180"></el-table-column>
-      <el-table-column prop="document_url" label="文档链接" width="180"></el-table-column>
       <el-table-column prop="document_name" label="文档名" width="180"></el-table-column>
-      <el-table-column prop="document_type" label="文档类型" width="180"></el-table-column>
-      <el-table-column prop="all_info" label="所有信息" width="180"></el-table-column>
+      <el-table-column prop="document_url" label="文档链接" width="400" show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="document_type" label="文档类型" width="100"></el-table-column>
+      <el-table-column prop="all_info" label="所有信息" width="400" show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -75,7 +74,7 @@ export default {
         </template>
       </el-table-column>
     </el-table>
-
+    <br>
     <el-pagination
         background
         layout="total, sizes, prev, pager, next,jumper"

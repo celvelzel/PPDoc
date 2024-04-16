@@ -39,9 +39,9 @@ public class DocController extends OcrController
     }
 
     @PostMapping
-    public Result add(@RequestBody Document document)
+    public Result save(@RequestBody Document document)
     {
-        log.info("修改文档信息:{}",document);
+        log.info("新增文档记录:{}",document);
         documentService.add(document);
         return Result.success();
     }

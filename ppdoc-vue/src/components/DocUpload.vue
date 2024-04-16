@@ -45,7 +45,7 @@
               <el-input v-model="docInfoForm.allInfo"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">提交表单</el-button>
+              <el-button type="primary" @click="onSubmit">提交</el-button>
               <el-button>取消</el-button>
             </el-form-item>
           </el-form>
@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import {defineComponent} from "vue";
 import ExtractInfo from "@/components/ExtractInfo.vue";
 import GenerateSummary from "@/components/GenerateSummary.vue";
@@ -78,6 +79,7 @@ export default defineComponent({
       dialogVisible: false,
       fileList: [],
       pdfUrl:"",
+      fileName:"",
     }
   },
   methods: {
@@ -94,6 +96,7 @@ export default defineComponent({
       // 更新数据的操作
       this.$emit('dataUpdated');
 
+      this.fileName = file.name;
       const newFile = {
         name: file.name, // 文件名
         url: response.data.url // 服务器返回的文件URL
@@ -125,7 +128,16 @@ export default defineComponent({
 
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      // 这里可以发送axios请求，将表单数据保存到数据库中
+      axios.post('http://localhost:8080/docs',{
+        document_Id: "",
+        document_url: this.pdfUrl,
+        document_name: this.fileName,
+        document_type: "",
+        all_info: this.docInfoForm.allInfo
+      }).then(res => {
+        console.log(res);
+      }
+      )
     },
   }
 })

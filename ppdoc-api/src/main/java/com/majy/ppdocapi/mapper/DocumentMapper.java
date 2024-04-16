@@ -2,7 +2,6 @@ package com.majy.ppdocapi.mapper;
 
 import com.majy.ppdocapi.pojo.Document;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -31,6 +30,7 @@ public interface DocumentMapper
      *
      * @param document 文档对象
      */
+    @Options(useGeneratedKeys = true, keyProperty = "document_id")
     @Insert("insert into document(document_url,document_name,document_type,all_info) values(#{document_url},#{document_name},#{document_type},#{all_info})")
     public void insert(Document document);
 
