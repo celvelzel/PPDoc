@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Document
 {
-    private Integer document_Id;
+    private Integer document_id;
     private String document_url;
     private String document_name;
     private String document_type;

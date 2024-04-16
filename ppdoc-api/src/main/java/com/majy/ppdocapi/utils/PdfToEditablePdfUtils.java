@@ -10,9 +10,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -24,15 +26,43 @@ import java.util.Map;
 @Slf4j
 public class PdfToEditablePdfUtils
 {
-    public PdfToEditablePdfUtils()
-    {
-
-    }
+    @Value("${font.path}")
+    private static String fontPath;
 
     public static void pdf2EditablePdfUtil(InputStream pdfInputStream, OutputStream pdfOutputStream, List<List<Map>> ocrText) throws IOException
     {
 
     }
+
+    /**
+     * 请求PPOCR服务进行OCR识别，并将识别结果绘制在PDF文件中。
+     *
+     * @param imgPath   图像文件的路径。
+     * @param pdfFolder 生成的PDF文件存储的文件夹路径。
+     * @throws IOException 如果读取图像文件或处理PDF时发生错误。
+     */
+    public static void requestPPOCR(String imgPath, String pdfFolder) throws IOException
+    {
+        // 将图像转换为PDF文件，并获取PDF的尺寸
+        float[] pdfZise = img2pdf2(imgPath, pdfFolder);
+        //读取图片的宽和高
+        BufferedImage image = ImageIO.read(new File(imgPath));
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float[] imgSize = new float[]{(float) width, (float) height};
+        log.info("图片尺寸：[" + imgSize[0] + "," + imgSize[1] + "]");
+
+        // 使用PPOCR服务进行OCR识别，获取OCR识别结果
+        JSONObject jsonObject = PaddleOcrUtils.requestOcr(imgPath);
+        JSONObject rerJObject = jsonObject;
+        log.info(rerJObject.toString());
+        // 根据输入图像路径和文件夹路径，生成PDF路径和双层PDF路径
+        String pdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + ".pdf";
+        String DpdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + "_d.pdf";
+        // 根据OCR结果绘制双层PDF文件
+        pdf2Dpdf2(pdfPath, pdfZise, imgSize, rerJObject, DpdfPath);
+    }
+
 
     /**
      * 将图片转换为PDF文件，并保存到指定文件夹中。
@@ -104,7 +134,7 @@ public class PdfToEditablePdfUtils
     {
         try
         {
-            FontFactory.registerDirectory("<LOCAL_PATH_REDACTED>");
+            FontFactory.registerDirectory(fontPath);
             //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             // 创建字体对象，用于在PDF中显示文字
             BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
@@ -179,32 +209,31 @@ public class PdfToEditablePdfUtils
     }
 
     /**
-     * 请求PPOCR服务进行OCR识别，并将识别结果绘制在PDF文件中。
-     *
-     * @param imgPath   图像文件的路径。
-     * @param pdfFolder 生成的PDF文件存储的文件夹路径。
-     * @throws IOException 如果读取图像文件或处理PDF时发生错误。
+     * 判断PDF文件是否可以直接复制文本
+     * @param pdfPath 待判断pdf的路径
+     * @return  true 表示可以复制文本，false 表示无法复制文本
      */
-    public static void requestPPOCR(String imgPath, String pdfFolder) throws IOException
-    {
-        // 将图像转换为PDF文件，并获取PDF的尺寸
-        float[] pdfZise = img2pdf2(imgPath, pdfFolder);
-        //读取图片的宽和高
-        BufferedImage image = ImageIO.read(new File(imgPath));
-        int width = image.getWidth();
-        int height = image.getHeight();
-        float[] imgSize = new float[]{(float) width, (float) height};
-        log.info("图片尺寸：[" + imgSize[0] + "," + imgSize[1] + "]");
+    public static boolean pdfCopyableChecker(String pdfPath) throws IOException {
+        File pdfFile = new File(pdfPath); // 替换为你的PDF文件路径
+        PDDocument document = PDDocument.load(pdfFile);
 
-        // 使用PPOCR服务进行OCR识别，获取OCR识别结果
-        JSONObject jsonObject = PaddleOcrUtils.requestOcr(imgPath);
-        JSONObject rerJObject = jsonObject;
-        log.info(rerJObject.toString());
-        // 根据输入图像路径和文件夹路径，生成PDF路径和双层PDF路径
-        String pdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + ".pdf";
-        String DpdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + "_d.pdf";
-        // 根据OCR结果绘制双层PDF文件
-        pdf2Dpdf2(pdfPath, pdfZise, imgSize, rerJObject, DpdfPath);
+        if (!document.isEncrypted()) { // 检查PDF是否被加密
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(document);
+            if (! text.trim().isEmpty()) {
+                System.out.println(pdfFile.getName() + "文档可以直接复制文本。");
+                document.close();
+                return true;
+            } else {
+                System.out.println(pdfFile.getName() + "文档中没有可见的文本，无法直接复制。");
+                document.close();
+                return false;
+            }
+        } else {
+            System.out.println(pdfFile.getName() + "文档已加密，无法判断文本是否可直接复制。");
+            document.close();
+            return false;
+        }
     }
 
     /**
@@ -255,9 +284,11 @@ public class PdfToEditablePdfUtils
     @Test
     public void test() throws DocumentException, IOException
     {
-        String jpgPath = "<LOCAL_PATH_REDACTED>";
-        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
-        requestPPOCR(jpgPath, dpdfFolder);
+//        String jpgPath = "<LOCAL_PATH_REDACTED>";
+//        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
+//        requestPPOCR(jpgPath, dpdfFolder);
+        String pdfFolder = "<LOCAL_PATH_REDACTED>";
+        pdfCopyableChecker(pdfFolder);
     }
 }
 

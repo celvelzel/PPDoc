@@ -62,10 +62,6 @@ public class IdCardOcrUtils extends PaddleOcrUtils
         }
     }
 
-    // 上面的方法，使用了static修饰，下面的方法，也需要使用static修饰，这里使用
-    // private修饰的话，在其他类中直接通过IdCardOcrUtils.predictName()这个就访问不到了, 或者protected修饰，
-    // 不然其他类访问不就行了吗？
-    // 这里唯一能通过IdCardOcrUtils.方法名，访问的是public修饰的方法
 
     /**
      * 获取身份证姓名
@@ -153,8 +149,6 @@ public class IdCardOcrUtils extends PaddleOcrUtils
         for (Map map : maps)
         {
             String str = map.get("text").toString().trim().replace(" ", "");
-            // 看身份证地址那一栏，具体可以看一下自己的身份证，几乎都包含这些字，具体可以自己debugger看一下就知道了
-            // 具体可以自己debugger看一下就知道了
             if (str.contains("住址") || str.contains("址") || str.contains("省") || str.contains("市")
                     || str.contains("县") || str.contains("街") || str.contains("乡") || str.contains("村")
                     || str.contains("镇") || str.contains("区") || str.contains("城") || str.contains("组")
@@ -168,8 +162,7 @@ public class IdCardOcrUtils extends PaddleOcrUtils
         if (s.contains("省") || s.contains("县") || s.contains("住址") || s.contains("址") || s.contains("公民身份证"))
         {
             // 通过这里的截取可以知道，即使是名字中有上述的那些字段，也不要紧，因为这个ocr识别是一行一行来的，所以名字的会在地址这两个字
-            // 前面，除非是名字中也有地址的”地“或者”址“字，这个还可以使用lastIndexOf()来从后往左找，也可以在一定程度上避免这个。
-            // 具体看后面的截图，就知道了
+            // 前面，除非是名字中也有地址的”地“或者”址“字，这个还可以使用lastIndexOf()来从后往左找，也可以在一定程度上避免这个
             address = s.substring(s.indexOf("址") + 1, s.indexOf("公民身份证"));
         }
         else
@@ -222,7 +215,7 @@ public class IdCardOcrUtils extends PaddleOcrUtils
     private static String sex(String cardNumber)
     {
         String sex = "";
-        // 取倒身份证倒数第二位的数字的奇偶性判断性别，二代身份证18位
+        // 取身份证倒数第二位的数字的奇偶性判断性别，二代身份证18位
         try
         {
             if (cardNumber.length() >= 18)

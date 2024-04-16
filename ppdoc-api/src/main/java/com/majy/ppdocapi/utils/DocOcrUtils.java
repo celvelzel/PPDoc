@@ -14,5 +14,4 @@ public class DocOcrUtils extends PaddleOcrUtils
         docInfoMap.put("allInfo", allInfo);
         return docInfoMap;
     }
-
 }

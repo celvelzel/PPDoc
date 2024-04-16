@@ -26,13 +26,12 @@ public class DocController extends OcrController
     @PostMapping("/upload")
     public Result DocOcr(MultipartFile file) throws IOException
     {
+
         //调用父类方法，上传文件到OSS
         URL urlResult = uploadFile(file);
 
-        // pdf识别，提取文字
-        List jsons = PaddleOcrUtils.pdfToOcrText(file);
-        // 根据识别文本提取信息
-        Map<String, String> dataMap = DocOcrUtils.getStringStringMap(jsons);
+        //调用Service中的方法，获取提取到的信息
+        Map<String, String> dataMap = documentService.file2StringStringMap(file);
 
         //调用父类方法，构建返回结果
         return getResuleSuccess(urlResult, dataMap);
