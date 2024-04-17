@@ -56,19 +56,19 @@ export default {
 <template>
   <div>
     <el-table :data="tableData" border>
-      <el-table-column prop="file_name" label="文件名" width="180"></el-table-column>
-      <el-table-column prop="license_url" label="文件链接" width="400" show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="license_code" label="统一社会信用代码" width="180"></el-table-column>
-      <el-table-column prop="license_number" label="证照编号" width="180"></el-table-column>
+      <el-table-column prop="file_name" label="文件名" width="130"></el-table-column>
+      <el-table-column prop="license_url" label="文件链接" width="150" show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="license_code" label="统一社会信用代码" width="175"></el-table-column>
+      <el-table-column prop="license_number" label="证照编号" width="170"></el-table-column>
       <el-table-column prop="license_enterprise_name" label="证照名称" width="180"></el-table-column>
       <el-table-column prop="license_enterprise_type" label="证照类型" width="180"></el-table-column>
-      <el-table-column prop="license_legal_representative" label="法定代表人" width="180"></el-table-column>
+      <el-table-column prop="license_legal_representative" label="法定代表人" width="90"></el-table-column>
       <el-table-column prop="license_business_scope" label="经营范围" width="180"></el-table-column>
       <el-table-column prop="license_registered_capital" label="注册资本" width="180"></el-table-column>
-      <el-table-column prop="license_establish_data" label="成立日期" width="180"></el-table-column>
+      <el-table-column prop="license_establish_date" label="成立日期" width="95"></el-table-column>
       <el-table-column prop="license_operation_period" label="营业期限" width="180"></el-table-column>
       <el-table-column prop="license_domicile" label="住所" width="180"></el-table-column>
-      <el-table-column prop="all_info" label="所有信息" width="400" show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="all_info" label="所有信息" width="100" show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button

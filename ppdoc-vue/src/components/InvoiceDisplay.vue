@@ -18,7 +18,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val;
-      axios.get('http://localhost:8080/idcards',{
+      axios.get('http://localhost:8080/invoices',{
         params: {
           page: val,
           pageSize : this.pageSize,
@@ -31,7 +31,7 @@ export default {
     },
     handleSizeChange(val) {
       this.pageSize = val;
-      axios.get('http://localhost:8080/idcards',{
+      axios.get('http://localhost:8080/invoices',{
         params: {
           page: this.page,
           pageSize: val,
@@ -44,7 +44,7 @@ export default {
     }
   },
   mounted() {
-    axios.get('http://localhost:8080/idcards').then(res => {
+    axios.get('http://localhost:8080/invoices').then(res => {
       // 返回的数据是res.data
       this.tableData = res.data.data.rows;
       this.total = res.data.data.total;
@@ -56,14 +56,16 @@ export default {
 <template>
   <div>
     <el-table :data="tableData" border>
-      <el-table-column prop="file_name" label="文件名" width="150"></el-table-column>
-      <el-table-column prop="id_card_url" label="文档链接" width="150" show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="80"></el-table-column>
-      <el-table-column prop="sex" label="性别" width="50"></el-table-column>
-      <el-table-column prop="nation" label="民族" width="50"></el-table-column>
-      <el-table-column prop="address" label="住址" width="200"></el-table-column>
-      <el-table-column prop="card_number" label="身份证号" width="180"></el-table-column>
-      <el-table-column prop="all_info" label="所有信息" width="200" show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="file_name" label="文件名" width="100"></el-table-column>
+      <el-table-column prop="invoice_url" label="发票链接" width="150" show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="invoice_code" label="发票代码" width="120"></el-table-column>
+      <el-table-column prop="invoice_number" label="发票号码" width="100"></el-table-column>
+      <el-table-column prop="invoice_amount" label="发票金额" width="70"></el-table-column>
+      <el-table-column prop="invoice_data" label="开票日期" width="100"></el-table-column>
+      <el-table-column prop="purchaser_name" label="购买方名称" width="150"></el-table-column>
+      <el-table-column prop="seller_name" label="销售方名称" width="150"></el-table-column>
+      <el-table-column prop="project_name" label="项目名称" width="100"></el-table-column>
+      <el-table-column prop="all_info" label="所有信息" width="100" show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button

@@ -13,7 +13,7 @@ public interface InvoiceMapper
      * @param invoice    发票对象
      */
     @Options(useGeneratedKeys = true, keyProperty = "invoice_id")
-    @Insert("insert into invoice(seller_name,all_info,invoice_url,invoice_date,purchaser_name,project_name,document_id,invoice_code,invoice_number,invoice_amount) values(#{seller_name},#{all_info},#{invoice_url},#{invoice_date},#{purchaser_name},#{project_name},#{document_id},#{invoice_code},#{invoice_number},#{invoice_amount})")
+    @Insert("insert into invoice(file_name,seller_name,all_info,invoice_url,invoice_date,purchaser_name,project_name,document_id,invoice_code,invoice_number,invoice_amount) values(#{file_name},#{seller_name},#{all_info},#{invoice_url},#{invoice_date},#{purchaser_name},#{project_name},#{document_id},#{invoice_code},#{invoice_number},#{invoice_amount})")
     public void insert(Invoice invoice);
 
     /**
@@ -27,7 +27,7 @@ public interface InvoiceMapper
      * 更新数据
      * @param invoice    发票对象
      */
-    @Update("update invoice set seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where invoice_id = #{invoice_id}")
+    @Update("update invoice set file_name= #{file_name}, seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where invoice_id = #{invoice_id}")
     public void update(Invoice invoice);
 
     /**
@@ -64,7 +64,7 @@ public interface InvoiceMapper
      * 根据document_id更新发票数据
      * @param invoice    发票对象
      */
-    @Update("update invoice set seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where document_id = #{document_id}")
+    @Update("update invoice set file_name= #{file_name},seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where document_id = #{document_id}")
     public void updateByDocumentId(Invoice invoice);
 
 }

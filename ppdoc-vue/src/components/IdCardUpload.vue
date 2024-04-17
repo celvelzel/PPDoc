@@ -92,6 +92,7 @@ export default {
       dialogVisible: false,
       fileList: [],
       pdfUrl: "",
+      fileName:"",
     };
   },
   methods: {
@@ -105,6 +106,9 @@ export default {
       this.pdfUrl = response.data.url;
       console.log("文档的url是：" + response.data.url);
       this.userInfoForm = response.data.data;
+      //获取文档名
+      this.fileName = file.name;
+
       const newFile = {
         name: file.name, // 文件名
         url: response.url // 服务器返回的文件URL

@@ -113,6 +113,7 @@ export default {
       },
       licenseOperationPeriod:[],
       pdfUrl:"",
+      fileName:"",
     }
   },
   methods: {
@@ -126,6 +127,8 @@ export default {
       this.licenseInfoForm = response.data.data;
       this.licenseOperationPeriod = [this.licenseInfoForm.licenseOperationPeriodStart,
         this.licenseInfoForm.licenseOperationPeriodEnd];
+      //获取文档名
+      this.fileName = file.name;
 
       const newFile = {
         name: file.name, // 文件名
@@ -170,7 +173,8 @@ export default {
         license_business_scope: this.licenseInfoForm.licenseBusinessScope,
         license_registered_capital: this.licenseInfoForm.licenseRegisteredCapital,
         license_establish_date: this.licenseInfoForm.licenseEstablishDate,
-        license_operation_period: this.licenseOperationPeriod.toString(),
+        license_operation_period: this.licenseInfoForm.licenseOperationPeriodStart.toString() +
+            "至" + this.licenseInfoForm.licenseOperationPeriodEnd.toString(),
         license_domicile: this.licenseInfoForm.licenseDomicile,
         all_info: this.licenseInfoForm.allInfo
       }).then(res => {

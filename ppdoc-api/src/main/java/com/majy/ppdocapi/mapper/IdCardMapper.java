@@ -16,7 +16,7 @@ public interface IdCardMapper
      * 添加身份证信息
      */
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Select("insert into id_card(document_id, id_card_url, name, nation, sex, address, card_number, all_info) values(#{document_id}, #{id_card_url}, #{name}, #{nation}, #{sex}, #{address}, #{card_number}, #{all_info})")
+    @Select("insert into id_card(document_id, id_card_url, file_name,name, nation, sex, address, card_number, all_info) values(#{document_id}, #{id_card_url}, #{file_name}, #{name}, #{nation}, #{sex}, #{address}, #{card_number}, #{all_info})")
     public void insert(IdCard idCard);
 
     /**

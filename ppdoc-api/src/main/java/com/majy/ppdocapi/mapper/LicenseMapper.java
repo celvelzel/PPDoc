@@ -19,8 +19,8 @@ public interface LicenseMapper
      * @param license
      */
     @Options(useGeneratedKeys = true, keyProperty = "license_id")
-    @Insert("insert into license(document_id,license_url,license_code,license_number,license_enterprise_name,license_enterprise_type,license_legal_representative,license_establish_date,license_operation_period,license_domicile,all_info) " +
-            "values(#{document_id},#{license_url},#{license_code},#{license_number},#{license_enterprise_name},#{license_enterprise_type},#{license_legal_representative},#{license_establish_date},#{license_operation_period},#{license_domicile},#{all_info})")
+    @Insert("insert into license(document_id,license_url,file_name,license_code,license_number,license_enterprise_name,license_enterprise_type,license_legal_representative,license_business_scope,license_registered_capital,license_establish_date,license_operation_period,license_domicile,all_info) " +
+            "values(#{document_id},#{license_url},#{file_name},#{license_code},#{license_number},#{license_enterprise_name},#{license_enterprise_type},#{license_legal_representative},#{license_business_scope},#{license_registered_capital},#{license_establish_date},#{license_operation_period},#{license_domicile},#{all_info})")
     public void insert(License license);
 
     /**
@@ -47,7 +47,7 @@ public interface LicenseMapper
      *
      * @param license
      */
-    @Update("update license set document_id = #{document_id},license_url = #{license_url},license_code = #{license_code},license_number = #{license_number},license_enterprise_name = #{license_enterprise_name},license_enterprise_type = #{license_enterprise_type},license_legal_representative = #{license_legal_representative},license_establish_date = #{license_establish_date},license_operation_period = #{license_operation_period},license_domicile = #{license_domicile},all_info = #{all_info} where license_id = #{license_id}")
+    @Update("update license set file_name= #{file_name}, document_id = #{document_id},license_url = #{license_url},license_code = #{license_code},license_number = #{license_number},license_enterprise_name = #{license_enterprise_name},license_enterprise_type = #{license_enterprise_type},license_legal_representative = #{license_legal_representative},license_establish_date = #{license_establish_date},license_operation_period = #{license_operation_period},license_domicile = #{license_domicile},all_info = #{all_info} where license_id = #{license_id}")
     public void update(License license);
 
 

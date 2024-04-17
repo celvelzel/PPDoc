@@ -94,6 +94,7 @@ export default {
         projectName: ''
       },
       pdfUrl:"",
+      fileName:"",
     };
   },
   methods: {
@@ -107,6 +108,8 @@ export default {
       this.invoiceInfoForm = response.data.data;
       // 更新数据的操作
       this.$emit('dataUpdated');
+      //获取文档名
+      this.fileName = file.name;
 
       const newFile = {
         name: file.name, // 文件名
