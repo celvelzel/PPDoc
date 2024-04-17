@@ -1,10 +1,9 @@
 package com.majy.ppdocapi.controller;
 
-import com.majy.ppdocapi.pojo.Document;
-import com.majy.ppdocapi.pojo.PageBean;
-import com.majy.ppdocapi.pojo.Result;
+import com.majy.ppdocapi.entity.po.Document;
+import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.service.DocumentService;
-import com.majy.ppdocapi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,7 +24,6 @@ public class DocController extends OcrController
     @PostMapping("/upload")
     public Result DocOcr(MultipartFile file) throws IOException
     {
-
         //调用父类方法，上传文件到OSS
         URL urlResult = uploadFile(file);
 
@@ -59,9 +56,8 @@ public class DocController extends OcrController
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){
         log.info("根据id删除文档:{}",id);
-        //调用service删除部门
+        //调用service删除文档
         documentService.delete(id);
         return Result.success();
     }
-
 }

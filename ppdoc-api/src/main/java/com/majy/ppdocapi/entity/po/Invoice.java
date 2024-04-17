@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.pojo;
+package com.majy.ppdocapi.entity.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +12,7 @@ public class Invoice
     private Integer invoice_id;
     private Integer document_id;
     private String invoice_url;
+    private String file_name;
     private String invoice_code;
     private String invoice_number;
     private String invoice_amount;

@@ -1,7 +1,6 @@
 package com.majy.ppdocapi.mapper;
 
-import com.majy.ppdocapi.pojo.Document;
-import com.majy.ppdocapi.pojo.Invoice;
+import com.majy.ppdocapi.entity.po.Invoice;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

@@ -18,7 +18,7 @@ public class IdCardOcrUtils extends PaddleOcrUtils
         super();
     }
 
-    public static Map<String, String> getStringStringMap(List<List> jsons) throws IOException
+    public static Map<String, String> getStringStringMap(List<List> jsons)
     {
 
         try

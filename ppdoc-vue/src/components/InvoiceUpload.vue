@@ -72,7 +72,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 
 import ExtractInfo from "@/components/ExtractInfo.vue";
 import GenerateSummary from "@/components/GenerateSummary.vue";
@@ -136,10 +136,26 @@ export default {
     beforeRemove(file) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      console.log('提交发票信息');
-      // 在这里处理表单提交逻辑
-    }
+      axios.post('http://localhost:8080/invoices',{
+        invoice_id: "",
+        document_Id: "",
+        invoice_url: this.pdfUrl,
+        file_name: this.fileName,
+        invoice_code: this.invoiceInfoForm.invoiceCode,
+        invoice_number: this.invoiceInfoForm.invoiceNumber,
+        invoice_amount: this.invoiceInfoForm.invoiceAmount,
+        invoice_date: this.invoiceInfoForm.invoiceDate,
+        purchaser_name: this.invoiceInfoForm.purchaserName,
+        seller_name: this.invoiceInfoForm.sellerName,
+        project_name: this.invoiceInfoForm.projectName,
+        all_info: this.invoiceInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+          }
+      )
+    },
   }
 };
 </script>

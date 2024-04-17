@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.pojo;
+package com.majy.ppdocapi.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

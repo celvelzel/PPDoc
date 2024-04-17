@@ -1,11 +1,15 @@
 package com.majy.ppdocapi.controller;
 
+import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.po.IdCard;
+import com.majy.ppdocapi.entity.po.Invoice;
+import com.majy.ppdocapi.service.IdCardService;
 import com.majy.ppdocapi.utils.IdCardOcrUtils;
 import com.majy.ppdocapi.utils.PaddleOcrUtils;
-import com.majy.ppdocapi.pojo.Result;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.majy.ppdocapi.entity.dto.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,9 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 @RequestMapping("/idcards")
 public class IdCardController extends OcrController
 {
+    @Autowired
+    private IdCardService idCardService;
 
     @PostMapping("/pdf/upload")
     public Result idCardPdfOcr(MultipartFile file) throws IOException
@@ -24,13 +31,10 @@ public class IdCardController extends OcrController
         // 调用父类方法，上传文件到OSS
         URL urlResult = uploadFile(file);
 
-        // pdf识别，提取文字
-        List jsons = PaddleOcrUtils.pdfToOcrText(file);
-        // 根据识别文本提取信息
-        Map<String, String> dataMap = IdCardOcrUtils.getStringStringMap(jsons);
+        Map<String, String> dataMap = idCardService.pdfFile2StringStringMap(file);
 
         //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult,dataMap);
+        return getResuleSuccess(urlResult, dataMap);
     }
 
     @PostMapping("/image/upload")
@@ -39,15 +43,36 @@ public class IdCardController extends OcrController
         //调用父类方法，上传文件到OSS
         URL urlResult = uploadFile(file);
 
-        //使用PaddleOcrUtils工具对上传的文件进行OCR处理，并获取识别结果。
-        List<MultipartFile> files = new java.util.ArrayList<>();
-        files.add(file);
-        List<List> jsons = PaddleOcrUtils.getOcrText(files);
-
-        // 对识别结果进行信息提取，转换为Map类型，并返回给前端。
-        Map<String, String> dataMap = IdCardOcrUtils.getStringStringMap(jsons);
+        Map<String, String> dataMap = idCardService.imageFile2StringStringMap(file);
 
         //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult,dataMap);
+        return getResuleSuccess(urlResult, dataMap);
+    }
+
+    @PostMapping
+    public Result save(@RequestBody IdCard idCard)
+    {
+        log.info("新增身份证文档记录:{}",idCard);
+        idCardService.add(idCard);
+        return Result.success();
+    }
+
+    @GetMapping
+    public Result page(@RequestParam(defaultValue = "1") Integer page,
+                       @RequestParam(defaultValue = "10") Integer pageSize)
+    {
+        log.info("进行分页查询，参数为:当前页数{} 每页条数{}", page, pageSize);
+
+        PageBean pageBean = idCardService.page(page, pageSize);
+        log.info("查询结果为:共有数据{}条", pageBean.getTotal());
+        return Result.success(pageBean);
+    }
+
+    @DeleteMapping("/{documentId}")
+    public Result delete(@PathVariable Integer documentId){
+        log.info("根据id删除身份证文档:{}",documentId);
+        //调用service，根据文档ID删除身份证记录
+        idCardService.delete(documentId);
+        return Result.success();
     }
 }

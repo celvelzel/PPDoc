@@ -1,5 +1,6 @@
 <script setup>
 import MyMenu from "@/components/MyMenu.vue";
+import IdCardDisplay from "@/components/IdCardDisplay.vue";
 </script>
 
 <template>
@@ -13,6 +14,7 @@ import MyMenu from "@/components/MyMenu.vue";
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
+          <IdCardDisplay></IdCardDisplay>
         </el-main>
       </el-container>
     </el-container>

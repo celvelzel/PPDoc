@@ -1,6 +1,7 @@
 <script setup>
 
 import MyMenu from "@/components/MyMenu.vue";
+import LicenseDisplay from "@/components/LicenseDisplay.vue";
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import MyMenu from "@/components/MyMenu.vue";
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
+          <LicenseDisplay></LicenseDisplay>
         </el-main>
       </el-container>
     </el-container>

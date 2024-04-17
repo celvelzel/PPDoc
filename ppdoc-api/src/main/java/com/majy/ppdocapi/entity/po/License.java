@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.pojo;
+package com.majy.ppdocapi.entity.po;
 
 
 import lombok.AllArgsConstructor;
@@ -12,6 +12,7 @@ public class License
 {
     private Integer license_id;
     private Integer document_id;
+    private String file_name;
     private String license_url;
     private String license_code;
     private String license_number;

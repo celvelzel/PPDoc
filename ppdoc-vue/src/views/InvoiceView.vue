@@ -1,6 +1,7 @@
 <script setup>
 
 import MyMenu from "@/components/MyMenu.vue";
+import InvoiceDisplay from "@/components/InvoiceDisplay.vue";
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import MyMenu from "@/components/MyMenu.vue";
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
+          <InvoiceDisplay></InvoiceDisplay>
         </el-main>
       </el-container>
     </el-container>

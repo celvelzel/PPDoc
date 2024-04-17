@@ -1,14 +1,11 @@
 package com.majy.ppdocapi;
 
 import com.majy.ppdocapi.mapper.DocumentMapper;
-import com.majy.ppdocapi.pojo.Document;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Mapper;
+import com.majy.ppdocapi.entity.po.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @SpringBootTest

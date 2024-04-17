@@ -2,7 +2,7 @@ package com.majy.ppdocapi.utils;
 
 import com.aliyun.oss.*;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
-import com.majy.ppdocapi.pojo.Result;
+import com.majy.ppdocapi.entity.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

@@ -1,16 +1,24 @@
 package com.majy.ppdocapi.mapper;
 
-import com.majy.ppdocapi.pojo.License;
+import com.majy.ppdocapi.entity.po.Document;
+import com.majy.ppdocapi.entity.po.License;
+import com.majy.ppdocapi.service.LicenseService;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface LicenseMapper
 {
+    @Select("select * from license")
+    public List<License> list();
+
     /**
      * 添加营业执照数据
      *
      * @param license
      */
+    @Options(useGeneratedKeys = true, keyProperty = "license_id")
     @Insert("insert into license(document_id,license_url,license_code,license_number,license_enterprise_name,license_enterprise_type,license_legal_representative,license_establish_date,license_operation_period,license_domicile,all_info) " +
             "values(#{document_id},#{license_url},#{license_code},#{license_number},#{license_enterprise_name},#{license_enterprise_type},#{license_legal_representative},#{license_establish_date},#{license_operation_period},#{license_domicile},#{all_info})")
     public void insert(License license);

@@ -73,6 +73,7 @@
 
 <script>
 import ExtractInfo from "@/components/ExtractInfo.vue";
+import axios from "axios";
 
 export default {
   components: {ExtractInfo},
@@ -90,7 +91,7 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       fileList: [],
-      pdfUrl:"",
+      pdfUrl: "",
     };
   },
   methods: {
@@ -102,7 +103,7 @@ export default {
     },
     handleSuccessPdf(response, file) {
       this.pdfUrl = response.data.url;
-      console.log("文档的url是："+response.data.url);
+      console.log("文档的url是：" + response.data.url);
       this.userInfoForm = response.data.data;
       const newFile = {
         name: file.name, // 文件名
@@ -142,7 +143,22 @@ export default {
 
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      // 这里可以发送axios请求，将表单数据保存到数据库中
+      axios.post('http://localhost:8080/idcards', {
+        id: "",
+        document_Id: "",
+        id_card_url: this.pdfUrl,
+        file_name: this.fileName,
+        name: this.userInfoForm.name,
+        nation: this.userInfoForm.nation,
+        sex: this.userInfoForm.sex,
+        birthday: this.userInfoForm.birthday,
+        address: this.userInfoForm.address,
+        card_number: this.userInfoForm.cardNumber,
+        all_info: this.userInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+          }
+      )
     },
   }
 };

@@ -85,6 +85,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import ExtractInfo from "@/components/ExtractInfo.vue";
 import GenerateSummary from "@/components/GenerateSummary.vue";
 
@@ -154,10 +155,29 @@ export default {
     beforeRemove(file) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      console.log('提交发票信息');
-      // 在这里处理表单提交逻辑
-    }
+      axios.post('http://localhost:8080/licenses',{
+        license_id: "",
+        document_Id: "",
+        license_url: this.pdfUrl,
+        file_name: this.fileName,
+        license_code: this.licenseInfoForm.licenseCode,
+        license_number: this.licenseInfoForm.licenseNumber,
+        license_enterprise_name: this.licenseInfoForm.licenseEnterpriseName,
+        license_enterprise_type: this.licenseInfoForm.licenseEnterpriseType,
+        license_legal_representative: this.licenseInfoForm.licenseLegalRepresentative,
+        license_business_scope: this.licenseInfoForm.licenseBusinessScope,
+        license_registered_capital: this.licenseInfoForm.licenseRegisteredCapital,
+        license_establish_date: this.licenseInfoForm.licenseEstablishDate,
+        license_operation_period: this.licenseOperationPeriod.toString(),
+        license_domicile: this.licenseInfoForm.licenseDomicile,
+        all_info: this.licenseInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+          }
+      )
+    },
   }
 }
 </script>

@@ -284,11 +284,11 @@ public class PdfToEditablePdfUtils
     @Test
     public void test() throws DocumentException, IOException
     {
-//        String jpgPath = "<LOCAL_PATH_REDACTED>";
-//        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
-//        requestPPOCR(jpgPath, dpdfFolder);
-        String pdfFolder = "<LOCAL_PATH_REDACTED>";
-        pdfCopyableChecker(pdfFolder);
+        String jpgPath = "<LOCAL_PATH_REDACTED>";
+        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
+        requestPPOCR(jpgPath, dpdfFolder);
+//        String pdfFolder = "<LOCAL_PATH_REDACTED>";
+//        pdfCopyableChecker(pdfFolder);
     }
 }
 
