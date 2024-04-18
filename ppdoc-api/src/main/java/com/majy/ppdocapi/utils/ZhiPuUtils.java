@@ -1,19 +1,13 @@
 package com.majy.ppdocapi.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.majy.ppdocapi.controller.ZhiPuLLM;
 import com.zhipu.oapi.ClientV4;
 import com.zhipu.oapi.Constants;
 import com.zhipu.oapi.service.v4.model.*;
 import io.reactivex.Flowable;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class ZhiPuUtils
@@ -326,36 +318,5 @@ public class ZhiPuUtils
         {
             return new ChatMessageAccumulator(chunk.getChoices().get(0).getDelta(), null, chunk.getChoices().get(0), chunk.getUsage(), chunk.getCreated(), chunk.getId());
         });
-    }
-
-    @Test
-    public void test()
-    {
-        String ocrTextValue = "姓名马洋洋性别男民族汉出生2013年05月06日住址湖南省长沙市开福区巡道街幸福小区居民组公民身份证号码430512198908131367";
-        String fieldsValue = "[姓名],[性别]";
-        String res = sseInvokeExtractInfo(ocrTextValue, fieldsValue);
-
-        // 正则表达式，用于匹配 JSON 对象
-        String jsonRegex = "\\{\\s*[\"\\w\\s]*:[ \"'].*?[\"]\\s*[,}]\\s*\\}";
-        Pattern pattern = Pattern.compile(jsonRegex, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(res);
-
-        // 查找所有匹配的 JSON 字符串
-        while (matcher.find())
-        {
-            // 构建完整的 JSON 字符串
-            StringBuilder jsonStringBuilder = new StringBuilder();
-            jsonStringBuilder.append("{");
-            jsonStringBuilder.append(matcher.group(0));
-            jsonStringBuilder.append("}");
-            String jsonStr = jsonStringBuilder.toString();
-
-            // 解析 JSON 字符串为 JSONObject
-            JSONObject jsonObj = new JSONObject(jsonStr);
-
-            // 输出解析后的 JSON 对象
-            System.out.println("解析后的 JSON 对象: " + jsonObj.toString());
-            break; // 如果只需要第一个 JSON 对象，可以取消注释并删除 break 语句
-        }
     }
 }

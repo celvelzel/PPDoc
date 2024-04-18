@@ -1,8 +1,9 @@
 package com.majy.ppdocapi.utils;
 
-import com.majy.ppdocapi.controller.ZhiPuLLM;
+import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,16 @@ import java.util.regex.Pattern;
 
 
 @Slf4j
+@Component
 public class InvoiceOcrUtils extends PaddleOcrUtils
 {
+    @Autowired
+    private ModelService modelService;
+
     //全局变量
     private static final String NO_INFO_FOUND = "未找到";
 
-    public static Map<String, String> getStringStringMap(List<List> jsons)
+    public Map<String, String> getStringStringMap(List<List> jsons)
     {
         //调用父类的jsonToString方法，拼接OCR结果
         String trim = jsonToString(jsons);
@@ -135,14 +140,14 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
      * @param trim 拼接后的ocr识别的文字
      * @return 获取项目名称、购买方名称、销售方名称
      */
-    private static Map<String,String> invokeLLM(String trim)
+    private Map<String,String> invokeLLM(String trim)
     {
         String projectName = "";
         String purchaserName = "";
         String sellerName = "";
         Map<String,String> invoiceInfoMap= new HashMap<>();
 
-        String LLMResult = ZhiPuUtils.sseInvokeExtractInfo(trim, "项目名称，购买方名称，销售方名称");
+        String LLMResult = modelService.extractInfo("zhipuai",trim, "项目名称，购买方名称，销售方名称");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("项目名称.([\u4e00-\u9fa5]*)\\s*购买方名称.([\u4e00-\u9fa5]*)\\s*销售方名称.([\u4e00-\u9fa5]*)");
         Matcher matcher = pattern.matcher(LLMResult);
@@ -162,33 +167,5 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
         invoiceInfoMap.put("purchaserName",purchaserName);
         invoiceInfoMap.put("sellerName",sellerName);
         return invoiceInfoMap;
-    }
-
-
-    //测试类
-    @Test
-    public void test()
-    {
-        String projectName = "";
-        String purchaserName = "";
-        String sellerName = "";
-        String text = "\"项目名称：餐饮服务\\n购买方名称：太极计算机股份有限公司\\n销售方名称：深圳市珍湘味饮食文化有限公司\"";
-        Pattern pattern = Pattern.compile("项目名称.([\u4e00-\u9fa5]*).*购买方名称.([\u4e00-\u9fa5]*).*销售方名称.([\u4e00-\u9fa5]*)");
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find())
-        {
-            projectName = matcher.group(1);
-            purchaserName = matcher.group(2);
-            sellerName = matcher.group(3);
-        }
-        else
-        {
-            projectName = NO_INFO_FOUND;
-            purchaserName = NO_INFO_FOUND;
-            sellerName = NO_INFO_FOUND;
-        }
-        System.out.println("ProjectN:"+projectName);
-        System.out.println("PurchaserN:"+purchaserName);
-        System.out.println("sellerN:"+sellerName);
     }
 }

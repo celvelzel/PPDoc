@@ -1,8 +1,9 @@
 package com.majy.ppdocapi.utils;
 
-import com.majy.ppdocapi.controller.ZhiPuLLM;
+import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,12 +12,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
+@Component
 public class LicenseOcrUtils extends PaddleOcrUtils
 {
+    @Autowired
+    private ModelService modelService;
+
     //全局变量
     private static final String NO_INFO_FOUND = "未找到";
 
-    public static Map<String, String> getStringStringMap(List<List> jsons)
+    public Map<String, String> getStringStringMap(List<List> jsons)
     {
         //调用父类的jsonToString方法，拼接OCR结果
         String trim = jsonToString(jsons);
@@ -227,14 +232,14 @@ public class LicenseOcrUtils extends PaddleOcrUtils
      * @param trim 拼接后的ocr识别的文字
      * @return 获取经营范围、住所、法定代表人
      */
-    private static Map<String, String> invokeLLM(String trim)
+    private Map<String, String> invokeLLM(String trim)
     {
         String licenseBusinessScope = "";
         String licenseDomicile = "";
         String licenseLegalRepresentative = "";
         Map<String, String> invoiceLLMMap = new HashMap<>();
 
-        String LLMResult = ZhiPuUtils.sseInvokeExtractInfo(trim, "经营范围，住所，法定代表人");
+        String LLMResult = modelService.extractInfo("zhipuai", trim, "经营范围，住所，法定代表人");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("经营范围.(.*)\\s*住所.(.*)\\s*法定代表人.(.*)");
         Matcher matcher = pattern.matcher(LLMResult);
@@ -254,41 +259,5 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         invoiceLLMMap.put("licenseDomicile", licenseDomicile);
         invoiceLLMMap.put("licenseLegalRepresentative", licenseLegalRepresentative);
         return invoiceLLMMap;
-    }
-
-    @Test
-    public void test()
-    {
-        String text = "经营范围：水处理设备、环保产品及零部件，空气调节设备及其零部件家用电器、燃气器具、电热水器具、太阳能设备、医疗器械的研究、批发、进出口、佣金代理（拍卖除外）并提供相关配套服务。\n" +
-                "住所：上海市黄浦区新码头街55号4幢3楼\n" +
-                "法定代表人：朱芮" ;
-        Pattern pattern = Pattern.compile("经营范围.(.*)\\s*住所.(.*)\\s*法定代表人.(.*)");
-        Matcher matcher = pattern.matcher(text);
-        String licenseBusinessScope = "";
-        String licenseDomicile = "";
-        String licenseLegalRepresentative = "";
-        log.info("智谱LLM结果是：" + text);
-        if (matcher.find())
-        {
-            licenseBusinessScope = matcher.group(1);
-            licenseDomicile = matcher.group(2);
-            licenseLegalRepresentative = matcher.group(3);
-        }
-        else
-        {
-            licenseBusinessScope = NO_INFO_FOUND;
-            licenseDomicile = NO_INFO_FOUND;
-            licenseLegalRepresentative = NO_INFO_FOUND;
-        }
-        System.out.println(licenseBusinessScope);
-        System.out.println(licenseDomicile);
-        System.out.println(licenseLegalRepresentative);
-//        System.out.println(licenseCode(trim));
-//        System.out.println(licenseNumber(trim));
-//        System.out.println(licenseEnterpriseName(trim));
-//        System.out.println(licenseEnterpriseType(trim));
-//        System.out.println(licenseRegisteredCapital(trim));
-//        System.out.println(licenseEstablishDate(trim));
-//        System.out.println(licenseOperationPeriod(trim)[0]+"至"+licenseOperationPeriod(trim)[1]);
     }
 }
