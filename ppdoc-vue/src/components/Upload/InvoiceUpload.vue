@@ -11,11 +11,17 @@
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
+                     :before-upload="beforeUpload"
                      :before-remove="beforeRemove"
                      multiple
                      :limit="2"
                      :on-exceed="handleExceed"
-                     :file-list="fileList">
+                     :file-list="fileList"
+
+                     v-loading.fullscreen.lock="fullscreenLoading"
+                     element-loading-text="加载中"
+                     element-loading-spinner="el-icon-loading"
+                     element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传pdf文件</div>
             <!-- 发票图片预览组件 -->
@@ -74,8 +80,8 @@
 <script>
 import axios from 'axios'
 
-import ExtractInfo from "@/components/ExtractInfo.vue";
-import GenerateSummary from "@/components/GenerateSummary.vue";
+import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
+import GenerateSummary from "@/components/Utils/GenerateSummary.vue";
 
 export default {
   components: {GenerateSummary, ExtractInfo},
@@ -93,8 +99,9 @@ export default {
         sellerName: '',
         projectName: ''
       },
-      pdfUrl:"",
-      fileName:"",
+      pdfUrl: "",
+      fileName: "",
+      fullscreenLoading: false
     };
   },
   methods: {
@@ -104,8 +111,10 @@ export default {
     handleSuccessPdf(response, file) {
       // 假设服务器返回的响应数据中包含了发票的URL
       this.pdfUrl = response.data.url;
-      console.log("发票的url是："+response.data.url);
+      console.log("发票的url是：" + response.data.url);
       this.invoiceInfoForm = response.data.data;
+      //表格收到数据后关闭加载动效
+      this.fullscreenLoading = false;
       // 更新数据的操作
       this.$emit('dataUpdated');
       //获取文档名
@@ -123,11 +132,11 @@ export default {
         this.fileList.shift();
       }
     },
+    beforeUpload() {
+      this.fullscreenLoading = true;
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
-    },
-    submitUpload() {
-      this.$refs.upload.submit();
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
@@ -141,7 +150,7 @@ export default {
     },
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      axios.post('http://localhost:8080/invoices',{
+      axios.post('http://localhost:8080/invoices', {
         invoice_id: "",
         document_Id: "",
         invoice_url: this.pdfUrl,
@@ -156,6 +165,19 @@ export default {
         all_info: this.invoiceInfoForm.allInfo
       }).then(res => {
             console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
           }
       )
     },

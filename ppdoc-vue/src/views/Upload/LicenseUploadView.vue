@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import LicenseUpload from "@/components/LicenseUpload.vue"
-import MyMenu from "@/components/MyMenu.vue"
+import LicenseUpload from "@/components/Upload/LicenseUpload.vue"
+import MyMenu from "@/components/Display/MyMenu.vue"
 export default{
   components: {LicenseUpload, MyMenu},
   data(){

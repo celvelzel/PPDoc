@@ -11,11 +11,17 @@
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
+                     :before-upload="beforeUpload"
                      :before-remove="beforeRemove"
                      multiple
                      :limit="2"
                      :on-exceed="handleExceed"
-                     :file-list="fileList">
+                     :file-list="fileList"
+
+                     v-loading.fullscreen.lock="fullscreenLoading"
+                     element-loading-text="加载中"
+                     element-loading-spinner="el-icon-loading"
+                     element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传pdf文件</div>
             <!-- 发票图片预览组件 -->
@@ -86,8 +92,8 @@
 
 <script>
 import axios from "axios";
-import ExtractInfo from "@/components/ExtractInfo.vue";
-import GenerateSummary from "@/components/GenerateSummary.vue";
+import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
+import GenerateSummary from "@/components/Utils/GenerateSummary.vue";
 
 export default {
   components: {GenerateSummary, ExtractInfo},
@@ -111,9 +117,10 @@ export default {
         licenseDomicile: '',
         allInfo: ''
       },
-      licenseOperationPeriod:[],
-      pdfUrl:"",
-      fileName:"",
+      licenseOperationPeriod: [],
+      pdfUrl: "",
+      fileName: "",
+      fullscreenLoading: false
     }
   },
   methods: {
@@ -123,10 +130,12 @@ export default {
     handleSuccessPdf(response, file) {
       // 假设服务器返回的响应数据中包含了营业执照的URL
       this.pdfUrl = response.data.url;
-      console.log("营业执照的url是："+response.data.url);
+      console.log("营业执照的url是：" + response.data.url);
       this.licenseInfoForm = response.data.data;
       this.licenseOperationPeriod = [this.licenseInfoForm.licenseOperationPeriodStart,
         this.licenseInfoForm.licenseOperationPeriodEnd];
+      //表格收到数据后关闭加载动效
+      this.fullscreenLoading = false;
       //获取文档名
       this.fileName = file.name;
 
@@ -141,6 +150,9 @@ export default {
         // 可以选择移除最早的文件
         this.fileList.shift();
       }
+    },
+    beforeUpload() {
+      this.fullscreenLoading = true;
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -160,7 +172,7 @@ export default {
     },
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      axios.post('http://localhost:8080/licenses',{
+      axios.post('http://localhost:8080/licenses', {
         license_id: "",
         document_Id: "",
         license_url: this.pdfUrl,
@@ -179,6 +191,19 @@ export default {
         all_info: this.licenseInfoForm.allInfo
       }).then(res => {
             console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
           }
       )
     },
@@ -196,6 +221,7 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
+
 .el-form-item__label {
   width: 150px;
   margin-bottom: 8px; /* 调整行间距 */

@@ -1,7 +1,7 @@
 <script setup>
 
-import MyMenu from "@/components/MyMenu.vue";
-import LicenseDisplay from "@/components/LicenseDisplay.vue";
+import MyMenu from "@/components/Display/MyMenu.vue";
+import LicenseDisplay from "@/components/Display/LicenseDisplay.vue";
 </script>
 
 <template>

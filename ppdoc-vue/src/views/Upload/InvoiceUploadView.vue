@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import InvoiceUpload from "@/components/InvoiceUpload.vue";
-import MyMenu from "@/components/MyMenu.vue"
+import InvoiceUpload from "@/components/Upload/InvoiceUpload.vue";
+import MyMenu from "@/components/Display/MyMenu.vue"
 
 export default {
   components: {

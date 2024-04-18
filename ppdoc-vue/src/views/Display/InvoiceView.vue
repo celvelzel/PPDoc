@@ -1,7 +1,7 @@
 <script setup>
 
-import MyMenu from "@/components/MyMenu.vue";
-import InvoiceDisplay from "@/components/InvoiceDisplay.vue";
+import MyMenu from "@/components/Display/MyMenu.vue";
+import InvoiceDisplay from "@/components/Display/InvoiceDisplay.vue";
 </script>
 
 <template>

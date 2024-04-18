@@ -7,11 +7,17 @@
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
+                     :before-upload="beforeUpload"
                      :before-remove="beforeRemove"
                      multiple
                      :limit="2"
                      :on-exceed="handleExceed"
-                     :file-list="fileList">
+                     :file-list="fileList"
+
+                     v-loading.fullscreen.lock="fullscreenLoading"
+                     element-loading-text="加载中"
+                     element-loading-spinner="el-icon-loading"
+                     element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传pdf文件</div>
           </el-upload>
@@ -21,6 +27,7 @@
                      list-type="picture-card"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
+                     :before-upload="beforeUpload"
                      :on-success="handleSuccessImage">
             <i class="el-icon-plus"></i>
           </el-upload>
@@ -72,7 +79,7 @@
 </template>
 
 <script>
-import ExtractInfo from "@/components/ExtractInfo.vue";
+import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
 import axios from "axios";
 
 export default {
@@ -92,7 +99,8 @@ export default {
       dialogVisible: false,
       fileList: [],
       pdfUrl: "",
-      fileName:"",
+      fileName: "",
+      fullscreenLoading: false
     };
   },
   methods: {
@@ -106,6 +114,8 @@ export default {
       this.pdfUrl = response.data.url;
       console.log("文档的url是：" + response.data.url);
       this.userInfoForm = response.data.data;
+      //表格收到数据后关闭加载动效
+      this.fullscreenLoading = false;
       //获取文档名
       this.fileName = file.name;
 
@@ -120,6 +130,9 @@ export default {
         // 可以选择移除最早的文件
         this.fileList.shift();
       }
+    },
+    beforeUpload() {
+      this.fullscreenLoading = true;
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -161,6 +174,19 @@ export default {
         all_info: this.userInfoForm.allInfo
       }).then(res => {
             console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
           }
       )
     },

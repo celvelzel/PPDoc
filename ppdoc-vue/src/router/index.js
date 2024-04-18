@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/Display/HomeView.vue'
 
 Vue.use(VueRouter)
 
@@ -11,62 +11,57 @@ const routes = [
         component: HomeView
     },
     {
-        path: '/about',
-        name: 'about',
-        component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-    },
-    {
         path: '/doc',
         name: 'doc',
-        component: () => import('../views/DocView.vue'),
+        component: () => import('../views/Display/DocView.vue'),
         meta: {title: "文档管理",},
     },
     {
         path: '/invoice',
         name: 'invoice',
-        component: () => import('../views/InvoiceView.vue'),
+        component: () => import('../views/Display/InvoiceView.vue'),
         meta: {title: "发票管理",},
     },
     {
         path: '/idcard',
         name: 'idcard',
-        component: () => import('../views/IdCardView.vue'),
+        component: () => import('../views/Display/IdCardView.vue'),
         meta: {title: "身份证管理",},
     },
     {
         path: '/license',
         name: 'license',
-        component: () => import('../views/LicenseView.vue'),
+        component: () => import('../views/Display/LicenseView.vue'),
         meta: {title: "营业执照管理",},
     },
     {
         path: '/invoice/upload',
         name: 'invoiceUpload',
-        component: () => import('../views/InvoiceUploadView.vue'),
+        component: () => import('../views/Upload/InvoiceUploadView.vue'),
         meta: {title: "发票上传",},
     },
     {
         path: '/idcard/upload',
         name: 'idcardUpload',
-        component: () => import('../views/IdCardUploadView.vue'),
+        component: () => import('../views/Upload/IdCardUploadView.vue'),
         meta: {title: "身份证上传",},
     },
     {
         path: '/license/upload',
         name: 'licenseUpload',
-        component: () => import('../views/LicenseUploadView.vue'),
+        component: () => import('../views/Upload/LicenseUploadView.vue'),
         meta: {title: "发票上传",},
     },
     {
         path: '/doc/upload',
         name: 'docUpload',
-        component: () => import('../views/DocUploadView.vue'),
+        component: () => import('../views/Upload/DocUploadView.vue'),
         meta: {title: "通用文档上传",},
     },
     {
         path: '/pdf',
         name: 'pdf',
-        component: () => import('../views/PDFPreview.vue'),
+        component: () => import('../views/Display/PDFPreview.vue'),
         meta: {title: "PDF预览",},
     },
 ]
