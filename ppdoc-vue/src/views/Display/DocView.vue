@@ -1,6 +1,6 @@
 <script setup>
 
-import MyMenu from "@/components/Display/MyMenu.vue";
+import MyMenu from "@/components/Utils/MyMenu.vue";
 import DocDisplay from "@/components/Display/DocDisplay.vue";
 </script>
 

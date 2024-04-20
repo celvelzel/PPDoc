@@ -20,7 +20,7 @@
 <script>
 import IdCardUpload from "@/components/Upload/IdCardUpload.vue";
 import axios from 'axios'
-import MyMenu from "@/components/Display/MyMenu.vue"
+import MyMenu from "@/components/Utils/MyMenu.vue"
 
 export default {
   components: {

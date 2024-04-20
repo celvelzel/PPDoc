@@ -1,7 +1,7 @@
 package com.majy.ppdocapi.service.impl;
 
 import com.majy.ppdocapi.service.ModelService;
-import com.majy.ppdocapi.utils.ZhiPuUtils;
+import com.majy.ppdocapi.utils.LLMUtils.ZhiPuUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

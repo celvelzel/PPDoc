@@ -4,6 +4,7 @@ import com.itextpdf.io.util.FileUtil;
 import com.itextpdf.text.*;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.pdf.*;
+import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -148,7 +149,7 @@ public class PdfToEditablePdfUtils
 
             // 开始在PDF页面上绘制文本
             page.beginText();
-            page.setFontAndSize(baseFont, 8.0F); // 设置字体大小
+            page.setFontAndSize(baseFont, 10.0F); // 设置字体大小
             BaseColor coler = new BaseColor(255, 0, 0, 0); // 设置文字颜色
             page.setColorFill(coler);
 
@@ -180,7 +181,7 @@ public class PdfToEditablePdfUtils
                         System.out.println("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
                         // 设置文字的位置
                         JSONArray point = textRegion.getJSONArray(0);
-                        page.setTextMatrix((float) point.getInt(0) * pw / iw, ph - 14.0F - (float) point.getInt(1) * ph / ih);
+                        page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F)/ iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
                         // 对识别得分较低的字符添加方括号标记
                         if (0.9 > confidence)
                         {

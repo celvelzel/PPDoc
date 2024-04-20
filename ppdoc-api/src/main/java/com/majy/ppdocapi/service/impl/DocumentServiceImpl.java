@@ -6,8 +6,8 @@ import com.majy.ppdocapi.mapper.DocumentMapper;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.service.DocumentService;
-import com.majy.ppdocapi.utils.DocOcrUtils;
-import com.majy.ppdocapi.utils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.DocOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,5 +53,11 @@ public class DocumentServiceImpl implements DocumentService
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
         // 根据识别文本提取信息
         return (Map<String, String>) DocOcrUtils.getStringStringMap(jsons);
+    }
+
+    @Override
+    public Object getAllTypes()
+    {
+        return documentMapper.getAllTypes();
     }
 }

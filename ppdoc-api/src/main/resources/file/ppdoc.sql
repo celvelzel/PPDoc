@@ -64,6 +64,27 @@ CREATE TABLE license (
     license_domicile VARCHAR(255),
     all_info TEXT
 );
+CREATE TABLE indictment (
+    indictment_id INT PRIMARY KEY AUTO_INCREMENT,
+    case_type VARCHAR(50) NOT NULL,
+    plaintiff_name VARCHAR(20) NOT NULL,
+    plaintiff_number VARCHAR(20),
+    plaintiff_type VARCHAR(10),
+    plaintiff_address VARCHAR(100),
+    plaintiff_contact VARCHAR(15),
+    defendant_name VARCHAR(20) NOT NULL,
+    defendant_number VARCHAR(20),
+    defendant_type VARCHAR(10),
+    defendant_address VARCHAR(255),
+    defendant_contact VARCHAR(15),
+    litigation_request TEXT,
+    facts_background TEXT,
+    legal_basis TEXT,
+    evidence_list TEXT,
+    court_name VARCHAR(20) NOT NULL,
+    indictment_date VARCHAR(30)
+);
+
 
 -- 1. 用户表 (users)
 -- 用户ID (user_id) - 主键，唯一标识每个用户。

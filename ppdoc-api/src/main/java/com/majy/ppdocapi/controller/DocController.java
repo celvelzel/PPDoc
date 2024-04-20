@@ -34,6 +34,12 @@ public class DocController extends OcrController
         return getResuleSuccess(urlResult, dataMap);
     }
 
+    @PostMapping("/types")
+    public Result getAllTypes()
+    {
+        return Result.success(documentService.getAllTypes());
+    }
+
     @PostMapping
     public Result save(@RequestBody Document document)
     {

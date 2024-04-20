@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils;
+package com.majy.ppdocapi.utils.OCRUtils;
 
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;

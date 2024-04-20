@@ -4,19 +4,16 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.po.Document;
-import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.entity.po.License;
 import com.majy.ppdocapi.mapper.DocumentMapper;
-import com.majy.ppdocapi.mapper.InvoiceMapper;
 import com.majy.ppdocapi.mapper.LicenseMapper;
 import com.majy.ppdocapi.service.LicenseService;
-import com.majy.ppdocapi.utils.LicenseOcrUtils;
-import com.majy.ppdocapi.utils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.LicenseOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +24,8 @@ public class LicenseServiceImpl implements LicenseService
     LicenseMapper licenseMapper;
     @Autowired
     DocumentMapper documentMapper;
+    @Autowired
+    LicenseOcrUtils licenseOcrUtils;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -63,6 +62,6 @@ public class LicenseServiceImpl implements LicenseService
         // pdf识别，提取文字
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
         // 根据识别文本提取信息
-        return LicenseOcrUtils.getStringStringMap(jsons);
+        return licenseOcrUtils.getStringStringMap(jsons);
     }
 }

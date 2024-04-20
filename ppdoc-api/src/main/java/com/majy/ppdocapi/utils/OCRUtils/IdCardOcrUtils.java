@@ -1,9 +1,8 @@
-package com.majy.ppdocapi.utils;
+package com.majy.ppdocapi.utils.OCRUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestClientException;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

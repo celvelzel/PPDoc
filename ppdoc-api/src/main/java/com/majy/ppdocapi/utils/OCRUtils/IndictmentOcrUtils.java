@@ -1,27 +1,48 @@
-package com.majy.ppdocapi;
+package com.majy.ppdocapi.utils.OCRUtils;
 
-import com.majy.ppdocapi.mapper.DocumentMapper;
-import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.service.ModelService;
-import com.majy.ppdocapi.utils.OCRUtils.IndictmentOcrUtils;
+import com.majy.ppdocapi.service.impl.ModelServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@SpringBootTest
-public class SpringbootMybatisQuickStart1Application
+@Component
+public class IndictmentOcrUtils extends PaddleOcrUtils
 {
-    @Autowired
-    private IndictmentOcrUtils indictmentOcrUtils;
     @Autowired
     private ModelService modelService;
 
+    //全局变量
+    private static final String NO_INFO_FOUND = "未找到";
+
+    public Map<String, String> getStringStringMap(List<List> jsons)
+    {
+        //调用父类的jsonToString方法，拼接OCR结果
+        String trim = jsonToString(jsons);
+
+        String allInfo = trim;
+
+        Map<String, String> indictmentInfoMap = new HashMap<>();
+
+        //调用LLM
+        Map<String, String> invoiceLLMMap = invokeLLM(trim);
+        indictmentInfoMap.putAll(invoiceLLMMap);
+
+        return indictmentInfoMap;
+    }
+
+    /**
+     * 调用智谱API，分析文本
+     *
+     * @param trim 拼接后的ocr识别的文字
+     */
     public Map<String,String> invokeLLM(String trim)
     {
         String LLMResult =  modelService.extractInfo("zhipuai", trim, "案件类型,原告姓名,原告身份证（若原告为个人）/统一社会信用代码（若原告为企业））,原告类型（企业或个人）,原告地址,原告联系方式,被告姓名,被告身份证或统一认证代码,被告类型,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期,其他重要信息");

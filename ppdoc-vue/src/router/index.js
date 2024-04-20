@@ -59,10 +59,22 @@ const routes = [
         meta: {title: "通用文档上传",},
     },
     {
+        path: '/process',
+        name: 'processs',
+        component: () => import('../views/Display/ProcessView.vue'),
+        meta: {title: "政务审核流程",},
+    },
+    {
         path: '/pdf',
         name: 'pdf',
         component: () => import('../views/Display/PDFPreview.vue'),
         meta: {title: "PDF预览",},
+    },
+    {
+        path: '/dialog',
+        name: 'dialog',
+        component: () => import('../views/DialogTest.vue'),
+        meta: {title: "Dialog预览",},
     },
 ]
 

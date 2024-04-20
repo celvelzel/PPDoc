@@ -4,56 +4,54 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.po.Document;
+import com.majy.ppdocapi.entity.po.Indictment;
 import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.mapper.DocumentMapper;
-import com.majy.ppdocapi.mapper.InvoiceMapper;
-import com.majy.ppdocapi.service.InvoiceService;
-import com.majy.ppdocapi.utils.OCRUtils.InvoiceOcrUtils;
+import com.majy.ppdocapi.mapper.IndictmentMapper;
+import com.majy.ppdocapi.service.IndictmentService;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class InvoiceServiceImpl implements InvoiceService
+public class IndictmentServiceImpl implements IndictmentService
 {
     @Autowired
-    InvoiceMapper invoiceMapper;
+    private DocumentMapper documentMapper;
     @Autowired
-    DocumentMapper documentMapper;
-    @Autowired
-    InvoiceOcrUtils invoiceOcrUtils;
+    private IndictmentMapper indictmentMapper;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
     {
         //设置分页参数
         PageHelper.startPage(start, pageSize);
-        //执行查询
-        List<Invoice> invoiceList = invoiceMapper.list();
-        Page<Invoice> pageHelper = (Page<Invoice>) invoiceList;
-        //封装pageBean对象
-        PageBean pageBean = new PageBean(pageHelper.getTotal(), pageHelper.getResult());
-        return pageBean;
+        //执行查询，获取分页结果
+        Page<Indictment> indictmentPage = (Page<Indictment>)indictmentMapper.list();
+        //封装PageBean对象
+        return new PageBean(indictmentPage.getTotal(), indictmentPage.getResult());
     }
 
     @Override
     public void delete(Integer documentId)
     {
-        invoiceMapper.deleteByDocumentId(documentId);
-        documentMapper.delete(documentId);
+        indictmentMapper.deleteByDocumentId(documentId);
+        documentMapper.delete(documentId);;
     }
 
     @Override
-    public void add(Invoice invoice)
+    public void add(Indictment indictment)
     {
-        Document document = new Document(null, invoice.getInvoice_url(), invoice.getFile_name(), "发票", invoice.getAll_info());
-        documentMapper.insert(document);
-        invoice.setDocument_id(document.getDocument_id());
-        invoiceMapper.insert(invoice);
+        Document newDocument = new Document(indictment.getDocument_id(), indictment.getIndictment_url(),indictment.getFile_name(),"起诉状",indictment.getAll_info());
+        documentMapper.insert(newDocument);
+        indictment.setDocument_id(newDocument.getDocument_id());
+        indictmentMapper.insert(indictment);
     }
 
     @Override
@@ -62,6 +60,6 @@ public class InvoiceServiceImpl implements InvoiceService
         // pdf识别，提取文字
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
         // 根据识别文本提取信息
-        return invoiceOcrUtils.getStringStringMap(jsons);
+        return new HashMap<>();
     }
 }

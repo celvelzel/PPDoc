@@ -20,7 +20,7 @@
 
 
 import {defineComponent} from "vue";
-import MyMenu from "@/components/Display/MyMenu.vue"
+import MyMenu from "@/components/Utils/MyMenu.vue"
 import DocUpload from "@/components/Upload/DocUpload.vue";
 
 

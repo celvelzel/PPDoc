@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils;
+package com.majy.ppdocapi.utils.OCRUtils;
 
 import java.util.HashMap;
 import java.util.List;

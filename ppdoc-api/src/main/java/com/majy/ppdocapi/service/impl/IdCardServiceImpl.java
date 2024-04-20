@@ -5,19 +5,16 @@ import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.IdCard;
-import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.mapper.DocumentMapper;
 import com.majy.ppdocapi.mapper.IdCardMapper;
-import com.majy.ppdocapi.mapper.InvoiceMapper;
 import com.majy.ppdocapi.service.IdCardService;
-import com.majy.ppdocapi.utils.IdCardOcrUtils;
-import com.majy.ppdocapi.utils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.IdCardOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

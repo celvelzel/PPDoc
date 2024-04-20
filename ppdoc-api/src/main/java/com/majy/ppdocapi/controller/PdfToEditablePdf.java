@@ -1,6 +1,6 @@
 package com.majy.ppdocapi.controller;
 
-import com.majy.ppdocapi.utils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import com.majy.ppdocapi.utils.PdfToEditablePdfUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

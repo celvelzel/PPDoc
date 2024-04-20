@@ -66,4 +66,7 @@ public interface DocumentMapper
 
     @Select("select * from document where document_type = #{document_type}")
     public List<Document> getByType(String document_type);
+
+    @Select("select distinct document_type from document")
+    public List<String> getAllTypes();
 }

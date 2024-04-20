@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils;
+package com.majy.ppdocapi.utils.LLMUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;

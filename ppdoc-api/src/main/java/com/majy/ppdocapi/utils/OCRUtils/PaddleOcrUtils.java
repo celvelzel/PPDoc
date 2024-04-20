@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils;
+package com.majy.ppdocapi.utils.OCRUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
