@@ -59,7 +59,7 @@ const routes = [
         meta: {title: "发票上传",},
     },
     {
-        path:'indictment/upload',
+        path:'/indictment/upload',
         name: 'indictmentUpload',
         component: () => import('../views/Upload/IndictmentUploadView.vue'),
         meta: {title: " 起诉状上传",},

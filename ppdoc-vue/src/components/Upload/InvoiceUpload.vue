@@ -29,7 +29,7 @@
           </el-upload>
           <br>
           <!-- PDF预览组件-->
-          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="600" height="570"></iframe>
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="570"></iframe>
           <!-------------->
           <br>
           <GenerateSummary :allinfo="invoiceInfoForm.allInfo"/>

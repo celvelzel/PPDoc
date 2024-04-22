@@ -64,7 +64,7 @@ export default {
       <el-table-column prop="address" label="住址" width="200"></el-table-column>
       <el-table-column prop="card_number" label="身份证号" width="180"></el-table-column>
       <el-table-column prop="all_info" label="所有信息" width="200" show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column fixed="right" width="150" label="操作">
         <template slot-scope="scope">
           <el-button
               size="mini"

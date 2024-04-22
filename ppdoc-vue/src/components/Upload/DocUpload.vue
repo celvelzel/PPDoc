@@ -43,7 +43,7 @@
         <el-col :span="12">
 
           <!-- PDF预览组件-->
-          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="600" height="1050"></iframe>
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="1050"></iframe>
           <!-------------->
 
         </el-col>

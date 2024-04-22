@@ -37,7 +37,7 @@
         </el-col>
       </el-row>
       <!-- PDF预览组件-->
-      <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="1200" height="350"></iframe>
+      <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="350"></iframe>
       <!-------------->
       <el-row :gutter="30" style="margin-top: 10px;">
         <el-col :span="12">

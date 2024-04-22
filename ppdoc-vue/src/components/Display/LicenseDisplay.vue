@@ -63,13 +63,13 @@ export default {
       <el-table-column prop="license_enterprise_name" label="证照名称" width="180"></el-table-column>
       <el-table-column prop="license_enterprise_type" label="证照类型" width="180"></el-table-column>
       <el-table-column prop="license_legal_representative" label="法定代表人" width="90"></el-table-column>
-      <el-table-column prop="license_business_scope" label="经营范围" width="180"></el-table-column>
+      <el-table-column prop="license_business_scope" label="经营范围" width="180" show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="license_registered_capital" label="注册资本" width="180"></el-table-column>
       <el-table-column prop="license_establish_date" label="成立日期" width="95"></el-table-column>
       <el-table-column prop="license_operation_period" label="营业期限" width="180"></el-table-column>
       <el-table-column prop="license_domicile" label="住所" width="180"></el-table-column>
       <el-table-column prop="all_info" label="所有信息" width="100" show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column fixed="right" width="150" label="操作">
         <template slot-scope="scope">
           <el-button
               size="mini"

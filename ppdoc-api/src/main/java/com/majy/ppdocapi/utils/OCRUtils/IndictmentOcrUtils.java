@@ -36,7 +36,7 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
 
         // 将拼接后的所有信息存储到map中
         String allInfo = trim;
-        indictmentInfoMap.put("all_info", allInfo);
+        indictmentInfoMap.put("allInfo", allInfo);
 
         // 调用LLM进行处理，并将结果添加到map中
         Map<String, String> invoiceLLMMap = invokeLLM(trim);
@@ -53,7 +53,7 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
      */
     public Map<String, String> invokeLLM(String trim)
     {
-        String LLMResult = modelService.extractInfo("zhipuai", trim, "案件类型,原告名称,原告id（公民身份号码或统一认证代码）,原告类型（如果有性别就是‘个人’）,原告地址,原告联系方式,被告名称,被告id（公民身份号码或统一认证代码）,被告类型（如果有性别就是‘个人’）,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期,其他重要信息");
+        String LLMResult = modelService.extractInfo("zhipuai", trim, "案件类型,原告名称,原告id（公民身份号码或统一认证代码）,原告类型（如果有性别就是‘个人’）,原告地址,原告联系方式,被告名称,被告id（公民身份号码或统一认证代码）,被告类型（如果有性别就是‘个人’）,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期");
         //log.info("LLM结果是：" + LLMResult);
 
         //提取信息
@@ -77,7 +77,7 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
         String indictmentDate = indictmentDate(LLMResult);
 
         //放入map
-        invoiceLLMMap.put("case_type", caseType);
+        invoiceLLMMap.put("caseType", caseType);
         invoiceLLMMap.put("plaintiffName", plaintiffName);
         invoiceLLMMap.put("plaintiffId", plaintiffId);
         invoiceLLMMap.put("plaintiffType", plaintiffType);
@@ -357,11 +357,14 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
     private String indictmentDate(String LLMResult)
     {
         String indictmentDate = "";
-        Pattern pattern = Pattern.compile("起诉状日期.(.*)\\s");
+        Pattern pattern = Pattern.compile("起诉状日期.(\\d{4})年(\\d{1,2})月(\\d{1,2})日");
         Matcher matcher = pattern.matcher(LLMResult);
         if (matcher.find())
         {
-            indictmentDate = matcher.group(1);
+            String year = matcher.group(1);
+            String month = matcher.group(2);
+            String day = matcher.group(3);
+            indictmentDate = year + "-" + month + "-" + day;
         }
         else
         {

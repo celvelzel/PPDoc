@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -16,12 +15,12 @@ public class Indictment {
     private String file_name;
     private String case_type;
     private String plaintiff_name;
-    private String plaintiff_number;
+    private String plaintiff_id;
     private String plaintiff_type;
     private String plaintiff_address;
     private String plaintiff_contact;
     private String defendant_name;
-    private String defendant_number;
+    private String defendant_id;
     private String defendant_type;
     private String defendant_address;
     private String defendant_contact;
@@ -30,7 +29,7 @@ public class Indictment {
     private String legal_basis;
     private String evidence_list;
     private String court_name;
-    private Date indictment_date;
+    private String indictment_date;
     private String all_info;
 }
 

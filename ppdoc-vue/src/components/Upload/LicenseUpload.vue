@@ -29,7 +29,7 @@
           </el-upload>
           <br>
           <!-- PDF预览组件-->
-          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="600" height="750"></iframe>
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="750"></iframe>
           <!-------------->
           <br>
           <GenerateSummary :allinfo="licenseInfoForm.allInfo"/>

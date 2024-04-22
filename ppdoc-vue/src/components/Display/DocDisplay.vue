@@ -60,7 +60,7 @@ export default {
       <el-table-column prop="document_url" label="文档链接" width="400" show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="document_type" label="文档类型" width="100"></el-table-column>
       <el-table-column prop="all_info" label="所有信息" width="400" show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column fixed="right" width="150" label="操作">
         <template slot-scope="scope">
           <el-button
               size="mini"

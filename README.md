@@ -1,3 +1,11 @@
+## 部署步骤
+运行paddleOCR
+```
+D:
+cd <LOCAL_PATH_REDACTED>
+start.bat
+```
+
 ## 思路
 
 OCR->图片->双层pdf->NLP->信息提取（正则）/摘要（大模型）
