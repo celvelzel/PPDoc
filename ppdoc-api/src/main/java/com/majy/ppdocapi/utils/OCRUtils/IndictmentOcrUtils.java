@@ -1,16 +1,15 @@
 package com.majy.ppdocapi.utils.OCRUtils;
 
 import com.majy.ppdocapi.service.ModelService;
-import com.majy.ppdocapi.service.impl.ModelServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Component
@@ -20,39 +19,354 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
     private ModelService modelService;
 
     //全局变量
-    private static final String NO_INFO_FOUND = "未找到";
+    private static final String NO_INFO_FOUND = "正则匹配未找到信息";
 
+    /**
+     * 将JSON格式数据处理成Map形式，用于存储OCR结果和LLM处理后的信息。
+     *
+     * @param jsons 包含OCR结果的JSON列表。
+     * @return 返回一个Map，其中包含合并后的所有信息以及通过LLM处理得到的信息。
+     */
     public Map<String, String> getStringStringMap(List<List> jsons)
     {
-        //调用父类的jsonToString方法，拼接OCR结果
+        // 将JSON列表转换为字符串，用于后续处理
         String trim = jsonToString(jsons);
-
-        String allInfo = trim;
 
         Map<String, String> indictmentInfoMap = new HashMap<>();
 
-        //调用LLM
+        // 将拼接后的所有信息存储到map中
+        String allInfo = trim;
+        indictmentInfoMap.put("all_info", allInfo);
+
+        // 调用LLM进行处理，并将结果添加到map中
         Map<String, String> invoiceLLMMap = invokeLLM(trim);
         indictmentInfoMap.putAll(invoiceLLMMap);
 
         return indictmentInfoMap;
     }
 
+
     /**
      * 调用智谱API，分析文本
      *
      * @param trim 拼接后的ocr识别的文字
      */
-    public Map<String,String> invokeLLM(String trim)
+    public Map<String, String> invokeLLM(String trim)
     {
-        String LLMResult =  modelService.extractInfo("zhipuai", trim, "案件类型,原告姓名,原告身份证（若原告为个人）/统一社会信用代码（若原告为企业））,原告类型（企业或个人）,原告地址,原告联系方式,被告姓名,被告身份证或统一认证代码,被告类型,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期,其他重要信息");
-        log.info("智谱LLM结果是：" + LLMResult);
-        return new HashMap<>();
+        String LLMResult = modelService.extractInfo("zhipuai", trim, "案件类型,原告名称,原告id（公民身份号码或统一认证代码）,原告类型（如果有性别就是‘个人’）,原告地址,原告联系方式,被告名称,被告id（公民身份号码或统一认证代码）,被告类型（如果有性别就是‘个人’）,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期,其他重要信息");
+        //log.info("LLM结果是：" + LLMResult);
+
+        //提取信息
+        Map<String, String> invoiceLLMMap = new HashMap<>();
+        String caseType = caseType(LLMResult);
+        String plaintiffName = plaintiffName(LLMResult);
+        String plaintiffId = plaintiffId(LLMResult);
+        String plaintiffType = plaintiffType(LLMResult);
+        String plaintiffAddress = plaintiffAddress(LLMResult);
+        String plaintiffContact = plaintiffContact(LLMResult);
+        String defendantName = defendantName(LLMResult);
+        String defendantId = defendantId(LLMResult);
+        String defendantType = defendantType(LLMResult);
+        String defendantAddress = defendantAddress(LLMResult);
+        String defendantContact = defendantContact(LLMResult);
+        String litigationRequest = litigationRequest(LLMResult);
+        String factsBackground = factsBackground(LLMResult);
+        String legalBasis = legalBasis(LLMResult);
+        String evidenceList = evidenceList(LLMResult);
+        String courtName = courtName(LLMResult);
+        String indictmentDate = indictmentDate(LLMResult);
+
+        //放入map
+        invoiceLLMMap.put("case_type", caseType);
+        invoiceLLMMap.put("plaintiffName", plaintiffName);
+        invoiceLLMMap.put("plaintiffId", plaintiffId);
+        invoiceLLMMap.put("plaintiffType", plaintiffType);
+        invoiceLLMMap.put("plaintiffAddress", plaintiffAddress);
+        invoiceLLMMap.put("plaintiffContact", plaintiffContact);
+        invoiceLLMMap.put("defendantName", defendantName);
+        invoiceLLMMap.put("defendantId", defendantId);
+        invoiceLLMMap.put("defendantType", defendantType);
+        invoiceLLMMap.put("defendantAddress", defendantAddress);
+        invoiceLLMMap.put("defendantContact", defendantContact);
+        invoiceLLMMap.put("litigationRequest", litigationRequest);
+        invoiceLLMMap.put("factsBackground", factsBackground);
+        invoiceLLMMap.put("legalBasis", legalBasis);
+        invoiceLLMMap.put("evidenceList", evidenceList);
+        invoiceLLMMap.put("courtName", courtName);
+        invoiceLLMMap.put("indictmentDate", indictmentDate);
+        //返回Map
+        return invoiceLLMMap;
     }
 
-    @Test
-    public void test(){
-        String trim = "民事起诉状（按揭类）原告：交通银行股份有限公司广西壮族自治区分行，住所地91450102898281063X.负责人：江洲，该分行行长。委托诉讼代理人：XXX，男，该公司员工。联系电话：0771-XXXxxXX委托诉讼代理人：XXX，男，该公司员工.联系电话：0771-XXXXX被告：XXX，男，XXX年XX月XX日出生，汉族，住XXX，公民身份号码XXXX，约定送达地址XXXX，联系电话XX。被告：XXX，女，XXX年XX月XX日出生，汉族，住XXX，公民身份号码XXX，约定送达地址XXXX，联系电话XXXX。诉讼请求一确认原告交通银行股份有限公司广西壮族自治区分行与被告XXX、XXX签订的编号为XXX的《个人房产抵押贷款合同》（下称“贷款合同”）贷款全部提前到期；二被告X、X向原告交通银行股份有限公司广西壮族自治区分行返还借款XXXX元；三、被告XXX、XX向原告交通银行股份有限公司广西壮族自治区分行支付利息（利息计算：1.计至X0X年XX月X日的利息为XXXX元、罚息XXX元、利息复利XXX元、罚息复利XXX元；2.以XXxX元为基数，自XXX年X月XX日至实际清偿之日止，按合同约定罚息利率计收罚息）：四、被告XXX、XXX如不能履行上述第二、第三项给付义务，原告交通银行股份有限公司广西壮族自治区分行有权对登记在被告XXX、XX名下的位于XXX房房产折价或者以拍卖、变卖该财产的价款优先受偿。五、被告XX、XXX承担本案诉讼费用及与本案有关的其他费用：其中包括但不限于案件受理费、财产保全费、评估费、公告费、鉴定费等。事实与理由原告与被告XXX、XXX、担保人XXX于XXX年XX月XX日签订了编号为XXX的《个人房产抵押贷款合同》，贷款合同约定：原告贷款XXXX元给被告XXX、XXX购买XXX房产；被告从发放贷款的次月起开始按月以XX还款法偿还贷款本息，月利率为XXX%：被告用所购买的房产为贷款提供抵押担保。上述贷款合同签订后，原告依约于XXX年XX月XX日向被告武海波发放了贷款XX元，双方办理了上述房产的抵押登记（编号为：XX）：原告已取得抵押物的他项权利证明，根据合同约定，担保人XX的保证责任解除。但是，被告并未依约按时向原告偿还贷款本息，截至XXXX年XX月XX日已逾期达XX期：为此，原告采取多种方式要求被告履行还款义务，但被告仍未按期清偿欠款。综上：被告的行为已构成违约，原告依据贷款合同第十三条“贷款提前到期”的“提前到期享件”约定宣布贷款全部提前到期，并要求被告立即偿还所有到期贷款本金、结清利息、承担原告实现本案债权所支付的各种费用（诉讼费、公告费、鉴定费、取证费、保全费以及律师费等）被告XX、XXX以XXX房产为贷款提供抵押担保，原告依法对抵押物享有优先受偿权。被告XXX向原告贷款发生在其与被告XXX婚姻存续期间，被告XXX对被告XXX的上述债务承担连带清偿责任。为此，原告向人民法院依法提起诉讼：恳请法院予以支持。此致南宁市兴宁区人民法院具状人：交通银行股份有限公司广西壮族自治区分行XXXX年XX月XX日";
-        invokeLLM(trim);
+    private String caseType(String LLMResult)
+    {
+        String caseType = "";
+        Pattern pattern = Pattern.compile("案件类型.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            caseType = matcher.group(1);
+        }
+        else
+        {
+            caseType = NO_INFO_FOUND;
+        }
+        return caseType;
+    }
+
+    private String plaintiffName(String LLMResult)
+    {
+        String plaintiffName = "";
+        Pattern pattern = Pattern.compile("原告名称.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            plaintiffName = matcher.group(1);
+        }
+        else
+        {
+            plaintiffName = NO_INFO_FOUND;
+        }
+        return plaintiffName;
+    }
+
+    private String plaintiffId(String LLMResult)
+    {
+        String plaintiffId = "";
+        Pattern pattern = Pattern.compile("原告id.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            plaintiffId = matcher.group(1);
+        }
+        else
+        {
+            plaintiffId = NO_INFO_FOUND;
+        }
+        return plaintiffId;
+    }
+
+    private String plaintiffType(String LLMResult)
+    {
+        String plaintiffType = "";
+        Pattern pattern = Pattern.compile("原告类型.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            plaintiffType = matcher.group(1);
+        }
+        else
+        {
+            plaintiffType = NO_INFO_FOUND;
+        }
+        return plaintiffType;
+    }
+
+    private String plaintiffAddress(String LLMResult)
+    {
+        String plaintiffAddress = "";
+        Pattern pattern = Pattern.compile("原告地址.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            plaintiffAddress = matcher.group(1);
+        }
+        else
+        {
+            plaintiffAddress = NO_INFO_FOUND;
+        }
+        return plaintiffAddress;
+    }
+
+    private String plaintiffContact(String LLMResult)
+    {
+        String plaintiffContact = "";
+        Pattern pattern = Pattern.compile("原告联系方式.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            plaintiffContact = matcher.group(1);
+        }
+        else
+        {
+            plaintiffContact = NO_INFO_FOUND;
+        }
+        return plaintiffContact;
+    }
+
+    private String defendantName(String LLMResult)
+    {
+        String defendantName = "";
+        Pattern pattern = Pattern.compile("被告名称.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            defendantName = matcher.group(1);
+        }
+        else
+        {
+            defendantName = NO_INFO_FOUND;
+        }
+        return defendantName;
+    }
+
+    private String defendantId(String LLMResult)
+    {
+        String defendantId = "";
+        Pattern pattern = Pattern.compile("被告id.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            defendantId = matcher.group(1);
+        }
+        else
+        {
+            defendantId = NO_INFO_FOUND;
+        }
+        return defendantId;
+    }
+
+    private String defendantType(String LLMResult)
+    {
+        String defendantType = "";
+        Pattern pattern = Pattern.compile("被告类型.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            defendantType = matcher.group(1);
+        }
+        else
+        {
+            defendantType = NO_INFO_FOUND;
+        }
+        return defendantType;
+    }
+
+    private String defendantAddress(String LLMResult)
+    {
+        String defendantAddress = "";
+        Pattern pattern = Pattern.compile("被告地址.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            defendantAddress = matcher.group(1);
+        }
+        else
+        {
+            defendantAddress = NO_INFO_FOUND;
+        }
+        return defendantAddress;
+    }
+
+    private String defendantContact(String LLMResult)
+    {
+        String defendantContact = "";
+        Pattern pattern = Pattern.compile("被告联系方式.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            defendantContact = matcher.group(1);
+        }
+        else
+        {
+            defendantContact = NO_INFO_FOUND;
+        }
+        return defendantContact;
+    }
+
+    private String litigationRequest(String LLMResult)
+    {
+        String litigationRequest = "";
+        Pattern pattern = Pattern.compile("诉讼请求.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            litigationRequest = matcher.group(1);
+        }
+        else
+        {
+            litigationRequest = NO_INFO_FOUND;
+        }
+        return litigationRequest;
+    }
+
+    private String factsBackground(String LLMResult)
+    {
+        String factsBackground = "";
+        Pattern pattern = Pattern.compile("事实背景.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            factsBackground = matcher.group(1);
+        }
+        else
+        {
+            factsBackground = NO_INFO_FOUND;
+        }
+        return factsBackground;
+    }
+
+    private String legalBasis(String LLMResult)
+    {
+        String legalBasis = "";
+        Pattern pattern = Pattern.compile("法律依据.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            legalBasis = matcher.group(1);
+        }
+        else
+        {
+            legalBasis = NO_INFO_FOUND;
+        }
+        return legalBasis;
+    }
+
+    private String evidenceList(String LLMResult)
+    {
+        String evidenceList = "";
+        Pattern pattern = Pattern.compile("证据清单.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            evidenceList = matcher.group(1);
+        }
+        else
+        {
+            evidenceList = NO_INFO_FOUND;
+        }
+        return evidenceList;
+    }
+
+    private String courtName(String LLMResult)
+    {
+        String courtName = "";
+        Pattern pattern = Pattern.compile("法院名称.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            courtName = matcher.group(1);
+        }
+        else
+        {
+            courtName = NO_INFO_FOUND;
+        }
+        return courtName;
+    }
+
+    private String indictmentDate(String LLMResult)
+    {
+        String indictmentDate = "";
+        Pattern pattern = Pattern.compile("起诉状日期.(.*)\\s");
+        Matcher matcher = pattern.matcher(LLMResult);
+        if (matcher.find())
+        {
+            indictmentDate = matcher.group(1);
+        }
+        else
+        {
+            indictmentDate = NO_INFO_FOUND;
+        }
+        return indictmentDate;
     }
 }

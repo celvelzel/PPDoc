@@ -43,25 +43,25 @@ public class ZhiPuUtils
     /**
      * 通过sse调用，提取信息
      */
-    public static String sseInvokeExtractInfo(String ocr_result, String keyInfo)
+    public static String sseInvokeExtractInfo(String ocrResult, String keyInfo)
     {
         List<ChatMessage> messages = new ArrayList<>();
         // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(),
                 "你现在的任务是从OCR文字识别的结果中提取我指定的关键信息。" +
                         "\n" +
-                        "OCR的文字识别结果使用符号{}包围，包含所识别出来的文字，顺序在原始图片中从左至右、从上至下。" +
+                        "OCR的文字识别结果使用符号<OCR>包围，包含所识别出来的文字，顺序在原始图片中从左至右、从上至下。" +
                         "\n" +
-                        "我指定的关键信息使用[]符号包围,多个关键信息之间由逗号分隔。请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，" +
+                        "我指定的关键信息使用<key_info>符号包围,多个关键信息之间由逗号分隔。请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，" +
                         "你需要结合上下文语义进行综合判断，以抽取准确的关键信息。" +
                         "\n" +
                         "在返回结果时使用文本格式，包含一个key-value对，key值为我指定的关键信息，value值为所抽取的结果。" +
-                        "如果认为OCR识别结果中没有关键信息key，则将value赋值为“未找到相关信息”。 " +
+                        "如果认为OCR识别结果中没有关键信息key，则将value赋值为“无”。 " +
                         "请只输出文本格式的结果，不要包含其它多余文字，不要使用markdown语法，不要用换行符等转义字符！" +
                         "输出示例是：姓名：张三" +
                         "下面正式开始：" +
                         "\n" +
-                        "OCR文字：{" + ocr_result + "}要抽取的关键信息：[" + keyInfo + "]");
+                        "<OCR>\n" + ocrResult + "</OCR>\n要抽取的关键信息：<key_info>\n" + keyInfo + "\n</key_info>");
         //ocr_text和keyInfo是前端传入的OCR识别结果文本和用户指定的关键词
 
         messages.add(chatMessage);
@@ -149,19 +149,19 @@ public class ZhiPuUtils
         String summaryOption = summaryOptions.get(summaryType);
         //prompt
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(),
-                "你现在的任务是根据OCR文字识别的结果生成一份摘要。请根据我的要求总结文本的内容。" +
+                "你现在的任务是根据用<OCR>标签OCR文字识别的结果生成一份摘要。请根据我用<requirement>标签包裹的要求总结文本的内容。" +
                         "请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，但您应该尽力理解文档的主要内容并提取关键信息。" +
 //                        "请确保您的摘要准确、清晰，并包含所有重要细节。" +
-                        "如果OCR结果中有任何不确定或缺失的信息，请在摘要中明确指出" +
+//                        "如果OCR结果中有任何不确定或缺失的信息，请在摘要中明确指出" +
                         "\n" +
-                        "我给出的OCR识别结果文本使用符号{}包围，包含所识别出来的文字，顺序在原始图片中从左至右、从上至下。" +
+                        "我给出的OCR识别结果文本使用<OCR>包围，包含所识别出来的文字，顺序在原始图片中从左至右、从上至下。" +
                         "\n" +
                         "在返回结果时 " +
                         "请只输出文本格式的结果，不要包含其它多余文字，不要使用markdown语法，不要用换行符等转义字符！" +
-                        "我对你的返回结果的要求是：[" + summaryOption + "]" +
+                        "我对你的返回结果的要求是：<requirement>\n" + summaryOption + "\n</requirement>" +
                         "下面正式开始：" +
                         "\n" +
-                        "OCR文字：{" + ocr_result + "}");
+                        "OCR文字：<OCR>\n" + ocr_result + "\n</OCR>");
         // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
 
         messages.add(chatMessage);
@@ -237,15 +237,15 @@ public class ZhiPuUtils
 
         //prompt
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(),
-                "您的任务是根据提供的文档图片的OCR结果对文档进行分类和打标签。" +
+                "您的任务是根据文档的OCR结果对文档进行分类和打标签。" +
                         "OCR结果可能包含一些错误或不完整的文本，但您应该尽力理解文档的主要内容并提取关键信息。" +
                         "请根据文档的内容和上下文，将其归入适当的分类，并为其添加相关标签。" +
                         "如果OCR结果中有任何不确定或缺失的信息，请在分类和打标签时保持谨慎。\n" +
-                        "输入：[OCR结果文本]\n" +
-                        "输出：[文档分类] - [相关标签1, 标签2, 标签3, ...]\n" +
+                        "输入是用<OCR>标签包裹的OCR结果文本]\n" +
+                        "输出格式为：[文档分类] - [相关标签1, 标签2, 标签3, ...]\n" +
                         "下面正式开始：" +
                         "\n" +
-                        "OCR文字：[" + ocr_result + "]");
+                        "OCR结果：<OCR>\n" + ocr_result + "\n</OCR>");
         // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
 
         messages.add(chatMessage);

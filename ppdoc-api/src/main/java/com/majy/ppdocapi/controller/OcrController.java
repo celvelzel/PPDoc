@@ -22,11 +22,19 @@ public class OcrController
     }
 
 
+    /**
+     * 构建并返回一个成功结果的响应体。
+     * @param urlResult 表示结果中的URL对象。
+     * @param dataMap 包含结果数据的键值对映射。
+     * @return 返回一个封装了结果数据的成功响应对象。
+     */
     public Result getResuleSuccess(URL urlResult, Map<String, String> dataMap){
-        //构建返回结果
+        // 构建响应结果的映射
         Map<String, Object> responseMap = new HashMap();
-        responseMap.put("url", urlResult);
-        responseMap.put("data", dataMap);
+        responseMap.put("url", urlResult); // 将URL对象放入响应映射中
+        responseMap.put("data", dataMap); // 将数据映射放入响应映射中
+        // 返回一个表示成功的Result对象，其中包含了构建的响应映射
         return Result.success(responseMap);
     }
+
 }

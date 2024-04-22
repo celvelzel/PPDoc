@@ -20,7 +20,7 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
     private ModelService modelService;
 
     //全局变量
-    private static final String NO_INFO_FOUND = "未找到";
+    private static final String NO_INFO_FOUND = "正则匹配未找到信息";
 
     public Map<String, String> getStringStringMap(List<List> jsons)
     {

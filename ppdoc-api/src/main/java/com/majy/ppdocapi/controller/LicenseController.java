@@ -38,7 +38,7 @@ public class LicenseController extends OcrController
     {
         log.info("新增营业执照文档记录:{}",license);
         licenseService.add(license);
-        return Result.success();
+        return Result.createSuccess();
     }
 
     @GetMapping
@@ -54,9 +54,9 @@ public class LicenseController extends OcrController
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){
-        log.info("根据id删除营业执照文档:{}",documentId);
+        log.info("根据文档id删除营业执照文档:{}",documentId);
         //调用service删除文档
         licenseService.delete(documentId);
-        return Result.success();
+        return Result.deleteSuccess();
     }
 }

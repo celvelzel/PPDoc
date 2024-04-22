@@ -13,8 +13,12 @@ public class Result<T> {
     private String msg;
     private T data;
 
-    public static Result success(){
-        return new Result(200,"success",null);
+    public static Result createSuccess(){
+        return new Result(200,"create success",null);
+    }
+
+    public static Result deleteSuccess(){
+        return new Result(200,"delete success",null);
     }
 
     public Result(T data) {

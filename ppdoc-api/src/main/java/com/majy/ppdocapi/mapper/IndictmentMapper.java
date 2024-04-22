@@ -12,7 +12,7 @@ public interface IndictmentMapper
     * 添加起诉状
      */
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("INSERT INTO indictment (document_id, indictment_url, file_name, case_type, plaintiff_name, plaintiff_number, plaintiff_type, plaintiff_address, plaintiff_contact, defendant_name, defendant_number, defendant_type, defendant_address, defendant_contact, litigation_request, facts_background, legal_basis, evidence_list, court_name, indictment_date, all_info) " +
+    @Insert("INSERT INTO indictment (document_id, indictment_url, file_name, case_type, plaintiff_name, plaintiff_id, plaintiff_type, plaintiff_address, plaintiff_contact, defendant_name, defendant_id, defendant_type, defendant_address, defendant_contact, litigation_request, facts_background, legal_basis, evidence_list, court_name, indictment_date, all_info) " +
             "VALUES (#{document_id}, #{indictment_url}, #{file_name}, #{case_type}, #{plaintiff_name}, #{plaintiff_number}, #{plaintiff_type}, #{plaintiff_address}, #{plaintiff_contact}, #{defendant_name}, #{defendant_number}, #{defendant_type}, #{defendant_address}, #{defendant_contact}, #{litigation_request}, #{facts_background}, #{legal_basis}, #{evidence_list}, #{court_name}, #{indictment_date}, #{all_info})")
     public void insert(Indictment indictment);
 
@@ -31,7 +31,7 @@ public interface IndictmentMapper
     /*
     * 更新起诉状
      */
-    @Update("UPDATE indictment SET document_id = #{document_id}, file_name = #{file_name}, case_type = #{case_type}, plaintiff_name = #{plaintiff_name}, plaintiff_number = #{plaintiff_number}, plaintiff_type = #{plaintiff_type}, plaintiff_address = #{plaintiff_address}, plaintiff_contact = #{plaintiff_contact}, defendant_name = #{defendant_name}, defendant_number = #{defendant_number}, defendant_type = #{defendant_type}, defendant_address = #{defendant_address}, defendant_contact = #{defendant_contact}, litigation_request = #{litigation_request}, facts_background = #{facts_background}, legal_basis = #{legal_basis}, evidence_list = #{evidence_list}, court_name = #{court_name}, indictment_date = #{indictment_date}, all_info = #{all_info} " +
+    @Update("UPDATE indictment SET document_id = #{document_id}, file_name = #{file_name}, case_type = #{case_type}, plaintiff_name = #{plaintiff_name}, plaintiff_id = #{plaintiff_number}, plaintiff_type = #{plaintiff_type}, plaintiff_address = #{plaintiff_address}, plaintiff_contact = #{plaintiff_contact}, defendant_name = #{defendant_name}, defendant_id = #{defendant_number}, defendant_type = #{defendant_type}, defendant_address = #{defendant_address}, defendant_contact = #{defendant_contact}, litigation_request = #{litigation_request}, facts_background = #{facts_background}, legal_basis = #{legal_basis}, evidence_list = #{evidence_list}, court_name = #{court_name}, indictment_date = #{indictment_date}, all_info = #{all_info} " +
             "WHERE indictment_id = #{indictment_id}")
     public void update(Indictment indictment);
 

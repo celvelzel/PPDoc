@@ -35,6 +35,12 @@ const routes = [
         meta: {title: "营业执照管理",},
     },
     {
+        path: '/indictment',
+        name: 'indictment',
+        component: () => import('../views/Display/IndictmentView.vue'),
+        meta: {title: " 起诉状管理",},
+    },
+    {
         path: '/invoice/upload',
         name: 'invoiceUpload',
         component: () => import('../views/Upload/InvoiceUploadView.vue'),
@@ -51,6 +57,12 @@ const routes = [
         name: 'licenseUpload',
         component: () => import('../views/Upload/LicenseUploadView.vue'),
         meta: {title: "发票上传",},
+    },
+    {
+        path:'indictment/upload',
+        name: 'indictmentUpload',
+        component: () => import('../views/Upload/IndictmentUploadView.vue'),
+        meta: {title: " 起诉状上传",},
     },
     {
         path: '/doc/upload',

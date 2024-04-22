@@ -2,6 +2,7 @@ package com.majy.ppdocapi.utils.OCRUtils;
 
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class LicenseOcrUtils extends PaddleOcrUtils
     private ModelService modelService;
 
     //全局变量
-    private static final String NO_INFO_FOUND = "未找到";
+    private static final String NO_INFO_FOUND = "正则匹配未找到信息";
 
     public Map<String, String> getStringStringMap(List<List> jsons)
     {
@@ -260,4 +261,5 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         invoiceLLMMap.put("licenseLegalRepresentative", licenseLegalRepresentative);
         return invoiceLLMMap;
     }
+
 }

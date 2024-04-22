@@ -39,7 +39,7 @@ public class InvoiceController extends OcrController
     {
         log.info("新增发票文档记录:{}",invoice);
         invoiceService.add(invoice);
-        return Result.success();
+        return Result.createSuccess();
     }
 
     @GetMapping
@@ -55,9 +55,9 @@ public class InvoiceController extends OcrController
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){
-        log.info("根据id删除发票文档:{}",documentId);
+        log.info("根据文档id删除发票文档:{}",documentId);
         //调用service，根据文档ID删除发票
         invoiceService.delete(documentId);
-        return Result.success();
+        return Result.deleteSuccess();
     }
 }

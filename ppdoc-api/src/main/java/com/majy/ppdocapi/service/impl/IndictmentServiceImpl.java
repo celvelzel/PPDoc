@@ -9,6 +9,7 @@ import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.mapper.DocumentMapper;
 import com.majy.ppdocapi.mapper.IndictmentMapper;
 import com.majy.ppdocapi.service.IndictmentService;
+import com.majy.ppdocapi.utils.OCRUtils.IndictmentOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class IndictmentServiceImpl implements IndictmentService
     private DocumentMapper documentMapper;
     @Autowired
     private IndictmentMapper indictmentMapper;
+    @Autowired
+    private IndictmentOcrUtils indictmentOcrUtils;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -60,6 +63,6 @@ public class IndictmentServiceImpl implements IndictmentService
         // pdf识别，提取文字
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
         // 根据识别文本提取信息
-        return new HashMap<>();
+        return indictmentOcrUtils.getStringStringMap(jsons);
     }
 }

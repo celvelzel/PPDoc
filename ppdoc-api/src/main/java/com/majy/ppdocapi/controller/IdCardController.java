@@ -50,7 +50,7 @@ public class IdCardController extends OcrController
     {
         log.info("新增身份证文档记录:{}",idCard);
         idCardService.add(idCard);
-        return Result.success();
+        return Result.createSuccess();
     }
 
     @GetMapping
@@ -66,9 +66,9 @@ public class IdCardController extends OcrController
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){
-        log.info("根据id删除身份证文档:{}",documentId);
+        log.info("根据文档id删除身份证文档:{}",documentId);
         //调用service，根据文档ID删除身份证记录
         idCardService.delete(documentId);
-        return Result.success();
+        return Result.deleteSuccess();
     }
 }

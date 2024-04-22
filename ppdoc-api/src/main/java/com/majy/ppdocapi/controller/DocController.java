@@ -45,7 +45,7 @@ public class DocController extends OcrController
     {
         log.info("新增文档记录:{}",document);
         documentService.add(document);
-        return Result.success();
+        return Result.createSuccess();
     }
 
     @GetMapping
@@ -61,9 +61,9 @@ public class DocController extends OcrController
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){
-        log.info("根据id删除文档:{}",id);
+        log.info("根据文档id删除文档:{}",id);
         //调用service删除文档
         documentService.delete(id);
-        return Result.success();
+        return Result.deleteSuccess();
     }
 }
