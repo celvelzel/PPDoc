@@ -12,11 +12,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public class IdCardOcrUtils extends PaddleOcrUtils
 {
-    private IdCardOcrUtils()
-    {
-        super();
-    }
-
     public static Map<String, String> getStringStringMap(List<List> jsons)
     {
 

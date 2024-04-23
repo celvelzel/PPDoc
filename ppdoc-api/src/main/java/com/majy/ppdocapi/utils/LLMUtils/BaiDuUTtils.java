@@ -1,0 +1,79 @@
+package com.majy.ppdocapi.utils.LLMUtils;
+
+import cn.hutool.json.JSONUtil;
+import lombok.SneakyThrows;
+import okhttp3.*;
+import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+//        "refresh_token":"<REDACTED_TOKEN>",
+//        "expires_in":2592000,
+//        "session_key":"<REDACTED_TOKEN>",
+//        "access_token":"<REDACTED_TOKEN>",
+//        "scope":"public brain_all_scope wenxinworkshop_mgr ai_custom_yiyan_com ai_custom_yiyan_com_eb_instant ai_custom_yiyan_com_bloomz7b1 ai_custom_yiyan_com_emb_text ai_custom_yiyan_com_llama2_7b ai_custom_yiyan_com_llama2_13b ai_custom_yiyan_com_llama2_70b ai_custom_yiyan_com_chatglm2_6b_32k ai_custom_yiyan_com_aquilachat_7b ai_custom_yiyan_com_emb_bge_large_zh ai_custom_yiyan_com_emb_bge_large_en ai_custom_yiyan_com_qianfan_chinese_llama_2_7b ai_custom_qianfan_bloomz_7b_compressed ai_custom_yiyan_com_eb_pro ai_custom_yiyan_com_sd_xl ai_custom_yiyan_com_tokenizer_eb ai_custom_yiyan_com_ai_apaas ai_custom_yiyan_com_qf_chinese_llama_2_13b ai_custom_yiyan_com_sqlcoder_7b ai_custom_yiyan_com_codellama_7b_ins ai_custom_yiyan_com_xuanyuan_70b_chat ai_custom_yiyan_com_yi_34b ai_custom_yiyan_com_chatlaw ai_custom_yiyan_com_emb_tao_8k ai_custom_yiyan_com_eb_turbo_pro ai_custom_yiyan_com_mixtral_8x7b ai_custom_yiyan_com_prmtv ai_custom_yiyan_com_eb_pro_prmtv ai_custom_yiyan_com_eb_turbo_pro_128k ai_custom_yiyan_com_ernie_35_4k_0205 ai_custom_yiyan_com_ernie_35_8k_0205 ai_custom_yiyan_com_ernie_35_8k_1222 ai_custom_yiyan_com_ernie_lite_8k ai_custom_yiyan_com_gemma_7b_it ai_custom_yiyan_com_bce_reranker_base ai_custom_yiyan_com_fuyu_8b ai_custom_yiyan_com_ernie_tiny_8k ai_custom_yiyan_com_ernie_char_8k ai_custom_yiyan_com_ernie_35_8k_preview ai_custom_yiyan_com_ernie_40_8k_preview ai_custom_yiyan_com_llama3_8b ai_custom_yiyan_com_llama3_70b wise_adapt lebo_resource_base lightservice_public hetu_basic lightcms_map_poi kaidian_kaidian ApsMisTest_Test权限 vis-classify_flower lpq_开放 cop_helloScope ApsMis_fangdi_permission smartapp_snsapi_base smartapp_mapp_dev_manage iop_autocar oauth_tp_app smartapp_smart_game_openapi oauth_sessionkey smartapp_swanid_verify smartapp_opensource_openapi smartapp_opensource_recapi fake_face_detect_开放Scope vis-ocr_虚拟人物助理 idl-video_虚拟人物助理 smartapp_component smartapp_search_plugin avatar_video_test b2b_tp_openapi b2b_tp_openapi_online smartapp_gov_aladin_to_xcx",
+//        "session_secret":"<REDACTED_TOKEN>"
+
+/**
+ * 百度文心开放平台-对话机器人-文本交互式问答
+ * 流式响应式接口
+ */
+@Component
+public class BaiDuUTtils
+{
+
+    public static final String API_KEY = "<REDACTED_SECRET>";
+    public static final String SECRET_KEY = "<REDACTED_SECRET>";
+
+    static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
+
+    //ERNIE-3.5-8K
+    @SneakyThrows
+    public static String invokeChat(String prompt)
+    {
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\"user_id\":\"MaJY\",\"messages\":[{\"role\":\"user\",\"content\":\"" + prompt + "\"}],\"temperature\":0.95,\"top_p\":0.8,\"penalty_score\":1,\"disable_search\":false,\"enable_citation\":false,\"response_format\":\"text\"}");
+        Request request = new Request.Builder()
+                .url("https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions?access_token=" + getAccessToken())
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Response response = HTTP_CLIENT.newCall(request).execute();
+        String jsonStr = response.body().string();
+        System.out.println("baidu返回的内容是" + jsonStr);
+
+        // 使用Hutool解析JSON字符串为JSONObject
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+        // 从返回结果json对象中获取result字段的值
+        String content = jsonObject.getStr("result");
+
+        System.out.println("baidu返回的Content: " + content);
+        return content;
+    }
+
+    /**
+     * 从用户的AK，SK生成鉴权签名（Access Token）
+     *
+     * @return 鉴权签名（Access Token）
+     * @throws IOException IO异常
+     */
+    static String getAccessToken() throws IOException
+    {
+        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&client_id=" + API_KEY
+                + "&client_secret=" + SECRET_KEY);
+        Request request = new Request.Builder()
+                .url("https://aip.baidubce.com/oauth/2.0/token")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+        Response response = HTTP_CLIENT.newCall(request).execute();
+        return new JSONObject(response.body().string()).getString("access_token");
+    }
+
+    public static void main(String[] args) throws IOException
+    {
+        String res = invokeChat("你好");
+    }
+}

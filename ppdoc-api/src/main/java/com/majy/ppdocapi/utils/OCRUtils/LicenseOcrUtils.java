@@ -4,6 +4,7 @@ import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -18,6 +19,8 @@ public class LicenseOcrUtils extends PaddleOcrUtils
 {
     @Autowired
     private ModelService modelService;
+    @Value("${model.name}")
+    String modelName;
 
     //全局变量
     private static final String NO_INFO_FOUND = "正则匹配未找到信息";
@@ -240,7 +243,7 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         String licenseLegalRepresentative = "";
         Map<String, String> invoiceLLMMap = new HashMap<>();
 
-        String LLMResult = modelService.extractInfo("zhipuai", trim, "经营范围，住所，法定代表人");
+        String LLMResult = modelService.extractInfo(modelName, trim, "经营范围，住所，法定代表人");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("经营范围.(.*)\\s*住所.(.*)\\s*法定代表人.(.*)");
         Matcher matcher = pattern.matcher(LLMResult);

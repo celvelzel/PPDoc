@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -25,6 +27,7 @@ import java.util.Map;
 
 
 @Slf4j
+@Component
 public class PdfToEditablePdfUtils
 {
     @Value("${font.path}")
@@ -45,7 +48,7 @@ public class PdfToEditablePdfUtils
     public static void requestPPOCR(String imgPath, String pdfFolder) throws IOException
     {
         // 将图像转换为PDF文件，并获取PDF的尺寸
-        float[] pdfZise = img2pdf2(imgPath, pdfFolder);
+        float[] pdfSize = img2pdf2(imgPath, pdfFolder);
         //读取图片的宽和高
         BufferedImage image = ImageIO.read(new File(imgPath));
         int width = image.getWidth();
@@ -61,7 +64,8 @@ public class PdfToEditablePdfUtils
         String pdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + ".pdf";
         String DpdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + "_d.pdf";
         // 根据OCR结果绘制双层PDF文件
-        pdf2Dpdf2(pdfPath, pdfZise, imgSize, rerJObject, DpdfPath);
+        pdf2Dpdf2(pdfPath, pdfSize, imgSize, rerJObject, DpdfPath);
+//        pdf2Dpdf6(pdfPath, pdfSize, rerJObject, DpdfPath);
     }
 
 
@@ -127,11 +131,11 @@ public class PdfToEditablePdfUtils
      * 将PDF文本转换为指定尺寸，并添加到另一个PDF中。
      *
      * @param pdfPath  原始PDF文件的路径。
-     * @param pdfZise  指定的PDF尺寸，数组中第一个元素为宽度，第二个元素为高度。
+     * @param pdfSize  指定的PDF尺寸，数组中第一个元素为宽度，第二个元素为高度。
      * @param textJO   包含转换后文本信息的JSONObject对象。
      * @param DpdfPath 目标PDF文件的路径，即转换后包含文本的PDF文件保存路径。
      */
-    public static void pdf2Dpdf2(String pdfPath, float[] pdfZise, float[] imgSize, JSONObject textJO, String DpdfPath)
+    public static void pdf2Dpdf2(String pdfPath, float[] pdfSize, float[] imgSize, JSONObject textJO, String DpdfPath)
     {
         try
         {
@@ -149,14 +153,14 @@ public class PdfToEditablePdfUtils
 
             // 开始在PDF页面上绘制文本
             page.beginText();
-            page.setFontAndSize(baseFont, 10.0F); // 设置字体大小
+            page.setFontAndSize(baseFont, 11.0F); // 设置字体大小
             BaseColor coler = new BaseColor(255, 0, 0, 0); // 设置文字颜色
             page.setColorFill(coler);
 
             float iw = imgSize[0];//图片的宽度，单位为像素
             float ih = imgSize[1];//图片的高度，单位为像素
-            float pw = pdfZise[0]; // 目标PDF的宽度
-            float ph = pdfZise[1]; // 目标PDF的高度
+            float pw = pdfSize[0]; // 目标PDF的宽度
+            float ph = pdfSize[1]; // 目标PDF的高度
             //PDF 页面的尺寸，单位是点（points）
             // 1 点等于 1/72 英寸
             // 这是 PDF 文档中默认的页面尺寸单位，也是 iTextPDF 中的标准单位。
@@ -181,12 +185,12 @@ public class PdfToEditablePdfUtils
                         System.out.println("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
                         // 设置文字的位置
                         JSONArray point = textRegion.getJSONArray(0);
-                        page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F)/ iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
+                        page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F) / iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
                         // 对识别得分较低的字符添加方括号标记
-                        if (0.9 > confidence)
-                        {
-                            textContent = "[" + textContent + "]";
-                        }
+//                        if (0.9 > confidence)
+//                        {
+//                            textContent = "[" + textContent + "]";
+//                        }
                         page.showText(textContent); // 显示文字
                     }
                 }
@@ -211,29 +215,61 @@ public class PdfToEditablePdfUtils
 
     /**
      * 判断PDF文件是否可以直接复制文本
-     * @param pdfPath 待判断pdf的路径
-     * @return  true 表示可以复制文本，false 表示无法复制文本
+     *
+     * @return true 表示可以复制文本，false 表示无法复制文本
      */
-    public static boolean pdfCopyableChecker(String pdfPath) throws IOException {
-        File pdfFile = new File(pdfPath); // 替换为你的PDF文件路径
-        PDDocument document = PDDocument.load(pdfFile);
-
-        if (!document.isEncrypted()) { // 检查PDF是否被加密
+    public static boolean pdfCopyableChecker(InputStream inputStream) throws IOException
+    {
+        PDDocument document = PDDocument.load(inputStream);
+        if (! document.isEncrypted())
+        { // 检查PDF是否被加密
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
-            if (! text.trim().isEmpty()) {
-                System.out.println(pdfFile.getName() + "文档可以直接复制文本。");
+            if (! text.trim().isEmpty())
+            {
+                log.info("文档可以直接复制文本。");
                 document.close();
                 return true;
-            } else {
-                System.out.println(pdfFile.getName() + "文档中没有可见的文本，无法直接复制。");
+            }
+            else
+            {
+                log.info("文档中没有可见的文本，无法直接复制。");
                 document.close();
                 return false;
             }
-        } else {
-            System.out.println(pdfFile.getName() + "文档已加密，无法判断文本是否可直接复制。");
+        }
+        else
+        {
+            System.out.println("文档已加密，无法判断文本是否可直接复制。");
             document.close();
             return false;
+        }
+    }
+
+
+    /**
+     * 从PDF文件中提取文本。
+     *
+     * @param inputStream 输入流，代表待处理的PDF文件。
+     * @return 返回从PDF中提取出的文本，去掉首尾空白字符。
+     * @throws RuntimeException 如果IO异常发生，例如PDF文件无法加载。
+     */
+    public static String getPdfText(InputStream inputStream)
+    {
+        try
+        {
+            // 加载PDF文档
+            PDDocument document = PDDocument.load(inputStream);
+            // 创建PDF文本提取器
+            PDFTextStripper stripper = new PDFTextStripper();
+            // 提取文档中的文本
+            String text = stripper.getText(document);
+            // 返回文本
+            return text.trim();
+        } catch (IOException e)
+        {
+            // 将IO异常转换为运行时异常抛出
+            throw new RuntimeException(e);
         }
     }
 
@@ -281,14 +317,86 @@ public class PdfToEditablePdfUtils
 
     }
 
+    public static void pdf2Dpdf6(String pdfPath, float[] pdfZise, JSONObject textJO, String DpdfPath)
+    {
+        try
+        {
+            FontFactory.registerDirectory(fontPath);
+            //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            // 创建字体对象，用于在PDF中显示文字
+            BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+            // 从文件系统中读取PDF文档
+            InputStream input = new FileInputStream(new File(pdfPath));
+            PdfReader reader = new PdfReader(input);
+            // 输出流用于创建新的PDF文件
+            OutputStream output = new FileOutputStream(new File(DpdfPath));
+            PdfStamper stamper = new PdfStamper(reader, output);
+            PdfContentByte page = stamper.getOverContent(1);
+            // 开始在PDF页面上绘制文本
+            page.beginText();
+            page.setFontAndSize(baseFont, 11.0F);
+            BaseColor coler = new BaseColor(255, 0, 0, 0);
+            page.setColorFill(coler);
+
+
+            // 解析并处理传入的JSONObject，将文本添加到PDF中
+            if (0 == textJO.getInt("status"))
+            {
+                JSONArray results = (JSONArray) textJO.get("results");
+                // 遍历结果数组
+                for (int i = 0; i < results.length(); i++)
+                {
+                    JSONArray resultArray = results.getJSONArray(i);
+                    for (int j = 0; j < resultArray.length(); j++)
+                    {
+                        JSONObject item = resultArray.getJSONObject(j);
+                        double confidence = item.getDouble("confidence");
+                        String textContent = item.getString("text");
+                        JSONArray textRegion = item.getJSONArray("text_region");
+                        JSONArray area1 = textRegion.getJSONArray(3);
+                        JSONArray area2 = textRegion.getJSONArray(3);
+                        float iw = (float) area1.getInt(0);
+                        float ih = (float) area2.getInt(1);
+                        float pw = pdfZise[0];
+                        float ph = pdfZise[1];
+
+                        // 处理信息
+                        System.out.println("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
+                        // 设置文字的位置
+                        JSONArray point = textRegion.getJSONArray(0);
+                        page.setTextMatrix((float) point.getInt(0) * pw / iw, ph - 14.0F - (float) point.getInt(1) * ph / ih);
+                        // 对识别得分较低的字符添加方括号标记
+                        if (0.9 > confidence)
+                        {
+                            textContent = "[" + textContent + "]";
+                        }
+                        page.showText(textContent); // 显示文字
+                    }
+                }
+            }
+            log.info("结束文本绘制");
+
+            page.endText();
+            stamper.close();
+            reader.close();
+        } catch (Exception var24)
+        {
+            System.out.println("双层pdf合成失败！");
+            var24.printStackTrace();
+        }
+
+    }
 
     @Test
     public void test() throws DocumentException, IOException
     {
-        String jpgPath = "<LOCAL_PATH_REDACTED>";
-        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
-        requestPPOCR(jpgPath, dpdfFolder);
-//        String pdfFolder = "<LOCAL_PATH_REDACTED>";
+//        String jpgPath = "<LOCAL_PATH_REDACTED>";
+//        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
+//        requestPPOCR(jpgPath, dpdfFolder);
+        String pdfFolder = "<LOCAL_PATH_REDACTED>";
+        File pdfFile = new File(pdfFolder);
+        InputStream input = new FileInputStream(pdfFile);
+        System.out.println(getPdfText(input));
 //        pdfCopyableChecker(pdfFolder);
     }
 }

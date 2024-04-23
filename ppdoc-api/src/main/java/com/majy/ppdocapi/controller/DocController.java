@@ -28,7 +28,7 @@ public class DocController extends OcrController
         URL urlResult = uploadFile(file);
 
         //调用Service中的方法，获取提取到的信息
-        Map<String, String> dataMap = documentService.file2StringStringMap(file);
+        Map<String, String> dataMap = documentService.handlePdfFile(file);
 
         //调用父类方法，构建返回结果
         return getResuleSuccess(urlResult, dataMap);

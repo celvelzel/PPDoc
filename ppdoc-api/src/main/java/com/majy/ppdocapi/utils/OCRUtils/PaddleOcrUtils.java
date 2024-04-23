@@ -69,7 +69,7 @@ public class PaddleOcrUtils
         headers.setContentType(MediaType.APPLICATION_JSON);
         //构建请求参数
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        //添加请求参数images，并将Base64编码的图片列表files传入
+        //添加请求参数images，按页将Base64编码的图片列表传入
         for (int index = 0; index < files.size(); index++)
         {
             byte[] bytes = files.get(index).getBytes();

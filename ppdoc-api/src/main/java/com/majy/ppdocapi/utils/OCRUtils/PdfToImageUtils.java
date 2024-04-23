@@ -64,7 +64,7 @@ public class PdfToImageUtils
                 // 渲染当前页为BufferedImage
                 BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 480); // DPI分辨率渲染
 
-                // 创建临时文件
+                // 对该页图片创建临时文件
                 File tempFile = File.createTempFile("temp", ".tmp");
 
                 FileOutputStream imageOutPutStream = new FileOutputStream(tempFile);

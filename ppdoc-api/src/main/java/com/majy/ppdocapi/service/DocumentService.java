@@ -14,7 +14,7 @@ public interface DocumentService
 
     void add(Document document);
 
-    Map<String, String> file2StringStringMap(MultipartFile file);
+    Map<String, String> handlePdfFile(MultipartFile file);
 
     Object getAllTypes();
 }

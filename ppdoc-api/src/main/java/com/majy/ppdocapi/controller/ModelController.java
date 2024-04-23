@@ -4,6 +4,7 @@ import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +15,8 @@ public class ModelController
 {
     @Autowired
     ModelService modelService;
-
-    String tempModelName = "zhipuai";
+    @Value("${model.name}")
+    String ModelName;
 
     @PostMapping("/extractinfo")
     public String extractInfo(@RequestBody String requestBody) throws Exception
@@ -29,7 +30,7 @@ public class ModelController
         String fieldsValue = jsonObject.getString("fields");
         String ocrTextValue = jsonObject.getString("ocr_text");
 
-        return modelService.extractInfo(tempModelName,ocrTextValue, fieldsValue);
+        return modelService.extractInfo(ModelName,ocrTextValue, fieldsValue);
     }
 
     @PostMapping("/generatesummary")
@@ -44,7 +45,7 @@ public class ModelController
         String ocrTextValue = jsonObject.getString("ocr_text");
         String summaryOptionValue = jsonObject.getString("summary_option");
 
-        return modelService.generateSummary(tempModelName,ocrTextValue, summaryOptionValue);
+        return modelService.generateSummary(ModelName,ocrTextValue, summaryOptionValue);
     }
 
     @PostMapping("/classification")
@@ -58,6 +59,6 @@ public class ModelController
         //提取各个字段的值
         String ocrTextValue = jsonObject.getString("ocr_text");
 
-        return modelService.classification(tempModelName,ocrTextValue);
+        return modelService.classification(ModelName,ocrTextValue);
     }
 }

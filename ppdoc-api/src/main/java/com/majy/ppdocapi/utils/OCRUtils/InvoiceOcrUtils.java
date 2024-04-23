@@ -3,6 +3,7 @@ package com.majy.ppdocapi.utils.OCRUtils;
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -18,6 +19,8 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
 {
     @Autowired
     private ModelService modelService;
+    @Value("${model.name}")
+    String modelName;
 
     //全局变量
     private static final String NO_INFO_FOUND = "正则匹配未找到信息";
@@ -140,14 +143,14 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
      * @param trim 拼接后的ocr识别的文字
      * @return 获取项目名称、购买方名称、销售方名称
      */
-    private Map<String,String> invokeLLM(String trim)
+    private Map<String, String> invokeLLM(String trim)
     {
         String projectName = "";
         String purchaserName = "";
         String sellerName = "";
-        Map<String,String> invoiceInfoMap= new HashMap<>();
+        Map<String, String> invoiceInfoMap = new HashMap<>();
 
-        String LLMResult = modelService.extractInfo("zhipuai",trim, "项目名称，购买方名称，销售方名称");
+        String LLMResult = modelService.extractInfo(modelName, trim, "项目名称，购买方名称，销售方名称");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("项目名称.([\u4e00-\u9fa5]*)\\s*购买方名称.([\u4e00-\u9fa5]*)\\s*销售方名称.([\u4e00-\u9fa5]*)");
         Matcher matcher = pattern.matcher(LLMResult);
@@ -163,9 +166,9 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
             purchaserName = NO_INFO_FOUND;
             sellerName = NO_INFO_FOUND;
         }
-        invoiceInfoMap.put("projectName",projectName);
-        invoiceInfoMap.put("purchaserName",purchaserName);
-        invoiceInfoMap.put("sellerName",sellerName);
+        invoiceInfoMap.put("projectName", projectName);
+        invoiceInfoMap.put("purchaserName", purchaserName);
+        invoiceInfoMap.put("sellerName", sellerName);
         return invoiceInfoMap;
     }
 }
