@@ -1,9 +1,12 @@
 <script>
 import MyMenu from "@/components/Utils/MyMenu.vue";
+import CaseDisplay from "@/components/Display/CaseDisplay.vue";
+import axios from "axios";
 export default {
   name: "ProcessView",
   components: {
-    MyMenu
+    MyMenu,
+    CaseDisplay
   },
   data() {
     return {
@@ -16,8 +19,25 @@ export default {
         type: [],
         resource: "",
         desc: ""
-      }
+      },
+      activeStep: 1,
     };
+  },
+  methods: {
+    handleCaseSelection(indictment_id) {
+      // 当子组件触发'select-case'事件时，会调用这个方法
+      // 处理业务逻辑
+      axios.get("http://localhost:8080/indictments",{
+        params: {
+          indictment_id: indictment_id
+        }
+      }).then(res => {
+        console.log(res.data.data);
+        this.form = res.data.data;
+      })
+      // 如果数据库查询成功或者操作完成，跳转到下一步
+      this.activeStep += 1;
+    },
   }
 };
 </script>
@@ -26,46 +46,26 @@ export default {
   <div>
     <el-container style="height: 700px; border: 1px solid #eee">
       <el-header style="font-size: 35px;background-color: #B3C0D1; color: #333;text-align: left;line-height: 60px">
-        政务审核流程
+        立案审查流程
       </el-header>
       <el-container>
         <el-aside class="custom-side" width="201px" style="background-color: rgb(238, 241, 246)">
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
-
-          <el-steps :active="1" align-center>
-            <el-step title="步骤1" description="这是一段很长的描述性文字"></el-step>
-            <el-step title="步骤2" description="这是一段很长很长的描述性文字"></el-step>
-            <el-step title="步骤3" description="这是一段很长很长很长的描述性文字"></el-step>
-            <el-step title="步骤4" description="这是一段很长很长很长很长的描述性文字"></el-step>
+          <el-steps :active="activeStep" align-center>
+            <el-step title="选择案件"></el-step>
+            <el-step title="自然人身份证审核"></el-step>
+            <el-step title="企业营业执照审核"></el-step>
+            <el-step title="其他材料审核"></el-step>
           </el-steps>
-
-          <el-form ref="form" :model="form" label-width="80px">
-
-            <el-form-item label="案件名称">
-              <el-input v-model="form.name"></el-input>
-            </el-form-item>
-
-            <el-form-item label="案件区域">
-              <el-select v-model="form.region" placeholder="请选择活动区域">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="案件时间">
-              <el-col :span="11">
-                <el-date-picker type="date" placeholder="选择日期" v-model="form.date1"
-                                style="width: 100%;"></el-date-picker>
-              </el-col>
-              <el-col class="line" :span="2">-</el-col>
-              <el-col :span="11">
-                <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2"
-                                style="width: 100%;"></el-time-picker>
-              </el-col>
-            </el-form-item>
-          </el-form>
+          <br>
+          <br>
+          <!--          案件选择组件-->
+          <CaseDisplay v-if="1==this.activeStep" @select-case="handleCaseSelection"></CaseDisplay>
+          <!--          案件选择组件-->
+          <br>
+          <br>
 
         </el-main>
       </el-container>

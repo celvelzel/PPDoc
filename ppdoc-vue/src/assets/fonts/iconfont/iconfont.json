@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3186901",
+      "name": "流程",
+      "font_class": "liucheng",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "8373029",
+      "name": "知识图谱",
+      "font_class": "zhishitupu",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "8392450",
+      "name": "知识图谱",
+      "font_class": "zhishitupu1",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "8776873",
+      "name": "setting",
+      "font_class": "icon-test",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
       "icon_id": "11463942",
       "name": "管理",
       "font_class": "guanli",
@@ -109,6 +137,13 @@
       "font_class": "hetongjiean",
       "unicode": "e531",
       "unicode_decimal": 58673
+    },
+    {
+      "icon_id": "29920881",
+      "name": "知识图谱-默认",
+      "font_class": "zhishitupu-moren",
+      "unicode": "e679",
+      "unicode_decimal": 59001
     }
   ]
 }

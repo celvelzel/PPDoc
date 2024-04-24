@@ -1,12 +1,17 @@
 package com.majy.ppdocapi.utils.LLMUtils;
 
 import cn.hutool.json.JSONUtil;
+import com.baidubce.qianfan.Qianfan;
+import com.baidubce.qianfan.core.auth.Auth;
+import com.baidubce.qianfan.model.chat.ChatResponse;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 //        "refresh_token":"<REDACTED_TOKEN>",
 //        "expires_in":2592000,
@@ -20,13 +25,39 @@ import java.io.IOException;
  * 流式响应式接口
  */
 @Component
+@Slf4j
 public class BaiDuUTtils
 {
 
     public static final String API_KEY = "<REDACTED_SECRET>";
     public static final String SECRET_KEY = "<REDACTED_SECRET>";
 
-    static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
+    static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().readTimeout(30, TimeUnit.SECONDS).build();
+
+    public static String invokeChatBySDK(String systemPrompt,String userPrompt)
+    {
+        ChatResponse response = new Qianfan(Auth.TYPE_OAUTH, API_KEY, SECRET_KEY).chatCompletion()
+                .model("ERNIE-Bot") // 使用model指定预置模型
+                // .endpoint("completions_pro") // 也可以使用endpoint指定任意模型 (二选一)
+                .addMessage("system", systemPrompt)
+                .addMessage("user", userPrompt) // 添加用户消息 (此方法可以调用多次，以实现多轮对话的消息传递)
+                .temperature(0.7) // 自定义超参数
+                .execute(); // 发起请求
+        log.info("baidu返回的内容是:" + response.toString());
+        return response.getResult();
+    }
+
+    public static String invokeChatBySDK(String prompt)
+    {
+        ChatResponse response = new Qianfan(Auth.TYPE_OAUTH, API_KEY, SECRET_KEY).chatCompletion()
+                .model("ERNIE-Bot") // 使用model指定预置模型
+                // .endpoint("completions_pro") // 也可以使用endpoint指定任意模型 (二选一)
+                .addMessage("user", prompt) // 添加用户消息 (此方法可以调用多次，以实现多轮对话的消息传递)
+                .temperature(0.7) // 自定义超参数
+                .execute(); // 发起请求
+        log.info("baidu返回的内容是:" + response.toString());
+        return response.getResult();
+    }
 
     //ERNIE-3.5-8K
     @SneakyThrows
@@ -41,14 +72,14 @@ public class BaiDuUTtils
                 .build();
         Response response = HTTP_CLIENT.newCall(request).execute();
         String jsonStr = response.body().string();
-        System.out.println("baidu返回的内容是" + jsonStr);
+        log.info("baidu返回的内容是" + jsonStr);
 
         // 使用Hutool解析JSON字符串为JSONObject
         cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
         // 从返回结果json对象中获取result字段的值
         String content = jsonObject.getStr("result");
 
-        System.out.println("baidu返回的Content: " + content);
+        log.info("baidu返回的Content: " + content);
         return content;
     }
 
@@ -74,6 +105,7 @@ public class BaiDuUTtils
 
     public static void main(String[] args) throws IOException
     {
-        String res = invokeChat("你好");
+        String res = invokeChatBySDK("你好，为什么我调用api的过程中报错：error_code\":336002,\"error_msg\":\"Invalid JSON\",\"id\":\"as-iy1ffcvui9\"");
+        log.info(res);
     }
 }

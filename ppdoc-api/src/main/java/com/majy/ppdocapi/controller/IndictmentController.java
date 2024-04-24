@@ -54,6 +54,12 @@ public class IndictmentController extends OcrController
         return Result.success(pageBean);
     }
 
+    @GetMapping
+    public Result getByIndictmentId(@RequestParam Integer indictment_id)
+    {
+        return Result.success(indictmentService.getByIndictmentId(indictment_id));
+    }
+
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){
         log.info("根据文档id删除起诉状文档:{}",documentId);

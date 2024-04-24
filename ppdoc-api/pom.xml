@@ -85,6 +85,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- 引入百度千帆大模型平台 SDK -->
+        <dependency>
+            <groupId>com.baidubce</groupId>
+            <artifactId>qianfan</artifactId>
+            <version>0.0.4</version>
+        </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>

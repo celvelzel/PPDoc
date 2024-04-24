@@ -1,5 +1,6 @@
 package com.majy.ppdocapi.service;
 
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +15,7 @@ public interface DocumentService
 
     void add(Document document);
 
-    Map<String, String> handlePdfFile(MultipartFile file);
+    Result handlePdfFile(MultipartFile file);
 
     Object getAllTypes();
 }

@@ -6,6 +6,7 @@ import com.majy.ppdocapi.utils.LLMUtils.BaiDuUTtils;
 import com.majy.ppdocapi.utils.LLMUtils.KimiUtils;
 import com.majy.ppdocapi.utils.LLMUtils.ZhiPuUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,6 +18,13 @@ import java.util.Map;
 @Slf4j
 public class ModelServiceImpl implements ModelService
 {
+    @Autowired
+    private ZhiPuUtils zhiPuUtils;
+    @Autowired
+    private KimiUtils kimiUtils;
+    @Autowired
+    private BaiDuUTtils baiDuUTtils;
+
     @Override
     public String extractInfo(String modelName, String ocrResult, String keyInfo)
     {
@@ -36,9 +44,9 @@ public class ModelServiceImpl implements ModelService
                 "<OCR>\n" + ocrResult + "</OCR>\n要抽取的关键信息：<key_info>\n" + keyInfo + "\n</key_info>";
         //ocr_text和keyInfo是前端传入的OCR识别结果文本和用户指定的关键词
         String finalPrompt = systemPrompt + userPrompt;
-        if (modelName.equals("zhipuai"))
+        if (modelName.equals("zhipu"))
         {
-            return ZhiPuUtils.sseInvokeChat(finalPrompt);
+            return zhiPuUtils.sseInvokeChat(finalPrompt);
         }
         else if (modelName.equals("kimi"))
         {
@@ -46,11 +54,11 @@ public class ModelServiceImpl implements ModelService
                     new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
                     new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
             );
-            return KimiUtils.invokeChat(messages);
+            return kimiUtils.invokeChat(messages);
         }
         else if (modelName.equals("baidu"))
         {
-            return BaiDuUTtils.invokeChat(finalPrompt);
+            return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
         }
         log.info("提取信息错误：未找到对应的模型");
         return "提取信息错误：未找到对应的模型";
@@ -82,9 +90,9 @@ public class ModelServiceImpl implements ModelService
                 "\n" +
                 "OCR文字：<OCR>\n" + ocrResult + "\n</OCR>";
         String finalPrompt = systemPrompt + userPrompt;
-        if (modelName.equals("zhipuai"))
+        if (modelName.equals("zhipu"))
         {
-            return ZhiPuUtils.sseInvokeChat(finalPrompt);
+            return zhiPuUtils.sseInvokeChat(finalPrompt);
         }
         else if (modelName.equals("kimi"))
         {
@@ -92,11 +100,11 @@ public class ModelServiceImpl implements ModelService
                     new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
                     new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
             );
-            return KimiUtils.invokeChat(messages);
+            return kimiUtils.invokeChat(messages);
         }
         else if (modelName.equals("baidu"))
         {
-            return BaiDuUTtils.invokeChat(finalPrompt);
+            return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
         }
         log.info("摘要生成错误：未找到对应的模型");
         return "摘要生成错误：未找到对应的模型";
@@ -115,9 +123,9 @@ public class ModelServiceImpl implements ModelService
                 "\n" +
                 "OCR结果：<OCR>\n" + ocrResult + "\n</OCR>";
         String finalPrompt = systemPrompt + userPrompt;
-        if (modelName.equals("zhipuai"))
+        if (modelName.equals("zhipu"))
         {
-            return ZhiPuUtils.sseInvokeChat(finalPrompt);
+            return zhiPuUtils.sseInvokeChat(finalPrompt);
         }
         else if (modelName.equals("kimi"))
         {
@@ -125,11 +133,11 @@ public class ModelServiceImpl implements ModelService
                     new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
                     new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
             );
-            return KimiUtils.invokeChat(messages);
+            return kimiUtils.invokeChat(messages);
         }
         else if (modelName.equals("baidu"))
         {
-            return BaiDuUTtils.invokeChat(finalPrompt);
+            return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
         }
         log.info("分类错误：未找到对应的模型");
         return "分类错误：未找到对应的模型";

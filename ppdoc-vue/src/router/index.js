@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/Display/HomeView.vue'
+import HomeView from '../views/HomeView.vue'
 
 Vue.use(VueRouter)
 
@@ -79,13 +79,13 @@ const routes = [
     {
         path: '/pdf',
         name: 'pdf',
-        component: () => import('../views/Display/PDFPreview.vue'),
+        component: () => import('../views/Test/PDFPreview.vue'),
         meta: {title: "PDF预览",},
     },
     {
         path: '/dialog',
         name: 'dialog',
-        component: () => import('../views/DialogTest.vue'),
+        component: () => import('../views/Test/DialogTest.vue'),
         meta: {title: "Dialog预览",},
     },
 ]

@@ -21,7 +21,7 @@ public class OcrController
     public URL uploadFile(MultipartFile file) throws IOException
     {
         // 上传文件到OSS
-        return (URL) ossUtils.uploadFile(file).getData();
+        return ossUtils.uploadFile(file);
     }
 
 

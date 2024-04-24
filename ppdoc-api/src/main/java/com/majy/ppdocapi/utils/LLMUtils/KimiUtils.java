@@ -12,16 +12,18 @@ import cn.hutool.json.JSONUtil;
 import lombok.*;
 import okhttp3.*;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class KimiUtils
 {
-    private static String API_KEY = "<REDACTED_MODEL_API_KEY>";
+    private String API_KEY = "<REDACTED_MODEL_API_KEY>";
     private static final String MODELS_URL = "https://api.moonshot.cn/v1/models";
     private static final String FILES_URL = "https://api.moonshot.cn/v1/files";
     private static final String ESTIMATE_TOKEN_COUNT_URL = "https://api.moonshot.cn/v1/tokenizers/estimate-token-count";
@@ -34,7 +36,7 @@ public class KimiUtils
 //    moonshot-v1-128k	1M tokens	¥60.00
     private static final String MODEL_NAME = "moonshot-v1-8k";
 
-    public static String commonChat(String prompt)
+    public String commonChat(String prompt)
     {
         List<Message> messages = CollUtil.newArrayList(
                 new Message(RoleEnum.user.name(), prompt)
@@ -42,7 +44,7 @@ public class KimiUtils
         return chat(MODEL_NAME, messages);
     }
 
-    public static String invokeChat(List<Message> messages)
+    public String invokeChat(List<Message> messages)
     {
         return chat(MODEL_NAME, messages);
     }
@@ -56,7 +58,7 @@ public class KimiUtils
      *                 注意：此方法需要处理异常，通过@SneakyThrows注解直接抛出异常外，调用方需要处理可能的异常情况。
      */
     @SneakyThrows
-    public static String chat(@NonNull String model, @NonNull List<Message> messages)
+    public String chat(@NonNull String model, @NonNull List<Message> messages)
     {
         // 构建请求体
         String requestBody = new JSONObject()
@@ -64,13 +66,19 @@ public class KimiUtils
                 .putOpt("messages", messages)
                 .putOpt("stream", false)
                 .toString();
+        // 创建一个OkHttpClient实例，并设置超时时间
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS) // 连接超时时间
+                .readTimeout(30, TimeUnit.SECONDS)     // 读取超时时间
+                .writeTimeout(20, TimeUnit.SECONDS)    // 写入超时时间
+                .build();
         // 创建OkHttp请求
         Request okhttpRequest = new Request.Builder()
                 .url(CHAT_COMPLETION_URL)
                 .post(RequestBody.create(MediaType.get(ContentType.JSON.getValue()), requestBody))
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .build();
-        Call call = new OkHttpClient().newCall(okhttpRequest);
+        Call call = client.newCall(okhttpRequest);
         Response okhttpResponse = call.execute();
         // 打印响应内容
         String jsonStr = okhttpResponse.body().string();
@@ -201,14 +209,14 @@ public class KimiUtils
         System.out.println(estimateTokenCount("moonshot-v1-8k", messages));
     }
 
-    public static String getModelList()
+    public String getModelList()
     {
         return getCommonRequest(MODELS_URL)
                 .execute()
                 .body();
     }
 
-    public static String uploadFile(@NonNull File file)
+    public String uploadFile(@NonNull File file)
     {
         return getCommonRequest(FILES_URL)
                 .method(Method.POST)
@@ -218,14 +226,14 @@ public class KimiUtils
                 .body();
     }
 
-    public static String getFileList()
+    public String getFileList()
     {
         return getCommonRequest(FILES_URL)
                 .execute()
                 .body();
     }
 
-    public static String deleteFile(@NonNull String fileId)
+    public String deleteFile(@NonNull String fileId)
     {
         return getCommonRequest(FILES_URL + "/" + fileId)
                 .method(Method.DELETE)
@@ -233,21 +241,21 @@ public class KimiUtils
                 .body();
     }
 
-    public static String getFileDetail(@NonNull String fileId)
+    public String getFileDetail(@NonNull String fileId)
     {
         return getCommonRequest(FILES_URL + "/" + fileId)
                 .execute()
                 .body();
     }
 
-    public static String getFileContent(@NonNull String fileId)
+    public String getFileContent(@NonNull String fileId)
     {
         return getCommonRequest(FILES_URL + "/" + fileId + "/content")
                 .execute()
                 .body();
     }
 
-    public static String estimateTokenCount(@NonNull String model, @NonNull List<Message> messages)
+    public String estimateTokenCount(@NonNull String model, @NonNull List<Message> messages)
     {
         String requestBody = new JSONObject()
                 .putOpt("model", model)
@@ -261,7 +269,7 @@ public class KimiUtils
                 .body();
     }
 
-    private static HttpRequest getCommonRequest(@NonNull String url)
+    private HttpRequest getCommonRequest(@NonNull String url)
     {
         return HttpRequest.of(url).header(Header.AUTHORIZATION, "Bearer " + API_KEY);
     }

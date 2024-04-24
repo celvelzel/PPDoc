@@ -1,12 +1,13 @@
 package com.majy.ppdocapi.controller;
 
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -15,8 +16,19 @@ public class ModelController
 {
     @Autowired
     ModelService modelService;
-    @Value("${model.name}")
-    String ModelName;
+    //    @Value("${model.name}")
+    String ModelName = "zhipu";
+    //zhipu
+    //baidu
+    //kimi
+
+
+    @PostMapping("/models")
+    public Result changeModel(RequestParam modelName)
+    {
+        ModelName = String.valueOf(modelName);
+        return Result.success("切换模型成功");
+    }
 
     @PostMapping("/extractinfo")
     public String extractInfo(@RequestBody String requestBody) throws Exception
@@ -30,11 +42,11 @@ public class ModelController
         String fieldsValue = jsonObject.getString("fields");
         String ocrTextValue = jsonObject.getString("ocr_text");
 
-        return modelService.extractInfo(ModelName,ocrTextValue, fieldsValue);
+        return modelService.extractInfo(ModelName, ocrTextValue, fieldsValue);
     }
 
     @PostMapping("/generatesummary")
-    public String zhiPuGenerateSummary(@RequestBody String requestBody)
+    public String generateSummary(@RequestBody String requestBody)
     {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         log.info("前端传回的摘要选项和OCR结果：{}", requestBody);
@@ -45,11 +57,11 @@ public class ModelController
         String ocrTextValue = jsonObject.getString("ocr_text");
         String summaryOptionValue = jsonObject.getString("summary_option");
 
-        return modelService.generateSummary(ModelName,ocrTextValue, summaryOptionValue);
+        return modelService.generateSummary(ModelName, ocrTextValue, summaryOptionValue);
     }
 
     @PostMapping("/classification")
-    public String zhiPuClassification(@RequestBody String requestBody)
+    public String classification(@RequestBody String requestBody)
     {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         //log.info("前端传回的OCR结果：{}", requestBody);
@@ -59,6 +71,6 @@ public class ModelController
         //提取各个字段的值
         String ocrTextValue = jsonObject.getString("ocr_text");
 
-        return modelService.classification(ModelName,ocrTextValue);
+        return modelService.classification(ModelName, ocrTextValue);
     }
 }

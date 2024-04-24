@@ -65,4 +65,10 @@ public class IndictmentServiceImpl implements IndictmentService
         // 根据识别文本提取信息
         return indictmentOcrUtils.getStringStringMap(jsons);
     }
+
+    @Override
+    public Indictment getByIndictmentId(Integer indictmentId)
+    {
+        return indictmentMapper.getById(indictmentId);
+    }
 }

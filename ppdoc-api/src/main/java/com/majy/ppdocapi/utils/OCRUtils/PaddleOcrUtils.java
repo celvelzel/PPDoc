@@ -30,6 +30,7 @@ public class PaddleOcrUtils
 
     }
 
+
     //传入单个pdf,先转图片list，再进行ocr
     public static List pdfToOcrText(MultipartFile file)
     {

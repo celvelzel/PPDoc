@@ -3,7 +3,7 @@ export default {}
 </script>
 
 <template>
-  <el-menu :default-openeds="['1','2','3']" style="text-align: left;font-size: 14px;color: #333">
+  <el-menu :default-openeds="['1']" style="text-align: left;font-size: 14px;color: #333">
     <el-submenu index="1">
       <template slot="title">
         <span class="iconfont icon-jingqingluru"></span>
@@ -63,12 +63,24 @@ export default {}
     <el-submenu index="3">
       <template slot="title">
         <span class="iconfont icon-yinzhangrenzheng"></span>
-        信息审核
+        政务信息审核
       </template>
       <el-menu-item-group>
         <el-menu-item index="3-1">
           <span class="iconfont icon-zhengfu"></span>
-          <router-link to="/process">政务信息审核流程</router-link>
+          <router-link to="/process">立案审查流程</router-link>
+        </el-menu-item>
+      </el-menu-item-group>
+    </el-submenu>
+    <el-submenu index="4">
+      <template slot="title">
+        <span class="iconfont icon-icon-test"></span>
+        系统管理
+      </template>
+      <el-menu-item-group>
+        <el-menu-item index="4-1">
+          <span class="iconfont icon-guanli"></span>
+          <router-link to="/process">大模型管理</router-link>
         </el-menu-item>
       </el-menu-item-group>
     </el-submenu>

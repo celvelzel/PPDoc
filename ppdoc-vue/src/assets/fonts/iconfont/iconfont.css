@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1713771139077') format('truetype');
+  src: url('iconfont.ttf?t=1713931332873') format('truetype');
 }
 
 .iconfont {
@@ -9,6 +9,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-liucheng:before {
+  content: "\e60e";
+}
+
+.icon-zhishitupu:before {
+  content: "\e603";
+}
+
+.icon-zhishitupu1:before {
+  content: "\e602";
+}
+
+.icon-icon-test:before {
+  content: "\e63f";
 }
 
 .icon-guanli:before {
@@ -69,5 +85,9 @@
 
 .icon-hetongjiean:before {
   content: "\e531";
+}
+
+.icon-zhishitupu-moren:before {
+  content: "\e679";
 }
 

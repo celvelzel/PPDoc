@@ -16,4 +16,6 @@ public interface IndictmentService
     void add(Indictment indictment);
 
     Map<String, String> file2StringStringMap(MultipartFile file);
+
+    Indictment getByIndictmentId(Integer indictmentId);
 }
