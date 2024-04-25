@@ -60,7 +60,7 @@ export default {
       <el-table-column prop="license_url" label="文件链接" width="150" show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="license_code" label="统一社会信用代码" width="175"></el-table-column>
       <el-table-column prop="license_number" label="证照编号" width="170"></el-table-column>
-      <el-table-column prop="license_enterprise_name" label="证照名称" width="180"></el-table-column>
+      <el-table-column prop="license_enterprise_name" label="企业名称" width="180"></el-table-column>
       <el-table-column prop="license_enterprise_type" label="证照类型" width="180"></el-table-column>
       <el-table-column prop="license_legal_representative" label="法定代表人" width="90"></el-table-column>
       <el-table-column prop="license_business_scope" label="经营范围" width="180" show-overflow-tooltip="true"></el-table-column>

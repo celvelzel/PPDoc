@@ -72,7 +72,10 @@ export default {
 
 <template>
   <div>
-    <el-table :data="tableData" border width="100%">
+    <el-table :data="tableData"
+              border
+              stripe
+              width="100%">
       <el-table-column prop="case_type" label="案件类型" width="80"></el-table-column>
       <el-table-column prop="plaintiff_name" label="原告姓名" width="100"></el-table-column>
       <el-table-column prop="plaintiff_id" label="原告ID" width="100"></el-table-column>

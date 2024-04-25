@@ -73,8 +73,8 @@ const routes = [
     {
         path: '/process',
         name: 'processs',
-        component: () => import('../views/Display/ProcessView.vue'),
-        meta: {title: "政务审核流程",},
+        component: () => import('../views/Verification/ProcessView.vue'),
+        meta: {title: "立案审查",},
     },
     {
         path: '/pdf',

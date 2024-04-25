@@ -68,7 +68,7 @@ export default {}
       <el-menu-item-group>
         <el-menu-item index="3-1">
           <span class="iconfont icon-zhengfu"></span>
-          <router-link to="/process">立案审查流程</router-link>
+          <router-link to="/process">立案审查</router-link>
         </el-menu-item>
       </el-menu-item-group>
     </el-submenu>
