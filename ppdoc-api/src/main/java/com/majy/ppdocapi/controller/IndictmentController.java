@@ -54,8 +54,8 @@ public class IndictmentController extends OcrController
         return Result.success(pageBean);
     }
 
-    @GetMapping
-    public Result getByIndictmentId(@RequestParam Integer indictment_id)
+    @GetMapping("/{indictment_id}")
+    public Result getByIndictmentId(@PathVariable("indictment_id") Integer indictment_id)
     {
         return Result.success(indictmentService.getByIndictmentId(indictment_id));
     }
