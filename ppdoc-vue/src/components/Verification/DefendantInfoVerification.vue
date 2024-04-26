@@ -73,7 +73,7 @@ export default {
     handleCurrentChange(val) {
       this.page = val;
       if (this.caseInfoForm.defendant_type == "个人") {
-        axios.get('http://localhost:8080/idcards', {
+        axios.get('http://localhost:8080/api/idcards', {
           params: {
             page: val,
             pageSize: this.pageSize,
@@ -83,7 +83,7 @@ export default {
           this.total = res.data.data.total;
         });
       } else {
-        axios.get('http://localhost:8080/licenses', {
+        axios.get('http://localhost:8080/api/licenses', {
           params: {
             page: val,
             pageSize: this.pageSize,
@@ -98,7 +98,7 @@ export default {
     handleSizeChange(val) {
       this.pageSize = val;
       if (this.caseInfoForm.defendant_type == "个人") {
-        axios.get('http://localhost:8080/idcards', {
+        axios.get('http://localhost:8080/api/idcards', {
           params: {
             page: this.page,
             pageSize: val,
@@ -108,7 +108,7 @@ export default {
           this.total = res.data.data.total;
         });
       } else {
-        axios.get('http://localhost:8080/licenses', {
+        axios.get('http://localhost:8080/api/licenses', {
           params: {
             page: this.page,
             pageSize: val,
@@ -123,13 +123,13 @@ export default {
   },
   mounted() {
     if (this.caseInfoForm.defendant_type == "个人") {
-      axios.get('http://localhost:8080/idcards').then(res => {
+      axios.get('http://localhost:8080/api/idcards').then(res => {
         // 返回的数据是res.data
         this.tableData = res.data.data.rows;
         this.total = res.data.data.total;
       });
     } else {
-      axios.get('http://localhost:8080/licenses').then(res => {
+      axios.get('http://localhost:8080/api/licenses').then(res => {
         // 返回的数据是res.data
         this.tableData = res.data.data.rows;
         this.total = res.data.data.total;

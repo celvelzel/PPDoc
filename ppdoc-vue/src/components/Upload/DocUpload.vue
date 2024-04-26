@@ -4,7 +4,7 @@
       <el-row class="centered-row bg">
         <el-col class="centered-row">
           <!--上传中包含了加载中动效-->
-          <el-upload action="http://localhost:8080/docs/upload"
+          <el-upload action="http://localhost:8080/api/docs/upload"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
                      :before-upload="beforeUpload"
@@ -27,7 +27,7 @@
           </el-upload>
         </el-col>
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/images/upload"
+          <el-upload action="http://localhost:8080/api/images/upload"
                      list-type="picture-card"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessImage">
@@ -139,7 +139,7 @@ export default defineComponent({
 
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      axios.post('http://localhost:8080/docs', {
+      axios.post('http://localhost:8080/api/docs', {
         document_Id: "",
         document_url: this.pdfUrl,
         document_name: this.fileName,

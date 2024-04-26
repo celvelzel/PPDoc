@@ -42,7 +42,7 @@ export default {
       };
 
       // 发送请求到后端 API
-      axios.post('http://localhost:8080/generatesummary', postData)
+      axios.post('http://localhost:8080/api/generatesummary', postData)
           .then(response => {
             console.log('生成摘要请求成功');
             this.outputResult = JSON.stringify(response.data);

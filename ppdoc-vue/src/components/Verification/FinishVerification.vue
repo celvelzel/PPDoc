@@ -14,7 +14,7 @@ export default {
   },
   methods: {
     onSubmit() {
-      axios.post('http://localhost:8080/cases', {
+      axios.post('http://localhost:8080/api/cases', {
         case_id: null,
         indictment_id : this.localCaseInfoForm.indictment_id,
         case_type: this.localCaseInfoForm.case_type,

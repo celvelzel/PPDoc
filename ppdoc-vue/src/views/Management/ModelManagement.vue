@@ -10,7 +10,7 @@ export default {
   methods: {
     handleSelect(index, row) {
       console.log(index, row);
-      axios.post('http://localhost:8080/models', {
+      axios.post('http://localhost:8080/api/models', {
         modelName: row.modelName
       }).then(res => {
         console.log(res);

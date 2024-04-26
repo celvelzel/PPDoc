@@ -3,7 +3,7 @@
     <el-main>
       <el-row class="centered-row bg">
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/idcards/pdf/upload"
+          <el-upload action="http://localhost:8080/api/idcards/pdf/upload"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
@@ -23,7 +23,7 @@
           </el-upload>
         </el-col>
         <el-col class="centered-row">
-          <el-upload action="http://localhost:8080/idcards/image/upload"
+          <el-upload action="http://localhost:8080/api/idcards/image/upload"
                      list-type="picture-card"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
@@ -160,7 +160,7 @@ export default {
 
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      axios.post('http://localhost:8080/idcards', {
+      axios.post('http://localhost:8080/api/idcards', {
         id: "",
         document_Id: "",
         id_card_url: this.pdfUrl,

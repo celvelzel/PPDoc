@@ -18,7 +18,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val;
-      axios.get('http://localhost:8080/invoices',{
+      axios.get('http://localhost:8080/api/invoices',{
         params: {
           page: val,
           pageSize : this.pageSize,
@@ -31,7 +31,7 @@ export default {
     },
     handleSizeChange(val) {
       this.pageSize = val;
-      axios.get('http://localhost:8080/invoices',{
+      axios.get('http://localhost:8080/api/invoices',{
         params: {
           page: this.page,
           pageSize: val,
@@ -44,7 +44,7 @@ export default {
     }
   },
   mounted() {
-    axios.get('http://localhost:8080/invoices').then(res => {
+    axios.get('http://localhost:8080/api/invoices').then(res => {
       // 返回的数据是res.data
       this.tableData = res.data.data.rows;
       this.total = res.data.data.total;

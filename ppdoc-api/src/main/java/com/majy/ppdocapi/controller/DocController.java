@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/docs")
+@RequestMapping("/api/docs")
 @Slf4j
 public class DocController extends OcrController
 {
@@ -52,6 +52,12 @@ public class DocController extends OcrController
         log.info("查询结果为:共有数据{}条", pageBean.getTotal());
         return Result.success(pageBean);
     }
+
+//    @GetMapping("/{document_id}")
+//    public Result getByDocumentId(@PathVariable("document_id") Integer document_id)
+//    {
+//        return Result.success(documentService.getByDocumentId(document_id));
+//    }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){

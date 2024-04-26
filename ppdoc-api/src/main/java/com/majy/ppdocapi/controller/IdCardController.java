@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/idcards")
+@RequestMapping("/api/idcards")
 public class IdCardController extends OcrController
 {
     @Autowired
@@ -63,6 +63,12 @@ public class IdCardController extends OcrController
         log.info("查询结果为:共有数据{}条", pageBean.getTotal());
         return Result.success(pageBean);
     }
+
+//    @GetMapping("/{id}")
+//    public Result getById(@PathVariable("id") Integer id)
+//    {
+//        return Result.success(IdCardService.getById(id));
+//    }
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){

@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/licenses")
+@RequestMapping("/api/licenses")
 public class LicenseController extends OcrController
 {
     @Autowired
@@ -51,6 +51,12 @@ public class LicenseController extends OcrController
         log.info("查询结果为:共有数据{}条", pageBean.getTotal());
         return Result.success(pageBean);
     }
+
+//    @GetMapping("/{license_id}")
+//    public Result getByLicenseId(@PathVariable("license_id") Integer license_id)
+//    {
+//        return Result.success(licenseService.getByLicenseId(license_id));
+//    }
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){

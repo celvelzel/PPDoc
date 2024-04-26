@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/invoices")
+@RequestMapping("/api/invoices")
 public class InvoiceController extends OcrController
 {
     @Autowired
@@ -52,6 +52,12 @@ public class InvoiceController extends OcrController
         log.info("查询结果为:共有数据{}条", pageBean.getTotal());
         return Result.success(pageBean);
     }
+
+//    @GetMapping("/{invoice_id}")
+//    public Result getByInvoiceId(@PathVariable("invoice_id") Integer invoice_id)
+//    {
+//        return Result.success(invoiceService.getByInvoiceId(invoice_id));
+//    }
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){

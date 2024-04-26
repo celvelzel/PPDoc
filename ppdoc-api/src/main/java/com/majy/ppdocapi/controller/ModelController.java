@@ -30,7 +30,7 @@ public class ModelController
         return Result.success("切换模型成功");
     }
 
-    @PostMapping("/extractinfo")
+    @PostMapping("/api/extractinfo")
     public String extractInfo(@RequestBody String requestBody) throws Exception
     {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
@@ -45,7 +45,7 @@ public class ModelController
         return modelService.extractInfo(ModelName, ocrTextValue, fieldsValue);
     }
 
-    @PostMapping("/generatesummary")
+    @PostMapping("/api/generatesummary")
     public String generateSummary(@RequestBody String requestBody)
     {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
@@ -60,7 +60,7 @@ public class ModelController
         return modelService.generateSummary(ModelName, ocrTextValue, summaryOptionValue);
     }
 
-    @PostMapping("/classification")
+    @PostMapping("/api/classification")
     public String classification(@RequestBody String requestBody)
     {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");

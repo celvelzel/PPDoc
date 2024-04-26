@@ -47,7 +47,7 @@ export default {
       };
 
       // 发送请求到后端 API
-      axios.post('http://localhost:8080/extractinfo', postData)
+      axios.post('http://localhost:8080/api/extractinfo', postData)
           .then(response => {
             // 处理后端返回的响应
             console.log('导出结果请求成功');

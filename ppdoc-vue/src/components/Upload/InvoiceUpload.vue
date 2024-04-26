@@ -7,7 +7,7 @@
       <el-row type="flex" justify="space-between">
         <el-col :span="12">
           <!-- 发票pdf上传组件 -->
-          <el-upload action="http://localhost:8080/invoices/upload"
+          <el-upload action="http://localhost:8080/api/invoices/upload"
                      :on-preview="handlePictureCardPreview"
                      :on-remove="handleRemove"
                      :on-success="handleSuccessPdf"
@@ -150,7 +150,7 @@ export default {
     },
     // 发送axios请求，将表单数据保存的数据库中
     onSubmit() {
-      axios.post('http://localhost:8080/invoices', {
+      axios.post('http://localhost:8080/api/invoices', {
         invoice_id: "",
         document_Id: "",
         invoice_url: this.pdfUrl,

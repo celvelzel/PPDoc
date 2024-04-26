@@ -23,9 +23,39 @@ public class Result<T>
         return new Result(200, "create success", null);
     }
 
+    public static Result createFailure()
+    {
+        return new Result(400, "create failure", null);
+    }
+
     public static Result deleteSuccess()
     {
-        return new Result(200, "delete success", null);
+        return new Result(204, "delete success", null);
+    }
+
+    public static Result deleteFailure()
+    {
+        return new Result(404, "delete failure");
+    }
+
+    public static Result updateSuccess()
+    {
+        return new Result(200, "update success");
+    }
+
+    public static Result updateFailure()
+    {
+        return new Result(400 , "update failure");
+    }
+
+    public static Result selectSuccess()
+    {
+        return new Result(200, "select success");
+    }
+
+    public static Result selectFailure()
+    {
+        return new Result(500, "select failure");
     }
 
     public Result(T data)
@@ -88,6 +118,7 @@ public class Result<T>
         // 返回一个表示成功的Result对象，其中包含了构建的响应映射
         return Result.success(responseMap);
     }
+
 }
 
 

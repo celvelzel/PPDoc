@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/indictments")
+@RequestMapping("/api/indictments")
 public class IndictmentController extends OcrController
 {
     @Autowired
