@@ -11,4 +11,5 @@ public interface CaseService
     Result add(Case caseModel);
     Result update(Case caseModel);
     Result getById(Integer case_id);
+    Result getGraphByCaseId(Integer case_id);
 }

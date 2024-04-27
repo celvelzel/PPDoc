@@ -43,7 +43,7 @@ public interface InvoiceMapper
      * @return
      */
     @Select("select * from invoice where invoice_id = #{invoice_id}")
-    public Invoice getInvoiceById(Integer invoice_id);
+    public Invoice getByInvoiceId(Integer invoice_id);
 
     /**
      * 根据document_id查询发票数据

@@ -28,6 +28,7 @@ export default {
         //确定选择，处理逻辑
         console.log(index, row);
         // 触发自定义事件，并将身份证ID作为参数传递给父组件
+        console.log("invoice file name is:"+row.file_name);
         this.$emit('select-invoice', row.invoice_id, row.file_name);
       }).catch(() => {
         this.$message({

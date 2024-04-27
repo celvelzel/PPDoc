@@ -41,4 +41,15 @@ public interface CaseMapper
      */
     @Select("SELECT * FROM t_case WHERE case_id = #{case_id}")
     Case getCaseById(Integer case_id);
+
+    @Select("SELECT *\n" +
+            "FROM t_case\n" +
+            "INNER JOIN indictment ON t_case.indictment_id = indictment.indictment_id\n" +
+            "LEFT JOIN id_card ON t_case.plaintiff_id_card_id = id_card.id\n" +
+            "LEFT JOIN id_card AS defendant_id_card ON t_case.defendant_id_card_id = defendant_id_card.id\n" +
+            "LEFT JOIN license ON t_case.plaintiff_license_id = license.license_id\n" +
+            "LEFT JOIN license AS defendant_license ON t_case.defendant_license_id = defendant_license.license_id\n" +
+            "LEFT JOIN invoice ON t_case.related_invoice_id = invoice.invoice_id\n" +
+            "WHERE t_case.indictment_id = #{indictment_id};")
+    Case getCaseAllInfoByCaseId(Integer case_id);
 }

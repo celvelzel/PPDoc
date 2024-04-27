@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public interface IdCardMapper
      * @param id
      */
     @Select("select * from id_card where id = #{id}")
-    public IdCard getById(Integer id);
+    public IdCard getByIdCardId(Integer id);
 
     /**
      * 根据document_id查询身份证信息

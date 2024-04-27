@@ -70,6 +70,10 @@ export default {}
           <span class="iconfont icon-zhengfu"></span>
           <router-link to="/process">立案审查</router-link>
         </el-menu-item>
+        <el-menu-item index="3-2">
+          <span class="iconfont icon-zhishitupu-moren"></span>
+          <router-link to="/case">案件知识图谱</router-link>
+        </el-menu-item>
       </el-menu-item-group>
     </el-submenu>
     <el-submenu index="4">

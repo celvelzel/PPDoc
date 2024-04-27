@@ -2,22 +2,40 @@ package com.majy.ppdocapi.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.majy.ppdocapi.entity.dto.CaseDetail;
+import com.majy.ppdocapi.entity.dto.GraphInfo;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.dto.Result;
-import com.majy.ppdocapi.entity.po.Case;
-import com.majy.ppdocapi.entity.po.IdCard;
-import com.majy.ppdocapi.mapper.CaseMapper;
+import com.majy.ppdocapi.entity.po.*;
+import com.majy.ppdocapi.mapper.*;
 import com.majy.ppdocapi.service.CaseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@Slf4j
 public class CaseServiceImpl implements CaseService
 {
     @Autowired
     private CaseMapper caseMapper;
+
+    @Autowired
+    private IdCardMapper idCardMapper;
+
+    @Autowired
+    private IndictmentMapper indictmentMapper;
+
+    @Autowired
+    private LicenseMapper licenseMapper;
+
+    @Autowired
+    private InvoiceMapper invoiceMapper;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -38,9 +56,12 @@ public class CaseServiceImpl implements CaseService
         // 尝试执行删除操作
         long rowsAffected = caseMapper.deleteCaseById(case_id);
         // 检查是否成功删除
-        if (rowsAffected > 0) {
+        if (rowsAffected > 0)
+        {
             return Result.deleteSuccess();
-        } else {
+        }
+        else
+        {
             return Result.deleteFailure();
         }
     }
@@ -64,5 +85,50 @@ public class CaseServiceImpl implements CaseService
     {
         caseMapper.getCaseById(case_id);
         return Result.selectSuccess();
+    }
+
+    @Override
+    public Result getGraphByCaseId(Integer case_id)
+    {
+        Indictment indictment = new Indictment();
+        Map<String, IdCard> idcards = new HashMap<String, IdCard>();
+        Map<String, License> licenses = new HashMap<String, License>();
+        List<Invoice> invoices = new ArrayList<Invoice>();
+
+        Case caseObj = caseMapper.getCaseById(case_id);
+        if (caseObj.getIndictment_id() != null)
+        {
+            indictment = indictmentMapper.getByIndictmentId(caseObj.getIndictment_id());
+        }
+
+        if (caseObj.getPlaintiff_type() == "个人")
+        {
+            idcards.put("原告", idCardMapper.getByIdCardId(caseObj.getPlaintiff_id_card_id()));
+        }
+        else if (caseObj.getPlaintiff_type() == "企业")
+        {
+            licenses.put("原告", licenseMapper.getByIdCardId(caseObj.getPlaintiff_license_id()));
+        }
+        else
+        {
+            log.info("获取起诉状类型错误");
+        }
+
+        if (caseObj.getDefendant_type() == "个人")
+        {
+            idcards.put("被告", idCardMapper.getByIdCardId(caseObj.getDefendant_id_card_id()));
+        }
+        else if (caseObj.getDefendant_type() == "企业")
+        {
+            licenses.put("被告", licenseMapper.getByIdCardId(caseObj.getDefendant_license_id()));
+        }
+
+        if (caseObj.getRelated_invoice_id() != null)
+        {
+            invoices.add(invoiceMapper.getByInvoiceId(caseObj.getRelated_invoice_id()));
+        }
+        CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices);
+        GraphInfo graphInfo = new GraphInfo(caseDetail);
+        return Result.success(graphInfo);
     }
 }

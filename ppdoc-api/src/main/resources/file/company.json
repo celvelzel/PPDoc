@@ -1,0 +1,105 @@
+{
+  "type": "force",
+  "categories": [
+    {
+      "name": "案件"
+    },
+    {
+      "name": "起诉状"
+    },
+    {
+      "name": "自然人身份证"
+    },
+    {
+      "name": "企业营业执照"
+    },
+    {
+      "name": "发票"
+    },
+    {
+      "name": "属性"
+    }
+  ],
+  "nodes": [
+    {
+      "name": "案件1",
+      "category": 0
+    },
+    {
+      "name": "起诉状1",
+      "category": 1
+    },
+    {
+      "name": "身份证1",
+      "category": 2
+    },
+    {
+      "name": "营业执照1",
+      "category": 3
+    },
+    {
+      "name": "发票1",
+      "category":4
+    },
+    {
+      "name": "河北XX实业发展有限公司",
+      "category": 0
+    },
+    {
+      "name": "李博",
+      "category": 1
+    },
+    {
+      "name": "主要人员",
+      "category": 2
+    },
+    {
+      "name": "投资人",
+      "category": 2
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 1,
+      "name": "link01"
+    }, {
+      "source": 0,
+      "target": 2,
+      "name": "2233"
+    }, {
+      "source": 0,
+      "target": 3
+    }, {
+      "source": 0,
+      "target": 4
+    }, {
+      "source": 3,
+      "target": 8
+    }, {
+      "source": 4,
+      "target": 7
+    }, {
+      "source": 5,
+      "target": 7
+    }, {
+      "source": 6,
+      "target": 10
+    }, {
+      "source": 7,
+      "target": 10
+    }, {
+      "source": 6,
+      "target": 11
+    }, {
+      "source": 7,
+      "target": 11
+    }, {
+      "source": 8,
+      "target": 11
+    }, {
+      "source": 12,
+      "target": 8
+    }
+  ]
+}

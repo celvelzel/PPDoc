@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.Indictment;
-import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.mapper.DocumentMapper;
 import com.majy.ppdocapi.mapper.IndictmentMapper;
 import com.majy.ppdocapi.service.IndictmentService;
@@ -15,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +66,6 @@ public class IndictmentServiceImpl implements IndictmentService
     @Override
     public Indictment getByIndictmentId(Integer indictmentId)
     {
-        return indictmentMapper.getById(indictmentId);
+        return indictmentMapper.getByIndictmentId(indictmentId);
     }
 }

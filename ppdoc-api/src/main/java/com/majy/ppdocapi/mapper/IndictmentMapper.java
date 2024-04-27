@@ -39,7 +39,7 @@ public interface IndictmentMapper
     * 根据ID查询起诉状
      */
     @Select("select * from indictment where indictment_id = #{indictment_id}")
-    public Indictment getById(Integer indictment_id);
+    public Indictment getByIndictmentId(Integer indictment_id);
 
     /*
     * 根据文档ID查询起诉状

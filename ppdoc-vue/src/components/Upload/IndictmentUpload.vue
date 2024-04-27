@@ -46,8 +46,11 @@
               <el-form-item label="原告ID">
                 <el-input v-model="indictmentInfoForm.plaintiffId"></el-input>
               </el-form-item>
-              <el-form-item label="原告类型">
-                <el-input v-model="indictmentInfoForm.plaintiffType"></el-input>
+              <el-form-item label="原告类型" align="left">
+                <el-select v-model="indictmentInfoForm.plaintiffType" placeholder="请选择原告类型">
+                  <el-option label="企业" value="企业"></el-option>
+                  <el-option label="个人" value="个人"></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="原告地址">
                 <el-input v-model="indictmentInfoForm.plaintiffAddress"></el-input>
@@ -61,8 +64,11 @@
               <el-form-item label="被告ID">
                 <el-input v-model="indictmentInfoForm.defendantId"></el-input>
               </el-form-item>
-              <el-form-item label="被告类型">
-                <el-input v-model="indictmentInfoForm.defendantType"></el-input>
+              <el-form-item label="被告类型" align="left">
+                <el-select v-model="indictmentInfoForm.defendantType" placeholder="请选择被告类型">
+                  <el-option label="企业" value="企业"></el-option>
+                  <el-option label="个人" value="个人"></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="被告地址">
                 <el-input v-model="indictmentInfoForm.defendantAddress"></el-input>

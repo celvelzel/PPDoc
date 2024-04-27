@@ -47,7 +47,7 @@ export default {
     handleCaseSelection(indictment_id) {
       // 当子组件触发'select-case'事件时，会调用这个方法
       // 处理业务逻辑
-      axios.get(`http://localhost:8080/indictments/${indictment_id}`).then(res => {
+      axios.get(`http://localhost:8080/api/indictments/${indictment_id}`).then(res => {
         console.log("被选中的案件的起诉状：" + res.data.data);
         // 根据选择的起诉状，填入案件基本信息
         this.caseInfoForm.indictment_id = res.data.data.indictment_id;

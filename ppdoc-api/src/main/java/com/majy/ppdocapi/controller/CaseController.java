@@ -1,12 +1,20 @@
 package com.majy.ppdocapi.controller;
 
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Case;
 import com.majy.ppdocapi.service.CaseService;
+import com.majy.ppdocapi.service.IdCardService;
+import com.majy.ppdocapi.service.IndictmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/cases")
@@ -15,6 +23,7 @@ public class CaseController extends OcrController
 {
     @Autowired
     private CaseService caseService;
+
 
     @PostMapping
     public Result add(@RequestBody Case caseModel) {
@@ -36,6 +45,14 @@ public class CaseController extends OcrController
     public Result getByCaseId(@PathVariable("case_id") Integer case_id)
     {
         return Result.success(caseService.getById(case_id));
+    }
+
+    @GetMapping("/graph/{case_id}")
+    public Result getGraphByCaseId(@PathVariable("case_id") Integer case_id)
+    {
+        JSONObject data = JSONUtil.readJSONObject(new File("<LOCAL_PATH_REDACTED>"), StandardCharsets.UTF_8);
+        //caseService.getGraphByCaseId(case_id);
+        return Result.success(data);
     }
 
     @DeleteMapping("/{id}")

@@ -1,8 +1,6 @@
 package com.majy.ppdocapi.mapper;
 
-import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.License;
-import com.majy.ppdocapi.service.LicenseService;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -34,7 +32,7 @@ public interface LicenseMapper
      * 根据license_id查询营业执照数据
      */
     @Select("select * from license where license_id = #{license_id}")
-    public License getById(Integer license_id);
+    public License getByIdCardId(Integer license_id);
 
     /**
      * 根据document_id查询营业执照数据

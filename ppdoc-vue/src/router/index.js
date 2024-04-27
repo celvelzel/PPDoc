@@ -83,6 +83,12 @@ const routes = [
         meta: {title: "立案审查",},
     },
     {
+        path: '/case',
+        name: 'case',
+        component: () => import('../views/Verification/CaseView.vue'),
+        meta: {title: "案件知识图谱",},
+    },
+    {
         path: '/pdf',
         name: 'pdf',
         component: () => import('../views/Test/PDFPreview.vue'),
