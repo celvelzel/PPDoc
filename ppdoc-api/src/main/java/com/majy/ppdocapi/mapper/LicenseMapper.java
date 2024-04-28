@@ -32,7 +32,7 @@ public interface LicenseMapper
      * 根据license_id查询营业执照数据
      */
     @Select("select * from license where license_id = #{license_id}")
-    public License getByIdCardId(Integer license_id);
+    public License getByLicenseId(Integer license_id);
 
     /**
      * 根据document_id查询营业执照数据

@@ -1,5 +1,6 @@
 package com.majy.ppdocapi.service.impl;
 
+import cn.hutool.core.util.IdcardUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.CaseDetail;
@@ -101,33 +102,45 @@ public class CaseServiceImpl implements CaseService
             indictment = indictmentMapper.getByIndictmentId(caseObj.getIndictment_id());
         }
 
-        if (caseObj.getPlaintiff_type() == "个人")
+        if (caseObj.getPlaintiff_id() != null)
         {
-            idcards.put("原告", idCardMapper.getByIdCardId(caseObj.getPlaintiff_id_card_id()));
-        }
-        else if (caseObj.getPlaintiff_type() == "企业")
-        {
-            licenses.put("原告", licenseMapper.getByIdCardId(caseObj.getPlaintiff_license_id()));
+            if (IdcardUtil.isValidCard(caseObj.getPlaintiff_id())) // 身份证有效则为自然人
+            {
+                idcards.put("原告", idCardMapper.getByIdCardId(caseObj.getPlaintiff_id_card_id()));
+            }
+            else
+            {
+                licenses.put("原告", licenseMapper.getByLicenseId(caseObj.getPlaintiff_license_id()));
+            }
         }
         else
         {
-            log.info("获取起诉状类型错误");
+            log.info("原告id为空");
         }
 
-        if (caseObj.getDefendant_type() == "个人")
+        if (caseObj.getDefendant_id() != null)
         {
-            idcards.put("被告", idCardMapper.getByIdCardId(caseObj.getDefendant_id_card_id()));
+            if (IdcardUtil.isValidCard(caseObj.getDefendant_id())) // 身份证有效则为自然人
+            {
+                idcards.put("被告", idCardMapper.getByIdCardId(caseObj.getDefendant_id_card_id()));
+            }
+            else
+            {
+                licenses.put("被告", licenseMapper.getByLicenseId(caseObj.getDefendant_license_id()));
+            }
         }
-        else if (caseObj.getDefendant_type() == "企业")
+        else
         {
-            licenses.put("被告", licenseMapper.getByIdCardId(caseObj.getDefendant_license_id()));
+            log.info("被告id为空");
         }
+
 
         if (caseObj.getRelated_invoice_id() != null)
         {
             invoices.add(invoiceMapper.getByInvoiceId(caseObj.getRelated_invoice_id()));
         }
         CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices);
+        log.info("案件详细信息：{}", caseDetail);
         GraphInfo graphInfo = new GraphInfo(caseDetail);
         return Result.success(graphInfo);
     }

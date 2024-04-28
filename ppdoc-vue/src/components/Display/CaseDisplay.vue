@@ -122,7 +122,8 @@ export default {
                 backgroundColor: '#f5f5f5'
               },
               // 图表控件对应颜色（索引 01234）
-              color: ["#7EC0EE", "#FF9F7F", "#FFD700", "#C9C9C9", "#E066FF", "#C0FF3E"],
+              //color: ["#FF6F61","#7EC0EE","#6667AB", "#FFC773", "#FFD700","#939597"],
+              color:["#880a0a","#8C531B","#A67B5B","#7F7053","#4A312C","#D3D3D3"],
               series: [
                 {
                   type: 'graph', // 类型:关系图
