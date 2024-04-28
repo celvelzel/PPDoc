@@ -11,4 +11,5 @@ public class Node
 {
     String name;
     Integer category;
+    Integer index;
 }

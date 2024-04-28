@@ -50,6 +50,9 @@ public class CaseController extends OcrController
     @GetMapping("/graph/{case_id}")
     public Result getGraphByCaseId(@PathVariable("case_id") Integer case_id)
     {
+        // test
+//         JSONObject data = JSONUtil.readJSONObject(new File("<LOCAL_PATH_REDACTED>"), StandardCharsets.UTF_8);
+//         return Result.success(data);
         return caseService.getGraphByCaseId(case_id);
     }
 

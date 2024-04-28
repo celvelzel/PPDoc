@@ -224,7 +224,6 @@ public class LicenseOcrUtils extends PaddleOcrUtils
             String licenseOperationPeriodStart = NO_INFO_FOUND;
             licenseOperationPeriod[0] = licenseOperationPeriodStart;
             String licenseOperationPeriodEnd = NO_INFO_FOUND;
-            ;
             licenseOperationPeriod[1] = licenseOperationPeriodStart;
         }
         return licenseOperationPeriod;

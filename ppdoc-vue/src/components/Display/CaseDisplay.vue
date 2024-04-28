@@ -132,13 +132,13 @@ export default {
                   legendHoverLink: false, //是否启用图例 hover(悬停) 时的联动高亮。
                   hoverAnimation: true, //是否开启鼠标悬停节点的显示动画
                   roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
-                  edgeSymbol: ['circle', 'arrow'], // 箭头
-                  edgeSymbolSize: [4, 8], // 箭头大小 边两端的标记大小，可以是一个数组分别指定两端，也可以是单个统一指定。
+                  //edgeSymbol: ['circle', 'arrow'], // 箭头
+                  //edgeSymbolSize: [4, 8], // 箭头大小 边两端的标记大小，可以是一个数组分别指定两端，也可以是单个统一指定。
                   draggable: true, // 节点是否可拖拽，只在使用力引导布局(layout: 'force',)的时候有用
                   focusNodeAdjacency: true, // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。
                   force: {
                     edgeLength: 130, // 边的两个节点之间的距离
-                    repulsion: 100, // 节点斥力
+                    repulsion: 180, // 节点斥力
                     gravity: 0.01, // 所有节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
                     layoutAnimation: true, // 节点动画
                   },
@@ -169,11 +169,6 @@ export default {
                     show: true,
                     //overflow: "truncate", //超出的部分截断
                     formatter: '{b}',
-                    rich: {
-                      bg: {
-                        backgroundColor: '#f5f5f5'
-                      }
-                    },
                   },
                   itemStyle: {
                     //鼠标放上去有阴影效果
@@ -241,7 +236,7 @@ export default {
     </el-pagination>
 
 
-    <el-dialog :visible.sync="showGraphDialog" title="案件知识图谱" fullscreen>
+    <el-dialog :visible.sync="showGraphDialog" title="案件图谱" fullscreen>
       <div id="graph" style="height: 600px; width: 1500px"></div>
     </el-dialog>
   </div>

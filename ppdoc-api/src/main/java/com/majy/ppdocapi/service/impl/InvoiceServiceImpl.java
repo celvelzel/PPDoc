@@ -37,7 +37,7 @@ public class InvoiceServiceImpl implements InvoiceService
         Page<Invoice> pageHelper = (Page<Invoice>) invoiceList;
         //封装pageBean对象
         PageBean pageBean = new PageBean(pageHelper.getTotal(), pageHelper.getResult());
-        return pageBean;
+        return pageBean; //返回PageBean对象
     }
 
     @Override

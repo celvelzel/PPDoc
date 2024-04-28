@@ -13,7 +13,7 @@ export default defineComponent({
   <div>
     <el-container style="height: 700px; border: 1px solid #eee">
       <el-header style="font-size: 35px;background-color: #B3C0D1; color: #333;text-align: left;line-height: 60px">
-        案件知识图谱
+        案件列表
       </el-header>
       <el-container>
         <el-aside class="custom-side" width="201px" style="background-color: rgb(238, 241, 246)">

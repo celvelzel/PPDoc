@@ -52,4 +52,15 @@ public interface CaseMapper
             "LEFT JOIN invoice ON t_case.related_invoice_id = invoice.invoice_id\n" +
             "WHERE t_case.indictment_id = #{indictment_id};")
     Case getCaseAllInfoByCaseId(Integer case_id);
+
+    @Select("SELECT * FROM t_case " +
+            "WHERE plaintiff_id_card_id = #{id_card_id} " +
+            "OR defendant_id_card_id = #{id_card_id} " +
+            "AND case_id != #{case_id}")
+    List<Case> getCaseByIDCardId(Integer id_card_id, Integer case_id);
+
+    @Select("Select * From t_case where plaintiff_license_id =#{license_id} " +
+            "OR defendant_license_id = #{license_id} " +
+            "AND case_id != #{case_id}")
+    List<Case> getCaseByLicenseId(Integer license_id, Integer case_id);
 }

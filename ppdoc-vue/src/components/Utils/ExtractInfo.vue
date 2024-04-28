@@ -3,7 +3,7 @@
   <!-- 输出结果和按钮 -->
   <el-col>
     <el-form label-width="80px" style="margin-top: 10px;margin-bottom: 10px">
-      <el-form-item label="待抽取字段" label-width="85px" rows="4">
+      <el-form-item label="待提取字段" label-width="85px" rows="4">
         <el-input type="textarea"
                   :autosize="{ minRows: 2, maxRows: 4}"
                   v-model="fields"

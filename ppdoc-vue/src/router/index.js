@@ -86,7 +86,7 @@ const routes = [
         path: '/case',
         name: 'case',
         component: () => import('../views/Verification/CaseView.vue'),
-        meta: {title: "案件知识图谱",},
+        meta: {title: "案件图谱",},
     },
     {
         path: '/pdf',
