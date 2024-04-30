@@ -44,7 +44,7 @@ public class CaseController extends OcrController
     @GetMapping("/{case_id}")
     public Result getByCaseId(@PathVariable("case_id") Integer case_id)
     {
-        return Result.success(caseService.getById(case_id));
+        return caseService.getById(case_id);
     }
 
     @GetMapping("/graph/{case_id}")

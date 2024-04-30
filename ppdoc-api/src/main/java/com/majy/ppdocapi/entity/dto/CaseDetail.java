@@ -18,4 +18,5 @@ public class CaseDetail
     private Map<String, IdCard> idCards;
     private Map<String, License> licenses;
     private List<Invoice> invoices;
+//    private List<Case> relatedCases;
 }

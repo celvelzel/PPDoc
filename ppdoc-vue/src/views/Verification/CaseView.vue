@@ -20,7 +20,7 @@ export default defineComponent({
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
-          <case-display></case-display>
+          <case-display operation="check"></case-display>
         </el-main>
       </el-container>
     </el-container>

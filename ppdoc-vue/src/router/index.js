@@ -89,6 +89,12 @@ const routes = [
         meta: {title: "案件图谱",},
     },
     {
+        path: '/assistant',
+        name: 'assistant',
+        component: () => import('../views/Verification/CaseAssistant.vue'),
+        meta: {title: "案件辅助",},
+    },
+    {
         path: '/pdf',
         name: 'pdf',
         component: () => import('../views/Test/PDFPreview.vue'),

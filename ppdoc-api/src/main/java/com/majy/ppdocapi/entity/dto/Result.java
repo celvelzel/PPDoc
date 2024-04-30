@@ -48,9 +48,9 @@ public class Result<T>
         return new Result(400 , "update failure");
     }
 
-    public static Result selectSuccess()
+    public static <T> Result<T> selectSuccess(T Data)
     {
-        return new Result(200, "select success");
+        return new Result(200, "select success",Data);
     }
 
     public static Result selectFailure()

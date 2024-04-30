@@ -63,14 +63,18 @@ export default {}
     <el-submenu index="3">
       <template slot="title">
         <span class="iconfont icon-yinzhangrenzheng"></span>
-        政务信息审核
+        智能审阅
       </template>
       <el-menu-item-group>
         <el-menu-item index="3-1">
+          <span class="iconfont icon-zhinengheyue"></span>
+          <router-link to="/assistant">案件辅助</router-link>
+        </el-menu-item>
+        <el-menu-item index="3-2">
           <span class="iconfont icon-zhengfu"></span>
           <router-link to="/process">立案审查</router-link>
         </el-menu-item>
-        <el-menu-item index="3-2">
+        <el-menu-item index="3-3">
           <span class="iconfont icon-zhishitupu-moren"></span>
           <router-link to="/case">案件知识图谱</router-link>
         </el-menu-item>

@@ -80,8 +80,7 @@ public class CaseServiceImpl implements CaseService
     @Override
     public Result getById(Integer case_id)
     {
-        caseMapper.getCaseById(case_id);
-        return Result.selectSuccess();
+        return Result.selectSuccess(caseMapper.getCaseById(case_id));
     }
 
     @Override
@@ -119,6 +118,10 @@ public class CaseServiceImpl implements CaseService
             if (IdcardUtil.isValidCard(caseObj.getDefendant_id())) // 身份证有效则为自然人
             {
                 idcards.put("被告", idCardMapper.getByIdCardId(caseObj.getDefendant_id_card_id()));
+//                if(!caseMapper.getCaseByIDCardId(caseObj.getDefendant_id_card_id(), case_id).isEmpty())
+//                {
+//
+//                }
             }
             else
             {
@@ -130,11 +133,12 @@ public class CaseServiceImpl implements CaseService
             log.info("被告id为空");
         }
 
-
         if (caseObj.getRelated_invoice_id() != null)
         {
             invoices.add(invoiceMapper.getByInvoiceId(caseObj.getRelated_invoice_id()));
         }
+
+
         CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices);
         log.info("案件{}的详细信息：{}", case_id, caseDetail);
         GraphInfo originGraphInfo = new GraphInfo(caseDetail);

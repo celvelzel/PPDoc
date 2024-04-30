@@ -1,6 +1,6 @@
 <script>
 import MyMenu from "@/components/Utils/MyMenu.vue";
-import CaseDisplay from "@/components/Verification/CaseDisplay.vue";
+import CaseDisplay from "@/components/Verification/IndictmentList.vue";
 import PlaintiffInfoVerification from "@/components/Verification/PlaintiffInfoVerification.vue";
 import DefendantInfoVerification from "@/components/Verification/DefendantInfoVerification.vue";
 import invoiceVerification from "@/components/Verification/InvoiceVerification.vue";

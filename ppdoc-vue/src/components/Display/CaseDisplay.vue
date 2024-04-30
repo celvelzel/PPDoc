@@ -31,12 +31,35 @@ export default {
       showGraphDialog: false,
     }
   },
+  props: {
+    operation:String,
+  },
   methods: {
     handleEdit(index, row) {
       console.log(index, row);
     },
     handleDelete(index, row) {
       console.log(index, row);
+    },
+    handleSelect(index, row) {
+      this.$confirm('确认选择该案件?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '选择成功!'
+            });
+            //确定选择，处理逻辑
+            console.log("选择了案件"+index, row);
+            this.$emit('select-case', row.case_id);
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消选择'
+        });
+      });
     },
     handleCheck(index, row) {
       console.log(index, row);
@@ -219,9 +242,15 @@ export default {
       <el-table-column fixed="right" width="150" label="操作">
         <template slot-scope="scope">
           <el-button
+              v-if="operation =='check'"
               size="small"
               icon="el-icon-view"
               @click="handleCheck(scope.$index, scope.row)">查看
+          </el-button>
+          <el-button
+              v-if="operation =='select'"
+              size="small"
+              @click="handleSelect(scope.$index, scope.row)">选择
           </el-button>
         </template>
       </el-table-column>
