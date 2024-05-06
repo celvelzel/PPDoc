@@ -263,7 +263,7 @@ public class PdfToEditablePdfUtils
             // 输出流用于创建新的PDF文件
             OutputStream output = new FileOutputStream(new File(DpdfPath));
             PdfStamper stamper = new PdfStamper(reader, output);
-            PdfContentByte page = stamper.getOverContent(1);
+            PdfContentByte page = stamper.getOverContent(1);//获取PDF第 2 层
 
             // 开始在PDF页面上绘制文本
             page.beginText();
@@ -284,7 +284,7 @@ public class PdfToEditablePdfUtils
             if (0 == textJO.getInt("status"))
             {
                 JSONArray results = (JSONArray) textJO.get("results");
-                // 遍历结果数组
+                // 遍历OCR结果数组
                 for (int i = 0; i < results.length(); i++)
                 {
                     JSONArray resultArray = results.getJSONArray(i);

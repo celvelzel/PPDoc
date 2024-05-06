@@ -118,10 +118,6 @@ public class CaseServiceImpl implements CaseService
             if (IdcardUtil.isValidCard(caseObj.getDefendant_id())) // 身份证有效则为自然人
             {
                 idcards.put("被告", idCardMapper.getByIdCardId(caseObj.getDefendant_id_card_id()));
-//                if(!caseMapper.getCaseByIDCardId(caseObj.getDefendant_id_card_id(), case_id).isEmpty())
-//                {
-//
-//                }
             }
             else
             {
@@ -139,88 +135,10 @@ public class CaseServiceImpl implements CaseService
         }
 
 
-        CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices);
+        CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices, getPlaintiffRelatedCase(case_id),getDefendantRelatedCase(case_id));
         log.info("案件{}的详细信息：{}", case_id, caseDetail);
         GraphInfo originGraphInfo = new GraphInfo(caseDetail);
         return Result.success(originGraphInfo);
-
-
-
-        // 获取相关案件，进行联想，只进行一次迭代
-//        List<Case> plaintiffRelatedCases = new ArrayList<Case>();
-//        List<Case> defendantRelatedCases = new ArrayList<Case>();
-//
-//        if (IdcardUtil.isValidCard(caseObj.getPlaintiff_id()))
-//        {
-//            plaintiffRelatedCases = caseMapper.getCaseByIDCardId(caseObj.getPlaintiff_id_card_id(), caseObj.getCase_id());
-//        }
-//        else
-//        {
-//            plaintiffRelatedCases = caseMapper.getCaseByLicenseId(caseObj.getPlaintiff_license_id(), caseObj.getCase_id());
-//        }
-//        GraphInfo plaintiffGraph = new GraphInfo();
-//        if (!plaintiffRelatedCases.isEmpty())
-//        {
-//            for (Case aCase : plaintiffRelatedCases)
-//            {
-//                if (! Objects.equals(aCase.getCase_id(), case_id))
-//                {
-//                    // 生成相关案件的图谱
-//                    GraphInfo relatedGraphInfo = new GraphInfo((CaseDetail) getGraphByCaseId(aCase.getCase_id()).getData());
-//                    // 将图谱的共同节点进行融合
-//                    if(! relatedGraphInfo.getNodes().isEmpty())
-//                    {
-//                        plaintiffGraph = mergeGraph(originGraphInfo, relatedGraphInfo);
-//                        log.info("原告相关案件图谱进行图谱融合");
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (IdcardUtil.isValidCard(caseObj.getDefendant_id()))
-//        {
-//            defendantRelatedCases = caseMapper.getCaseByIDCardId(caseObj.getDefendant_id_card_id(), caseObj.getCase_id());
-//        }
-//        else
-//        {
-//            defendantRelatedCases = caseMapper.getCaseByLicenseId(caseObj.getDefendant_license_id(), caseObj.getCase_id());
-//        }
-//        GraphInfo defendantGraph = new GraphInfo();
-//        if (!defendantRelatedCases.isEmpty())
-//        {
-//            for (Case aCase : defendantRelatedCases)
-//            {
-//                if (! Objects.equals(aCase.getCase_id(), case_id))
-//                {
-//                    // 生成相关案件的图谱
-//                    GraphInfo relatedGraphInfo = new GraphInfo((CaseDetail) getGraphByCaseId(aCase.getCase_id()).getData());
-//                    // 将图谱的共同节点进行融合
-//                    if(! relatedGraphInfo.getNodes().isEmpty())
-//                    {
-//                        defendantGraph = mergeGraph(originGraphInfo, relatedGraphInfo);
-//                        log.info("被告相关案件图谱进行图谱融合");
-//                    }
-//                }
-//            }
-//        }
-//        if (! originGraphInfo.getNodes().isEmpty())
-//        {
-//            if (! defendantGraph.getNodes().isEmpty())
-//            {
-//                if (! plaintiffGraph.getNodes().isEmpty())
-//                {
-//                    log.info("被告相关案件和原告相关案件都不为空，进行图谱融合");
-//                    return Result.success(mergeGraph(plaintiffGraph, defendantGraph));
-//                }
-//                return Result.success(defendantGraph);
-//            }
-//            else if (! plaintiffGraph.getNodes().isEmpty())
-//            {
-//                return Result.success(plaintiffGraph);
-//            }
-//            return Result.success(originGraphInfo);
-//        }
-//        return Result.selectFailure();
     }
 
     public GraphInfo mergeGraph(GraphInfo graph1, GraphInfo graph2)
@@ -265,5 +183,79 @@ public class CaseServiceImpl implements CaseService
         }
 
         return mergedGraph;
+    }
+
+    public List<Case> getPlaintiffRelatedCase(Integer case_id)
+    {
+        List<Case> Result = new ArrayList<>();
+        Case caseObj = caseMapper.getCaseById(case_id);
+        if (caseObj != null)
+        {
+            if (caseObj.getPlaintiff_id_card_id() != null)
+            {
+                caseMapper.getCaseByIDCardId(caseObj.getPlaintiff_id_card_id(), case_id).forEach(caseModel ->
+                {
+                    if (! Objects.equals(caseModel.getCase_id(), case_id))
+                    {
+                        Result.add(caseModel);
+                        log.info("原告自然人相关案件,案件信息为{}", caseModel);
+                    }
+                });
+            }
+            if (caseObj.getPlaintiff_license_id() != null)
+            {
+                caseMapper.getCaseByLicenseId(caseObj.getPlaintiff_license_id(), case_id).forEach(caseModel ->
+                {
+                    if (! Objects.equals(caseModel.getCase_id(), case_id))
+                    {
+                        Result.add(caseModel);
+                        log.info("原告企业相关案件,案件信息为{}", caseModel);
+                    }
+                });
+            }
+            return Result;
+        }
+        else
+        {
+            log.info("案件不存在");
+            return null;
+        }
+    }
+
+    public List<Case> getDefendantRelatedCase(Integer case_id)
+    {
+        List<Case> Result = new ArrayList<>();
+        Case caseObj = caseMapper.getCaseById(case_id);
+        if (caseObj != null)
+        {
+            if (caseObj.getDefendant_id_card_id() != null)
+            {
+                caseMapper.getCaseByIDCardId(caseObj.getDefendant_id_card_id(), caseObj.getCase_id()).forEach(caseModel ->
+                {
+                    if (! Objects.equals(caseModel.getCase_id(), case_id))
+                    {
+                        Result.add(caseModel);
+                        log.info("被告自然人相关案件,案件信息为{}", caseModel);
+                    }
+                });
+            }
+            if (caseObj.getDefendant_license_id() != null)
+            {
+                caseMapper.getCaseByLicenseId(caseObj.getDefendant_license_id(), caseObj.getCase_id()).forEach(caseModel ->
+                {
+                    if (! Objects.equals(caseModel.getCase_id(), case_id))
+                    {
+                        Result.add(caseModel);
+                        log.info("被告企业相关案件,案件信息为{}", caseModel);
+                    }
+                });
+            }
+            return Result;
+        }
+        else
+        {
+            log.info("案件不存在");
+            return null;
+        }
     }
 }

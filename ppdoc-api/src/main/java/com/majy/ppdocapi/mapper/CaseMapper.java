@@ -57,10 +57,10 @@ public interface CaseMapper
             "WHERE plaintiff_id_card_id = #{id_card_id} " +
             "OR defendant_id_card_id = #{id_card_id} " +
             "AND case_id != #{case_id}")
-    List<Case> getCaseByIDCardId(Integer id_card_id, Integer case_id);
+    List<Case> getCaseByIDCardId(@Param("id_card_id") Integer id_card_id, @Param("case_id") Integer case_id);
 
     @Select("Select * From t_case where plaintiff_license_id =#{license_id} " +
             "OR defendant_license_id = #{license_id} " +
             "AND case_id != #{case_id}")
-    List<Case> getCaseByLicenseId(Integer license_id, Integer case_id);
+    List<Case> getCaseByLicenseId(@Param("license_id") Integer license_id, @Param("case_id") Integer case_id);
 }

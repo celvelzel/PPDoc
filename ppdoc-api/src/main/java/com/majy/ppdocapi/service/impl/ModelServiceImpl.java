@@ -29,15 +29,17 @@ public class ModelServiceImpl implements ModelService
     public String extractInfo(String modelName, String ocrResult, String keyInfo)
     {
         String systemPrompt = "你现在的任务是从OCR文字识别的结果中提取我指定的关键信息。" +
+                "请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，" +
+                "你需要结合上下文语义进行综合判断，以抽取准确的关键信息。" +
                 "\n" +
                 "OCR的文字识别结果使用符号<OCR>包围，包含所识别出来的文字，顺序在原始图片中从左至右、从上至下。" +
                 "\n" +
-                "我指定的关键信息使用<key_info>符号包围,多个关键信息之间由逗号分隔。请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，" +
-                "你需要结合上下文语义进行综合判断，以抽取准确的关键信息。" +
+                "我指定的关键信息使用<key_info>符号包围,多个关键信息之间由逗号分隔。" +
                 "\n" +
                 "在返回结果时使用文本格式，包含一个key-value对，key值为我指定的关键信息，value值为所抽取的结果。" +
                 "如果认为OCR识别结果中没有关键信息key，则将value赋值为“无”。 " +
                 "请只输出文本格式的结果，不要包含其它多余文字，不要使用markdown语法，不要用换行符等转义字符！" +
+                "\n" +
                 "输出示例是：姓名：张三";
         String userPrompt = "下面正式开始：" +
                 "\n" +

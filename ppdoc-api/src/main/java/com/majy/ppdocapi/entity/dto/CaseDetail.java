@@ -15,8 +15,9 @@ public class CaseDetail
 {
     private Case caseobj;
     private Indictment indictment;
-    private Map<String, IdCard> idCards;
+    private Map<String, IdCard> idCards;//example:"被告:Case"
     private Map<String, License> licenses;
     private List<Invoice> invoices;
-//    private List<Case> relatedCases;
+    private List<Case> plaintiffRelatedCases;
+    private List<Case> defendantRelatedCases;
 }

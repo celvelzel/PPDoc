@@ -99,6 +99,10 @@ export default {
      */
     async nodeClick(params) {
       console.log('点了节点:' + params.name, "clicked");
+      if (echarts.getInstanceByDom(document.getElementById('graph'))) {
+        echarts.dispose(document.getElementById('graph'));
+      }
+      this.initChart(params.data.myId);
     },
     /**
      * 设置echarts配置项,重绘画布
@@ -151,7 +155,7 @@ export default {
                 {
                   type: 'graph', // 类型:关系图
                   layout: 'force', // 图的布局，类型为力导图
-                  animation: true,
+                  // animation: true,
                   legendHoverLink: false, //是否启用图例 hover(悬停) 时的联动高亮。
                   hoverAnimation: true, //是否开启鼠标悬停节点的显示动画
                   roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
@@ -160,10 +164,10 @@ export default {
                   draggable: true, // 节点是否可拖拽，只在使用力引导布局(layout: 'force',)的时候有用
                   focusNodeAdjacency: true, // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。
                   force: {
-                    edgeLength: 130, // 边的两个节点之间的距离
-                    repulsion: 180, // 节点斥力
+                    edgeLength: 120, // 边的两个节点之间的距离
+                    repulsion: 150, // 节点斥力
                     gravity: 0.01, // 所有节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
-                    layoutAnimation: true, // 节点动画
+                    // layoutAnimation: true, // 节点动画
                   },
                   // 线条样式
                   lineStyle: {

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class Node
 {
     String name;
+    Integer myId;
     Integer category;
     Integer index;
 }

@@ -87,8 +87,9 @@ export default defineComponent({
               <el-step title="结案后"></el-step>
             </el-steps>
             </el-row>
-          <el-row v-show="isSelected">
-          </el-row>
+<!--          <el-row v-show="isSelected">-->
+<!--&lt;!&ndash;            流程图组件&ndash;&gt;-->
+<!--          </el-row>-->
           </el-main>
         </el-container>
     </el-container>

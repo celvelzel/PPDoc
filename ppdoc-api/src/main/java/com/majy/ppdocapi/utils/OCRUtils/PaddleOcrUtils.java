@@ -79,8 +79,6 @@ public class PaddleOcrUtils
         //构建请求
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         RestTemplate restTemplate = new RestTemplate();
-
-
         //发送请求, springboot内置的restTemplate
         //通过8868端口调用ppocr的服务
         Map json = restTemplate.postForEntity("http://127.0.0.1:8868/predict/ocr_system", request, Map.class).getBody();
