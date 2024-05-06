@@ -101,6 +101,7 @@ export default {
       console.log('点了节点:' + params.name, "clicked");
       if (echarts.getInstanceByDom(document.getElementById('graph'))) {
         echarts.dispose(document.getElementById('graph'));
+        //判断 dom 是否为空或未定义,已存在则调用 dispose() 方法销毁
       }
       this.initChart(params.data.myId);
     },

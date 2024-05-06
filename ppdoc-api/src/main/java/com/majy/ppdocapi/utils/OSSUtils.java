@@ -1,9 +1,11 @@
 package com.majy.ppdocapi.utils;
 
+import cn.hutool.core.util.StrUtil;
 import com.aliyun.oss.*;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.majy.ppdocapi.entity.dto.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.N;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -115,13 +117,39 @@ public class OSSUtils
         return signedUrl;
     }
 
+    //从文件的url中裁剪出文件名
+    public String getFileName(String url)
+    {
+        int beginIndex =  url.lastIndexOf("/") + 1;
+        int endIndex = url.indexOf("?");
+        return StrUtil.sub(url, beginIndex, endIndex);
+    }
+
     //删除文件
-    public void deleteFile(String fileName)
+    public void deleteFile(String url)
     {
         //创建OSSclient实例
         OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyID, accessKeySecret);
         //删除文件
-        ossClient.deleteObject(bucketName, fileName);
+        try {
+            // 删除文件或目录。如果要删除目录，目录必须为空。
+            ossClient.deleteObject(bucketName, getFileName(url));
+        } catch (OSSException oe) {
+            System.out.println("Caught an OSSException, which means your request made it to OSS, "
+                    + "but was rejected with an error response for some reason.");
+            System.out.println("Error Message:" + oe.getErrorMessage());
+            System.out.println("Error Code:" + oe.getErrorCode());
+            System.out.println("Request ID:" + oe.getRequestId());
+            System.out.println("Host ID:" + oe.getHostId());
+        } catch (ClientException ce) {
+            System.out.println("Caught an ClientException, which means the client encountered "
+                    + "a serious internal problem while trying to communicate with OSS, "
+                    + "such as not being able to access the network.");
+            System.out.println("Error Message:" + ce.getMessage());
+        } finally {
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
+        }
     }
-
 }

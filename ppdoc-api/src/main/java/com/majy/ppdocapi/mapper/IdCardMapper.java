@@ -1,10 +1,7 @@
 package com.majy.ppdocapi.mapper;
 
 import com.majy.ppdocapi.entity.po.IdCard;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -49,4 +46,9 @@ public interface IdCardMapper
      */
     @Select("select * from id_card")
     public List<IdCard> list();
+
+    /**
+     * 更新身份证信息
+     */
+    void update(IdCard idCard);
 }

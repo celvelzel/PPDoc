@@ -3,6 +3,7 @@ package com.majy.ppdocapi.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.IdCard;
 import com.majy.ppdocapi.mapper.DocumentMapper;
@@ -25,6 +26,16 @@ public class IdCardServiceImpl implements IdCardService
     IdCardMapper idCardMapper;
     @Autowired
     DocumentMapper documentMapper;
+
+    @Override
+    public Result getById(Integer id)
+    {
+        if (idCardMapper.getByIdCardId(id) != null)
+        {
+            return Result.selectSuccess(idCardMapper.getByIdCardId(id));
+        }
+        return Result.selectFailure();
+    }
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -74,5 +85,12 @@ public class IdCardServiceImpl implements IdCardService
 
         // 对识别结果进行信息提取，转换为Map类型，并返回给前端。
         return IdCardOcrUtils.getStringStringMap(jsons);
+    }
+
+    @Override
+    public Result update(IdCard idCard)
+    {
+        idCardMapper.update(idCard);
+        return Result.updateSuccess();
     }
 }

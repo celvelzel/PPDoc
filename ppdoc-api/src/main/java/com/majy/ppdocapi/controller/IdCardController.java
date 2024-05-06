@@ -64,11 +64,18 @@ public class IdCardController extends OcrController
         return Result.success(pageBean);
     }
 
-//    @GetMapping("/{id}")
-//    public Result getById(@PathVariable("id") Integer id)
-//    {
-//        return Result.success(IdCardService.getById(id));
-//    }
+    @GetMapping("/{id}")
+    public Result getById(@PathVariable("id") Integer id)
+    {
+        return idCardService.getById(id);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody IdCard idCard)
+    {
+        log.info("更新身份证文档记录:{}",idCard);
+        return idCardService.update(idCard);
+    }
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){

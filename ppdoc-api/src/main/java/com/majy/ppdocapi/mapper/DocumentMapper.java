@@ -47,7 +47,6 @@ public interface DocumentMapper
      *
      * @param document 文档对象
      */
-    @Update("update document set document_url = #{document_url},document_name = #{document_name},document_type = #{document_type},all_info = #{all_info} where document_id = #{document_id}")
     public void update(Document document);
 
     /**

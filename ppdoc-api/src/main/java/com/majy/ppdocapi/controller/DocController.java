@@ -63,7 +63,20 @@ public class DocController extends OcrController
     public Result delete(@PathVariable Integer id){
         log.info("根据文档id删除文档:{}",id);
         //调用service删除文档
-        documentService.delete(id);
-        return Result.deleteSuccess();
+        return documentService.delete(id);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody Document document)
+    {
+        log.info("更新文档信息:{}",document);
+        return documentService.update(document);
+    }
+
+    @GetMapping("/{document_id}")
+    public Result getById(@PathVariable Integer document_id)
+    {
+        log.info("根据文档id查询文档:{}",document_id);
+        return documentService.getById(document_id);
     }
 }

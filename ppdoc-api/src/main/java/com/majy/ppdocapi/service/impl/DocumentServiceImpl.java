@@ -52,9 +52,11 @@ public class DocumentServiceImpl implements DocumentService
     }
 
     @Override
-    public void delete(Integer id)
+    public Result delete(Integer id)
     {
+        ossUtils.deleteFile(documentMapper.getById(id).getDocument_url());
         documentMapper.delete(id);
+        return Result.deleteSuccess();
     }
 
     @Override
@@ -102,5 +104,22 @@ public class DocumentServiceImpl implements DocumentService
     public Object getAllTypes()
     {
         return documentMapper.getAllTypes();
+    }
+
+    @Override
+    public Result update(Document document)
+    {
+        documentMapper.update(document);
+        return Result.updateSuccess();
+    }
+
+    @Override
+    public Result getById(Integer documentId)
+    {
+        if (documentMapper.getById(documentId) != null)
+        {
+            return Result.selectSuccess(documentMapper.getById(documentId));
+        }
+        return Result.selectFailure();
     }
 }

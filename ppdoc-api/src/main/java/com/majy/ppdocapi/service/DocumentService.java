@@ -11,11 +11,15 @@ public interface DocumentService
 {
     PageBean page(Integer start, Integer pageSize);
 
-    void delete(Integer id);
+    Result delete(Integer id);
 
     void add(Document document);
 
     Result handlePdfFile(MultipartFile file);
 
     Object getAllTypes();
+
+    Result update(Document document);
+
+    Result getById(Integer documentId);
 }
