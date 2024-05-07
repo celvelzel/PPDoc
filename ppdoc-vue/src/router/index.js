@@ -95,6 +95,12 @@ const routes = [
         meta: {title: "案件辅助",},
     },
     {
+        path: '/model',
+        name: 'model',
+        component: () => import('../views/System/ModelView.vue'),
+        meta: {title: "模型管理",},
+    },
+    {
         path: '/pdf',
         name: 'pdf',
         component: () => import('../views/Test/PDFPreview.vue'),

@@ -120,7 +120,7 @@
               title="提示"
               :visible.sync="dialogVisible"
               width="60%">
-            <json-view :data="caseInfo" style="height: 600px; scroll"/>
+            <json-view :data="caseInfo" style="height: 600px;"/>
             <span slot="footer" class="dialog-footer">
 		    <el-button type="primary" @click="dialogVisible = false">关闭</el-button>
 		  </span>

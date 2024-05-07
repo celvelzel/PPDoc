@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.majy.ppdocapi.mapper.ChannelMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.majy.ppdocapi.entity.po.Channel">
+        <id column="channel_id" property="channelId" jdbcType="INTEGER"/>
+        <result column="channel_name" property="channelName" jdbcType="VARCHAR"/>
+        <result column="channel_type" property="channelType" jdbcType="VARCHAR"/>
+        <result column="channel_state" property="channelState" jdbcType="VARCHAR"/>
+        <result column="channel_response_time" property="channelResponseTime" jdbcType="VARCHAR"/>
+        <result column="channel_crater_time" property="channelCraterTime" jdbcType="TIMESTAMP"/>
+        <result column="channel_model_name" property="channelModelName" jdbcType="VARCHAR"/>
+        <result column="channel_api_key" property="channelApiKey" jdbcType="VARCHAR"/>
+        <result column="channel_secret_key" property="channelSecretKey" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!-- 查询语句 -->
+    <select id="selectByChannelId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM channel
+        WHERE channel_id = #{channelId,jdbcType=INTEGER}
+    </select>
+
+    <!-- 插入语句 -->
+    <insert id="insert" parameterType="com.majy.ppdocapi.entity.po.Channel">
+        INSERT INTO channel (channel_id, channel_name, channel_type,
+                             channel_state, channel_response_time, channel_crater_time,
+                             channel_model_name, channel_api_key, channel_secret_key)
+        VALUES (#{channelId,jdbcType=INTEGER}, #{channelName,jdbcType=VARCHAR}, #{channelType,jdbcType=VARCHAR},
+                #{channelState,jdbcType=VARCHAR}, #{channelResponseTime,jdbcType=DECIMAL}, #{channelCraterTime,jdbcType=TIMESTAMP},
+                #{channelModelName,jdbcType=VARCHAR}, #{channelApiKey,jdbcType=VARCHAR}, #{channelSecretKey,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 更新语句 -->
+    <update id="update" parameterType="com.majy.ppdocapi.entity.po.Channel">
+        UPDATE channel
+        SET channel_name = #{channelName,jdbcType=VARCHAR},
+            channel_type = #{channelType,jdbcType=VARCHAR},
+            channel_state = #{channelState,jdbcType=VARCHAR},
+            channel_response_time = #{channelResponseTime,jdbcType=DECIMAL},
+            channel_crater_time = #{channelCraterTime,jdbcType=TIMESTAMP},
+            channel_model_name = #{channelModelName,jdbcType=VARCHAR},
+            channel_api_key = #{channelApiKey,jdbcType=VARCHAR},
+            channel_secret_key = #{channelSecretKey,jdbcType=VARCHAR}
+        WHERE channel_id = #{channelId,jdbcType=INTEGER}
+    </update>
+
+    <!-- 删除语句 -->
+    <delete id="deleteByChannelId" parameterType="java.lang.Integer">
+        DELETE FROM channel
+        WHERE channel_id = #{channelId,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

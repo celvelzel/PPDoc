@@ -88,7 +88,7 @@ export default {}
       <el-menu-item-group>
         <el-menu-item index="4-1">
           <span class="iconfont icon-guanli"></span>
-          <router-link to="/process">大模型管理</router-link>
+          <router-link to="/model">模型管理</router-link>
         </el-menu-item>
       </el-menu-item-group>
     </el-submenu>
