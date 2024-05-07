@@ -60,9 +60,10 @@ public class DocumentServiceImpl implements DocumentService
     }
 
     @Override
-    public void add(Document document)
+    public Result add(Document document)
     {
         documentMapper.insert(document);
+        return Result.createSuccess();
     }
 
     @Override
@@ -101,9 +102,9 @@ public class DocumentServiceImpl implements DocumentService
     }
 
     @Override
-    public Object getAllTypes()
+    public Result getAllTypes()
     {
-        return documentMapper.getAllTypes();
+        return Result.success(documentMapper.getAllTypes());
     }
 
     @Override

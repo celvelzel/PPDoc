@@ -15,9 +15,9 @@ public interface IdCardService
 
     PageBean page(Integer start, Integer pageSize);
 
-    void delete(Integer documentId);
+    Result delete(Integer documentId);
 
-    void add(IdCard idCard);
+    Result add(IdCard idCard);
 
     Map<String, String> pdfFile2StringStringMap(MultipartFile file);
 

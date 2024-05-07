@@ -40,8 +40,7 @@ public class IndictmentController extends OcrController
     public Result save(@RequestBody Indictment indictment)
     {
         log.info("新增起诉状文档记录:{}",indictment);
-        indictmentService.add(indictment);
-        return Result.createSuccess();
+        return indictmentService.add(indictment);
     }
 
     @GetMapping
@@ -58,7 +57,7 @@ public class IndictmentController extends OcrController
     @GetMapping("/{indictment_id}")
     public Result getByIndictmentId(@PathVariable("indictment_id") Integer indictment_id)
     {
-        return Result.success(indictmentService.getByIndictmentId(indictment_id));
+        return indictmentService.getByIndictmentId(indictment_id);
     }
 
     @PutMapping
@@ -72,7 +71,6 @@ public class IndictmentController extends OcrController
     public Result delete(@PathVariable Integer documentId){
         log.info("根据文档id删除起诉状文档:{}",documentId);
         //调用service，根据文档ID删除发票
-        indictmentService.delete(documentId);
-        return Result.deleteSuccess();
+        return indictmentService.delete(documentId);
     }
 }

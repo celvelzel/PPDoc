@@ -13,11 +13,11 @@ public interface DocumentService
 
     Result delete(Integer id);
 
-    void add(Document document);
+    Result add(Document document);
 
     Result handlePdfFile(MultipartFile file);
 
-    Object getAllTypes();
+    Result getAllTypes();
 
     Result update(Document document);
 

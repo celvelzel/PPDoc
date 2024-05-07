@@ -37,8 +37,7 @@ public class LicenseController extends OcrController
     public Result save(@RequestBody License license)
     {
         log.info("新增营业执照文档记录:{}",license);
-        licenseService.add(license);
-        return Result.createSuccess();
+        return licenseService.add(license);
     }
 
     @GetMapping

@@ -11,6 +11,7 @@ import com.majy.ppdocapi.mapper.IdCardMapper;
 import com.majy.ppdocapi.service.IdCardService;
 import com.majy.ppdocapi.utils.OCRUtils.IdCardOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OSSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,8 @@ public class IdCardServiceImpl implements IdCardService
     IdCardMapper idCardMapper;
     @Autowired
     DocumentMapper documentMapper;
+    @Autowired
+    OSSUtils ossUtils;
 
     @Override
     public Result getById(Integer id)
@@ -51,19 +54,22 @@ public class IdCardServiceImpl implements IdCardService
     }
 
     @Override
-    public void delete(Integer documentId)
+    public Result delete(Integer documentId)
     {
+        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
         idCardMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
+        return Result.deleteSuccess();
     }
 
     @Override
-    public void add(IdCard idCard)
+    public Result add(IdCard idCard)
     {
         Document document = new Document(null, idCard.getId_card_url(), idCard.getFile_name(), "身份证", idCard.getAll_info());
         documentMapper.insert(document);
         idCard.setDocument_id(document.getDocument_id());
         idCardMapper.insert(idCard);
+        return Result.createSuccess();
     }
 
     @Override

@@ -44,5 +44,6 @@
                 all_info = #{all_info},
             </if>
         </set>
+        where license_id = #{license_id}
     </update>
 </mapper>

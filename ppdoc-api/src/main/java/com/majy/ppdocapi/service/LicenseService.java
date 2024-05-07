@@ -14,7 +14,7 @@ public interface LicenseService
 
     Result deleteByDocumentId(Integer documentiId);
 
-    void add(License license);
+    Result add(License license);
 
     Map<String, String> file2StringStringMap(MultipartFile file);
 

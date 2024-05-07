@@ -11,6 +11,7 @@ import com.majy.ppdocapi.mapper.InvoiceMapper;
 import com.majy.ppdocapi.service.InvoiceService;
 import com.majy.ppdocapi.utils.OCRUtils.InvoiceOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OSSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,8 @@ public class InvoiceServiceImpl implements InvoiceService
     DocumentMapper documentMapper;
     @Autowired
     InvoiceOcrUtils invoiceOcrUtils;
+    @Autowired
+    OSSUtils ossUtils;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -44,18 +47,20 @@ public class InvoiceServiceImpl implements InvoiceService
     @Override
     public Result deleteByDocumentId(Integer documentId)
     {
+        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
         invoiceMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
         return Result.deleteSuccess();
     }
 
     @Override
-    public void add(Invoice invoice)
+    public Result add(Invoice invoice)
     {
         Document document = new Document(null, invoice.getInvoice_url(), invoice.getFile_name(), "发票", invoice.getAll_info());
         documentMapper.insert(document);
         invoice.setDocument_id(document.getDocument_id());
         invoiceMapper.insert(invoice);
+        return Result.createSuccess();
     }
 
 

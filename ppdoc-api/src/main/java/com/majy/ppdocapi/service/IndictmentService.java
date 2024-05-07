@@ -12,13 +12,13 @@ public interface IndictmentService
 {
     PageBean page(Integer start, Integer pageSize);
 
-    void delete(Integer documentId);
+    Result delete(Integer documentId);
 
-    void add(Indictment indictment);
+    Result add(Indictment indictment);
 
     Map<String, String> file2StringStringMap(MultipartFile file);
 
-    Indictment getByIndictmentId(Integer indictmentId);
+    Result getByIndictmentId(Integer indictmentId);
 
     Result update(Indictment indictment);
 }

@@ -22,10 +22,11 @@ export default {
         license_business_scope: '',
         license_registered_capital: '',
         license_establish_date: '',
-        license_operation_period: '',
+        license_operation_period: [],
         license_domicile: '',
         all_info: ''
-      }
+      },
+      operation_period:[],
     }
   },
   methods: {
@@ -35,6 +36,8 @@ export default {
       axios.get('http://localhost:8080/api/licenses/' + row.license_id).then(res => {
         this.dialogVisible = true;
         this.InfoForm = res.data.data;
+        // 数据回显处理日期范围
+        this.operation_period = [new Date(this.InfoForm.license_operation_period.split(',')[0]), new Date(this.InfoForm.license_operation_period.split(',')[1])]
       });
     },
     handleDelete(index, row) {
@@ -61,6 +64,8 @@ export default {
     },
     handleUpdate() {
       this.dialogVisible = false;
+      // 更新数据处理日期范围
+      this.InfoForm.license_operation_period = this.operation_period[0].toLocaleDateString() + ',' + this.operation_period[1].toLocaleDateString();
       axios.put('http://localhost:8080/api/licenses/', this.InfoForm).then(res => {
         console.log(res);
         //刷新表格
@@ -188,7 +193,15 @@ export default {
           </el-date-picker>
         </el-form-item>
         <el-form-item label="营业期限">
-          <el-input v-model="InfoForm.license_operation_period"></el-input>
+          <el-date-picker
+              v-model="operation_period"
+              type="daterange"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="margin-right: 500px;">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="住所">
           <el-input v-model="InfoForm.license_domicile"></el-input>

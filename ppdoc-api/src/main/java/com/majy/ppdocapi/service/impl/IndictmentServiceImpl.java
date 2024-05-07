@@ -11,6 +11,7 @@ import com.majy.ppdocapi.mapper.IndictmentMapper;
 import com.majy.ppdocapi.service.IndictmentService;
 import com.majy.ppdocapi.utils.OCRUtils.IndictmentOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OSSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,8 @@ public class IndictmentServiceImpl implements IndictmentService
     private IndictmentMapper indictmentMapper;
     @Autowired
     private IndictmentOcrUtils indictmentOcrUtils;
+    @Autowired
+    OSSUtils ossUtils;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -40,19 +43,22 @@ public class IndictmentServiceImpl implements IndictmentService
     }
 
     @Override
-    public void delete(Integer documentId)
+    public Result delete(Integer documentId)
     {
+        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
         indictmentMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);;
+        return Result.deleteSuccess();
     }
 
     @Override
-    public void add(Indictment indictment)
+    public Result add(Indictment indictment)
     {
         Document newDocument = new Document(indictment.getDocument_id(), indictment.getIndictment_url(),indictment.getFile_name(),"起诉状",indictment.getAll_info());
         documentMapper.insert(newDocument);
         indictment.setDocument_id(newDocument.getDocument_id());
         indictmentMapper.insert(indictment);
+        return Result.createSuccess();
     }
 
     @Override
@@ -65,9 +71,9 @@ public class IndictmentServiceImpl implements IndictmentService
     }
 
     @Override
-    public Indictment getByIndictmentId(Integer indictmentId)
+    public Result getByIndictmentId(Integer indictmentId)
     {
-        return indictmentMapper.getByIndictmentId(indictmentId);
+        return Result.selectSuccess(indictmentMapper.getByIndictmentId(indictmentId));
     }
 
     @Override

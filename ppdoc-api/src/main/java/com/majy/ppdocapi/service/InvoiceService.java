@@ -14,7 +14,7 @@ public interface InvoiceService
 
     Result deleteByDocumentId(Integer documentId);
 
-    void add(Invoice invoice);
+    Result add(Invoice invoice);
 
     Map<String, String> file2StringStringMap(MultipartFile file);
 

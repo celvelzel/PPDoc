@@ -31,15 +31,14 @@ public class DocController extends OcrController
     @PostMapping("/types")
     public Result getAllTypes()
     {
-        return Result.success(documentService.getAllTypes());
+        return documentService.getAllTypes();
     }
 
     @PostMapping
     public Result save(@RequestBody Document document)
     {
         log.info("新增文档记录:{}",document);
-        documentService.add(document);
-        return Result.createSuccess();
+        return documentService.add(document);
     }
 
     @GetMapping
@@ -52,12 +51,6 @@ public class DocController extends OcrController
         log.info("查询结果为:共有数据{}条", pageBean.getTotal());
         return Result.success(pageBean);
     }
-
-//    @GetMapping("/{document_id}")
-//    public Result getByDocumentId(@PathVariable("document_id") Integer document_id)
-//    {
-//        return Result.success(documentService.getByDocumentId(document_id));
-//    }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){

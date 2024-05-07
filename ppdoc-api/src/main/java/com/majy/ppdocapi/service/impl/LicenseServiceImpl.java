@@ -11,6 +11,7 @@ import com.majy.ppdocapi.mapper.LicenseMapper;
 import com.majy.ppdocapi.service.LicenseService;
 import com.majy.ppdocapi.utils.OCRUtils.LicenseOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OSSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,8 @@ public class LicenseServiceImpl implements LicenseService
     DocumentMapper documentMapper;
     @Autowired
     LicenseOcrUtils licenseOcrUtils;
+    @Autowired
+    OSSUtils ossUtils;
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -44,18 +47,20 @@ public class LicenseServiceImpl implements LicenseService
     @Override
     public Result deleteByDocumentId(Integer documentId)
     {
+        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
         licenseMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
         return Result.deleteSuccess();
     }
 
     @Override
-    public void add(License license)
+    public Result add(License license)
     {
         Document document = new Document(null, license.getLicense_url(), license.getFile_name(), "营业执照", license.getAll_info());
         documentMapper.insert(document);
         license.setDocument_id(document.getDocument_id());
         licenseMapper.insert(license);
+        return Result.createSuccess();
     }
 
     @Override

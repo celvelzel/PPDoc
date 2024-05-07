@@ -38,8 +38,7 @@ public class InvoiceController extends OcrController
     public Result save(@RequestBody Invoice invoice)
     {
         log.info("新增发票文档记录:{}",invoice);
-        invoiceService.add(invoice);
-        return Result.createSuccess();
+        return invoiceService.add(invoice);
     }
 
     @GetMapping
