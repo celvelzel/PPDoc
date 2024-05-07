@@ -29,35 +29,69 @@ export default {
       page: 1,
       pageSize: 10,
       showGraphDialog: false,
+      dialogVisible: false,
+      InfoForm: {
+        case_id: null,
+        indictment_id: null,
+        case_type: null,
+        plaintiff_name: null,
+        plaintiff_id: null,
+        plaintiff_type: null,
+        defendant_name: null,
+        defendant_id: null,
+        defendant_type: null,
+        plaintiff_id_card_id: null,
+        defendant_id_card_id: null,
+        plaintiff_license_id: null,
+        defendant_license_id: null,
+        related_invoice_id: null,
+      },
     }
-  },
-  props: {
-    operation:String,
   },
   methods: {
     handleEdit(index, row) {
       console.log(index, row);
+      // this.dialogVisible = true;
+      axios.get('http://localhost:8080/api/cases/' + row.case_id).then(res => {
+        this.dialogVisible = true;
+        this.InfoForm = res.data.data;
+      });
     },
     handleDelete(index, row) {
       console.log(index, row);
-    },
-    handleSelect(index, row) {
-      this.$confirm('确认选择该案件?', '提示', {
+      this.$confirm('此操作将永久删除该文档, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'success'
+        type: 'warning'
       }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '选择成功!'
-            });
-            //确定选择，处理逻辑
-            console.log("选择了案件"+index, row);
-            this.$emit('select-case', row.case_id);
+        axios.delete('http://localhost:8080/api/cases/' + row.case_id).then(res => {
+          console.log(res);
+          this.tableData.splice(index, 1);
+        });
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消选择'
+          message: '已取消删除'
+        });
+      });
+    },
+    handleUpdate() {
+      this.dialogVisible = false;
+      axios.put('http://localhost:8080/api/cases/', this.InfoForm).then(res => {
+        console.log(res);
+        //刷新表格
+        axios.get('http://localhost:8080/api/cases', {
+          params: {
+            page: this.page,
+            pageSize: this.pageSize,
+          }
+        }).then(res => {
+          this.tableData = res.data.data.rows;
+          this.total = res.data.data.total;
         });
       });
     },
@@ -99,11 +133,14 @@ export default {
      */
     async nodeClick(params) {
       console.log('点了节点:' + params.name, "clicked");
-      if (echarts.getInstanceByDom(document.getElementById('graph'))) {
-        echarts.dispose(document.getElementById('graph'));
-        //判断 dom 是否为空或未定义,已存在则调用 dispose() 方法销毁
+      if(params.dataType === "node" &&params.data.category === 0)
+      {
+        if (echarts.getInstanceByDom(document.getElementById('graph'))) {
+          echarts.dispose(document.getElementById('graph'));
+          //判断 dom 是否为空或未定义,已存在则调用 dispose() 方法销毁
+        }
+        this.initChart(params.data.myId);
       }
-      this.initChart(params.data.myId);
     },
     /**
      * 设置echarts配置项,重绘画布
@@ -151,13 +188,13 @@ export default {
               },
               // 图表控件对应颜色（索引 01234）
               //color: ["#FF6F61","#7EC0EE","#6667AB", "#FFC773", "#FFD700","#939597"],
-              color:["#880a0a","#8C531B","#A67B5B","#7F7053","#4A312C","#D3D3D3"],
+              color: ["#880a0a", "#8C531B", "#A67B5B", "#7F7053", "#4A312C", "#D3D3D3"],
               series: [
                 {
                   type: 'graph', // 类型:关系图
                   layout: 'force', // 图的布局，类型为力导图
                   // animation: true,
-                  legendHoverLink: false, //是否启用图例 hover(悬停) 时的联动高亮。
+                  legendHoverLink: true, //是否启用图例 hover(悬停) 时的联动高亮。
                   hoverAnimation: true, //是否开启鼠标悬停节点的显示动画
                   roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
                   //edgeSymbol: ['circle', 'arrow'], // 箭头
@@ -166,9 +203,9 @@ export default {
                   focusNodeAdjacency: true, // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。
                   force: {
                     edgeLength: 120, // 边的两个节点之间的距离
-                    repulsion: 150, // 节点斥力
+                    repulsion: 100, // 节点斥力
                     gravity: 0.01, // 所有节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
-                    // layoutAnimation: true, // 节点动画
+                    layoutAnimation: false, // 节点动画
                   },
                   // 线条样式
                   lineStyle: {
@@ -217,7 +254,6 @@ export default {
                 }
               ],
             };
-
             myChart.setOption(option);
           })
           .catch(error => {
@@ -246,7 +282,6 @@ export default {
       <el-table-column prop="defendant_id" label="被告ID" width="200"></el-table-column>
       <el-table-column fixed="right" width="210" label="操作">
         <template slot-scope="scope">
-          <!--          知识图谱界面用查看按钮-->
           <el-button
               size="mini"
               @click="handleEdit(scope.$index, scope.row)">编辑
@@ -256,16 +291,10 @@ export default {
               type="danger"
               @click="handleDelete(scope.$index, scope.row)">删除
           </el-button>
+          <!--          知识图谱界面用查看按钮-->
           <el-button
-              v-if="operation =='check'"
               size="mini"
               @click="handleCheck(scope.$index, scope.row)">查看
-          </el-button>
-          <!--          案件辅助界面用选择按钮-->
-          <el-button
-              v-if="operation =='select'"
-              size="small"
-              @click="handleSelect(scope.$index, scope.row)">选择
           </el-button>
         </template>
       </el-table-column>
@@ -281,7 +310,34 @@ export default {
 
 
     <el-dialog :visible.sync="showGraphDialog" title="案件图谱" fullscreen>
+<!--      <span>可通过点击案件节点切换到相关案件</span>-->
       <div id="graph" style="height: 600px; width: 1500px"></div>
+    </el-dialog>
+    <el-dialog
+        title="修改案件信息"
+        :visible.sync="dialogVisible"
+        width="50%">
+      <el-form ref="form" :model="InfoForm" label-width="auto">
+        <el-form-item label="案件类型">
+          <el-input v-model="InfoForm.case_type"></el-input>
+        </el-form-item>
+        <el-form-item label="原告姓名">
+          <el-input v-model="InfoForm.plaintiff_name"></el-input>
+        </el-form-item>
+        <el-form-item label="原告ID">
+          <el-input v-model="InfoForm.plaintiff_id"></el-input>
+        </el-form-item>
+        <el-form-item label="被告姓名">
+          <el-input v-model="InfoForm.defendant_name"></el-input>
+        </el-form-item>
+        <el-form-item label="被告ID">
+          <el-input v-model="InfoForm.defendant_id"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleUpdate">保 存</el-button>
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -289,3 +345,4 @@ export default {
 <style scoped>
 
 </style>
+

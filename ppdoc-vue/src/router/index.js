@@ -85,7 +85,7 @@ const routes = [
     {
         path: '/case',
         name: 'case',
-        component: () => import('../views/Verification/CaseView.vue'),
+        component: () => import('../views/Verification/CaseGraph.vue'),
         meta: {title: "案件图谱",},
     },
     {

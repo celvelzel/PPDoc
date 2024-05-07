@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.majy.ppdocapi.mapper.IndictmentMapper">
+    <update id="update" parameterType="com.majy.ppdocapi.entity.po.Indictment">
+            update indictment
+            <set>
+                <if test="indictment_id != null">
+                    indictment_id = #{indictment_id},
+                </if>
+                <if test="document_id != null">
+                    document_id = #{document_id},
+                </if>
+                <if test="indictment_url != null">
+                    indictment_url = #{indictment_url},
+                </if>
+                <if test="file_name != null">
+                    file_name = #{file_name},
+                </if>
+                <if test="case_type != null">
+                    case_type = #{case_type},
+                </if>
+                <if test="plaintiff_name != null">
+                    plaintiff_name = #{plaintiff_name},
+                </if>
+                <if test="plaintiff_id != null">
+                        plaintiff_id = #{plaintiff_id},
+                    </if>
+                <if test="plaintiff_type != null">
+                    plaintiff_type = #{plaintiff_type},
+                </if>
+                <if test="plaintiff_address != null">
+                    plaintiff_address = #{plaintiff_address},
+                </if>
+                <if test="plaintiff_contact != null">
+                    plaintiff_contact = #{plaintiff_contact},
+                </if>
+                <if test="defendant_name != null">
+                    defendant_name = #{defendant_name},
+                </if>
+                <if test="defendant_id != null">
+                    defendant_id = #{defendant_id},
+                </if>
+                <if test="defendant_type != null">
+                    defendant_type = #{defendant_type},
+                </if>
+                <if test="defendant_address != null">
+                    defendant_address = #{defendant_address},
+                </if>
+                <if test="defendant_contact != null">
+                    defendant_contact = #{defendant_contact},
+                </if>
+                <if test="litigation_request != null">
+                    litigation_request = #{litigation_request},
+                </if>
+                <if test="facts_background != null">
+                    facts_background = #{facts_background},
+                </if>
+                <if test="legal_basis != null">
+                    legal_basis = #{legal_basis},
+                </if>
+                <if test="evidence_list != null">
+                    evidence_list = #{evidence_list},
+                </if>
+                <if test="court_name != null">
+                    court_name = #{court_name},
+                </if>
+                <if test="indictment_date != null">
+                    indictment_date = #{indictment_date},
+                </if>
+                <if test="all_info != null">
+                    all_info = #{all_info},
+                </if>
+            </set>
+            where indictment_id = #{indictment_id}
+        </update>
+</mapper>

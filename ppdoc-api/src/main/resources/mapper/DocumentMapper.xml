@@ -3,10 +3,20 @@
 <mapper namespace="com.majy.ppdocapi.mapper.DocumentMapper">
     <update id="update" parameterType="com.majy.ppdocapi.entity.po.Document">
         update document
-        set document_url  = #{document_url},
-            document_name = #{document_name},
-            document_type = #{document_type},
-            all_info      = #{all_info}
+        <set>
+            <if test="document_url != null">
+                document_url = #{document_url},
+            </if>
+            <if test="document_name != null">
+                document_name = #{document_name},
+            </if>
+            <if test="document_type != null">
+                document_type = #{document_type},
+            </if>
+            <if test="all_info != null">
+                all_info = #{all_info},
+            </if>
+        </set>
         where document_id = #{document_id}
     </update>
 </mapper>

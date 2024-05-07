@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.majy.ppdocapi.mapper.LicenseMapper">
+    <update id="update" parameterType="com.majy.ppdocapi.entity.po.License">
+        update license
+        <set>
+            <if test="license_url != null">
+                license_url = #{license_url},
+            </if>
+            <if test="file_name != null">
+                file_name = #{file_name},
+            </if>
+            <if test="license_code != null">
+                license_code = #{license_code},
+            </if>
+            <if test="license_number != null">
+                license_number = #{license_number},
+            </if>
+            <if test="license_enterprise_name != null">
+                license_enterprise_name = #{license_enterprise_name},
+            </if>
+            <if test="license_enterprise_type != null">
+                license_enterprise_type = #{license_enterprise_type},
+            </if>
+            <if test="license_legal_representative != null">
+                license_legal_representative = #{license_legal_representative},
+            </if>
+            <if test="license_business_scope != null">
+                license_business_scope = #{license_business_scope},
+            </if>
+            <if test="license_registered_capital != null">
+                license_registered_capital = #{license_registered_capital},
+            </if>
+            <if test="license_establish_date != null">
+                license_establish_date = #{license_establish_date},
+            </if>
+            <if test="license_operation_period != null">
+                license_operation_period = #{license_operation_period},
+            </if>
+            <if test="license_domicile != null">
+                license_domicile = #{license_domicile},
+            </if>
+            <if test="all_info != null">
+                all_info = #{all_info},
+            </if>
+        </set>
+    </update>
+</mapper>

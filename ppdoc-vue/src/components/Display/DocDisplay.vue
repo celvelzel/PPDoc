@@ -135,6 +135,7 @@ export default {
     <el-dialog
         title="修改文档信息"
         :visible.sync="dialogVisible"
+        :close-on-click-modal="false"
         width="30%">
       <el-form ref="form" :model="docInfoForm" label-width="80px">
         <el-form-item label="文档名">

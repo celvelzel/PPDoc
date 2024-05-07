@@ -169,8 +169,9 @@ export default {
     </el-pagination>
 
     <el-dialog
-        title="修改文档信息"
+        title="修改起诉状文档信息"
         :visible.sync="dialogVisible"
+        :close-on-click-modal="false"
         width="50%">
       <el-form ref="form" :model="InfoForm" label-width="auto">
         <el-form-item label="案件类型">

@@ -32,8 +32,6 @@ public interface CaseMapper
     /**
      * 根据案件ID更新数据
      */
-    @Update("UPDATE t_case SET indictment_id = #{indictment_id}, case_type = #{case_type}, plaintiff_name = #{plaintiff_name}, plaintiff_id = #{plaintiff_id}, plaintiff_type = #{plaintiff_type}, defendant_name = #{defendant_name}, defendant_id = #{defendant_id}, defendant_type = #{defendant_type}, plaintiff_id_card_id = #{plaintiff_id_card_id}, defendant_id_card_id = #{defendant_id_card_id}, plaintiff_license_id = #{plaintiff_license_id}, defendant_license_id = #{defendant_license_id}, related_invoice_id = #{related_invoice_id} " +
-            "WHERE case_id = #{case_id}")
     void update(Case caseModel);
 
     /**

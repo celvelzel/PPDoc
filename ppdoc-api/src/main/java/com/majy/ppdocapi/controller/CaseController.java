@@ -56,10 +56,16 @@ public class CaseController extends OcrController
         return caseService.getGraphByCaseId(case_id);
     }
 
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Integer id) {
-        log.info("根据案件id删除案件:{}", id);
+    @DeleteMapping("/{caseId}")
+    public Result delete(@PathVariable Integer caseId) {
+        log.info("根据案件id删除案件:{}", caseId);
         // 调用service删除案件
-        return caseService.delete(id);
+        return caseService.delete(caseId);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody Case caseModel) {
+        log.info("更新案件记录:{}", caseModel);
+        return caseService.update(caseModel);
     }
 }

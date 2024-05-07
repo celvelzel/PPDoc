@@ -3,11 +3,10 @@ import axios from "axios";
 
 import {defineComponent} from "vue";
 import MyMenu from "@/components/Utils/MyMenu.vue";
-import CaseDisplay from "@/components/Display/CaseDisplay.vue";
-import AntGraph from "@/components/Utils/AntGraph.vue";
+import CaseList from "@/components/Display/CaseList.vue";
 
 export default defineComponent({
-  components: {CaseDisplay, MyMenu,AntGraph},
+  components: {CaseList, MyMenu},
   data() {
     return {
       activeStep: 2,
@@ -65,7 +64,7 @@ export default defineComponent({
         </el-aside>
         <el-main>
           <el-row v-show="!isSelected">
-            <case-display operation="select" @select-case="handleCaseSelection"></case-display>
+            <CaseList @select-case="handleCaseSelection"></CaseList>
           </el-row>
           <el-row v-show="isSelected">
             <el-descriptions title="案件信息" column="4">
@@ -108,11 +107,5 @@ export default defineComponent({
   transition: all 0.3s ease; /* 平滑的过渡效果，提升用户体验 */
   /* 增大内边距*/
   padding: 20px 30px;
-}
-
-/* 可选：鼠标悬停时改变效果，提升交互体验 */
-.el-row:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 </style>

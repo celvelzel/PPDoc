@@ -27,7 +27,6 @@ public interface InvoiceMapper
      * 更新数据
      * @param invoice    发票对象
      */
-    @Update("update invoice set file_name= #{file_name}, seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where invoice_id = #{invoice_id}")
     public void update(Invoice invoice);
 
     /**

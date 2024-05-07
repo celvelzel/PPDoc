@@ -31,8 +31,6 @@ public interface IndictmentMapper
     /*
     * 更新起诉状
      */
-    @Update("UPDATE indictment SET document_id = #{document_id}, file_name = #{file_name}, case_type = #{case_type}, plaintiff_name = #{plaintiff_name}, plaintiff_id = #{plaintiff_id}, plaintiff_type = #{plaintiff_type}, plaintiff_address = #{plaintiff_address}, plaintiff_contact = #{plaintiff_contact}, defendant_name = #{defendant_name}, defendant_id = #{defendant_id}, defendant_type = #{defendant_type}, defendant_address = #{defendant_address}, defendant_contact = #{defendant_contact}, litigation_request = #{litigation_request}, facts_background = #{facts_background}, legal_basis = #{legal_basis}, evidence_list = #{evidence_list}, court_name = #{court_name}, indictment_date = #{indictment_date}, all_info = #{all_info} " +
-            "WHERE indictment_id = #{indictment_id}")
     public void update(Indictment indictment);
 
     /*

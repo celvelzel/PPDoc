@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.majy.ppdocapi.mapper.InvoiceMapper">
+    <update id="update" parameterType="com.majy.ppdocapi.entity.po.Invoice">
+        update invoice
+        <set>
+            <if test="invoice_url != null">
+                invoice_url = #{invoice_url},
+            </if>
+            <if test="file_name != null">
+                file_name = #{file_name},
+            </if>
+            <if test="invoice_code != null">
+                invoice_code = #{invoice_code},
+            </if>
+            <if test="invoice_number != null">
+                invoice_number = #{invoice_number},
+            </if>
+            <if test="invoice_amount != null">
+                invoice_amount = #{invoice_amount},
+            </if>
+            <if test="invoice_date != null">
+                invoice_date = #{invoice_date},
+            </if>
+            <if test="purchaser_name != null">
+                purchaser_name = #{purchaser_name},
+            </if>
+            <if test="seller_name != null">
+                seller_name = #{seller_name},
+            </if>
+            <if test="project_name != null">
+                project_name = #{project_name},
+            </if>
+            <if test="all_info != null">
+                all_info = #{all_info},
+            </if>
+        </set>
+        where invoice_id = #{invoice_id}
+    </update>
+</mapper>

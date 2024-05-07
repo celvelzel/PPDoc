@@ -153,8 +153,9 @@ export default {
     </el-pagination>
 
     <el-dialog
-        title="修改身份信息"
+        title="修改营业执照信息"
         :visible.sync="dialogVisible"
+        :close-on-click-modal="false"
         width="50%">
       <el-form ref="form" :model="InfoForm" label-width="auto">
         <el-form-item label="统一社会信用代码">

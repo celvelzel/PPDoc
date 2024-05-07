@@ -45,7 +45,6 @@ public interface LicenseMapper
      *
      * @param license
      */
-    @Update("update license set file_name= #{file_name}, document_id = #{document_id},license_url = #{license_url},license_code = #{license_code},license_number = #{license_number},license_enterprise_name = #{license_enterprise_name},license_enterprise_type = #{license_enterprise_type},license_legal_representative = #{license_legal_representative},license_establish_date = #{license_establish_date},license_operation_period = #{license_operation_period},license_domicile = #{license_domicile},all_info = #{all_info} where license_id = #{license_id}")
     public void update(License license);
 
 
