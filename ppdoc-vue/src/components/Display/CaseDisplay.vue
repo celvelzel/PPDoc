@@ -244,14 +244,24 @@ export default {
       <el-table-column prop="plaintiff_id" label="原告ID" width="200"></el-table-column>
       <el-table-column prop="defendant_name" label="被告姓名" width="200"></el-table-column>
       <el-table-column prop="defendant_id" label="被告ID" width="200"></el-table-column>
-      <el-table-column fixed="right" width="150" label="操作">
+      <el-table-column fixed="right" width="210" label="操作">
         <template slot-scope="scope">
+          <!--          知识图谱界面用查看按钮-->
+          <el-button
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)">编辑
+          </el-button>
+          <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)">删除
+          </el-button>
           <el-button
               v-if="operation =='check'"
-              size="small"
-              icon="el-icon-view"
+              size="mini"
               @click="handleCheck(scope.$index, scope.row)">查看
           </el-button>
+          <!--          案件辅助界面用选择按钮-->
           <el-button
               v-if="operation =='select'"
               size="small"

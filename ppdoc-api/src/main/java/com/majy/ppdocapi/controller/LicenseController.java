@@ -52,17 +52,23 @@ public class LicenseController extends OcrController
         return Result.success(pageBean);
     }
 
-//    @GetMapping("/{license_id}")
-//    public Result getByLicenseId(@PathVariable("license_id") Integer license_id)
-//    {
-//        return Result.success(licenseService.getByLicenseId(license_id));
-//    }
+    @GetMapping("/{license_id}")
+    public Result getByLicenseId(@PathVariable("license_id") Integer license_id)
+    {
+        return licenseService.getByLicenseId(license_id);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody License license)
+    {
+        log.info("更新营业执照文档记录:{}",license);
+        return licenseService.update(license);
+    }
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){
         log.info("根据文档id删除营业执照文档:{}",documentId);
         //调用service删除文档
-        licenseService.delete(documentId);
-        return Result.deleteSuccess();
+        return licenseService.deleteByDocumentId(documentId);
     }
 }

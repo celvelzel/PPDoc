@@ -53,17 +53,23 @@ public class InvoiceController extends OcrController
         return Result.success(pageBean);
     }
 
-//    @GetMapping("/{invoice_id}")
-//    public Result getByInvoiceId(@PathVariable("invoice_id") Integer invoice_id)
-//    {
-//        return Result.success(invoiceService.getByInvoiceId(invoice_id));
-//    }
+    @GetMapping("/{invoice_id}")
+    public Result getByInvoiceId(@PathVariable("invoice_id") Integer invoice_id)
+    {
+        return invoiceService.getByInvoiceId(invoice_id);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody Invoice invoice)
+    {
+        log.info("更新发票文档记录:{}",invoice);
+        return invoiceService.update(invoice);
+    }
 
     @DeleteMapping("/{documentId}")
     public Result delete(@PathVariable Integer documentId){
         log.info("根据文档id删除发票文档:{}",documentId);
         //调用service，根据文档ID删除发票
-        invoiceService.delete(documentId);
-        return Result.deleteSuccess();
+        return invoiceService.deleteByDocumentId(documentId);
     }
 }

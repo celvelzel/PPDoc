@@ -37,7 +37,7 @@
         <el-col :span="12">
           <el-row>
             <!-- 发票信息表单 -->
-            <el-form ref="form" :model="invoiceInfoForm" label-width="80px">
+            <el-form ref="form" :model="invoiceInfoForm" label-width="auto">
               <el-form-item label="发票代码">
                 <el-input v-model="invoiceInfoForm.invoiceCode"></el-input>
               </el-form-item>

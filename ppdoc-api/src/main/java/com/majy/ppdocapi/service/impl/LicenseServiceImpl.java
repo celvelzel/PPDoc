@@ -3,6 +3,7 @@ package com.majy.ppdocapi.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.License;
 import com.majy.ppdocapi.mapper.DocumentMapper;
@@ -41,10 +42,11 @@ public class LicenseServiceImpl implements LicenseService
     }
 
     @Override
-    public void delete(Integer documentiId)
+    public Result deleteByDocumentId(Integer documentId)
     {
-        licenseMapper.deleteByDocumentId(documentiId);
-        documentMapper.delete(documentiId);
+        licenseMapper.deleteByDocumentId(documentId);
+        documentMapper.delete(documentId);
+        return Result.deleteSuccess();
     }
 
     @Override
@@ -63,5 +65,18 @@ public class LicenseServiceImpl implements LicenseService
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
         // 根据识别文本提取信息
         return licenseOcrUtils.getStringStringMap(jsons);
+    }
+
+    @Override
+    public Result getByLicenseId(Integer licenseId)
+    {
+        return Result.selectSuccess(licenseMapper.getByLicenseId(licenseId));
+    }
+
+    @Override
+    public Result update(License license)
+    {
+        licenseMapper.update(license);
+        return Result.updateSuccess();
     }
 }

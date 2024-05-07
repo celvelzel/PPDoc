@@ -3,6 +3,7 @@ package com.majy.ppdocapi.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.Indictment;
 import com.majy.ppdocapi.mapper.DocumentMapper;
@@ -67,5 +68,12 @@ public class IndictmentServiceImpl implements IndictmentService
     public Indictment getByIndictmentId(Integer indictmentId)
     {
         return indictmentMapper.getByIndictmentId(indictmentId);
+    }
+
+    @Override
+    public Result update(Indictment indictment)
+    {
+        indictmentMapper.update(indictment);
+        return Result.updateSuccess();
     }
 }

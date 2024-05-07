@@ -39,7 +39,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        axios.delete('http://localhost:8080/api/idcards/' + row.id).then(res => {
+        axios.delete('http://localhost:8080/api/idcards/' + row.document_id).then(res => {
           console.log(res);
           this.tableData.splice(index, 1);
         });

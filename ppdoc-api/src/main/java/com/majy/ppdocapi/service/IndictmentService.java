@@ -2,6 +2,7 @@ package com.majy.ppdocapi.service;
 
 
 import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Indictment;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,4 +19,6 @@ public interface IndictmentService
     Map<String, String> file2StringStringMap(MultipartFile file);
 
     Indictment getByIndictmentId(Integer indictmentId);
+
+    Result update(Indictment indictment);
 }

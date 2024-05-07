@@ -2,6 +2,7 @@ package com.majy.ppdocapi.controller;
 
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.dto.Result;
+import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.Indictment;
 import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.service.IndictmentService;
@@ -58,6 +59,13 @@ public class IndictmentController extends OcrController
     public Result getByIndictmentId(@PathVariable("indictment_id") Integer indictment_id)
     {
         return Result.success(indictmentService.getByIndictmentId(indictment_id));
+    }
+
+    @PutMapping
+    public Result update(@RequestBody Indictment indictment)
+    {
+        log.info("更新起诉状文档信息:{}",indictment);
+        return indictmentService.update(indictment);
     }
 
     @DeleteMapping("/{documentId}")

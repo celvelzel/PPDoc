@@ -37,7 +37,7 @@
         <el-col :span="12">
           <el-row>
             <!-- 发票信息表单 -->
-            <el-form ref="form" label-width="80px">
+            <el-form ref="form" label-width="auto" label-position="left">
               <el-form-item label="统一社会信用代码">
                 <el-input v-model="licenseInfoForm.licenseCode"></el-input>
               </el-form-item>

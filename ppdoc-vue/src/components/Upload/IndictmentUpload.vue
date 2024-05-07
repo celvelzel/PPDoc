@@ -36,7 +36,7 @@
         <el-col :span="12">
           <el-row>
             <!-- 起诉状信息表单 -->
-            <el-form ref="form" :model="indictmentInfoForm" label-width="80px">
+            <el-form ref="form" :model="indictmentInfoForm" label-width="auto" label-position="left">
               <el-form-item label="案件类型">
                 <el-input v-model="indictmentInfoForm.caseType"></el-input>
               </el-form-item>

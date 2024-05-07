@@ -3,6 +3,7 @@ package com.majy.ppdocapi.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.majy.ppdocapi.entity.dto.PageBean;
+import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.mapper.DocumentMapper;
@@ -41,10 +42,11 @@ public class InvoiceServiceImpl implements InvoiceService
     }
 
     @Override
-    public void delete(Integer documentId)
+    public Result deleteByDocumentId(Integer documentId)
     {
         invoiceMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
+        return Result.deleteSuccess();
     }
 
     @Override
@@ -65,5 +67,18 @@ public class InvoiceServiceImpl implements InvoiceService
         List jsons = PaddleOcrUtils.pdfToOcrText(file);
         // 根据识别文本提取信息
         return invoiceOcrUtils.getStringStringMap(jsons);
+    }
+
+    @Override
+    public Result getByInvoiceId(Integer invoiceId)
+    {
+        return Result.selectSuccess(invoiceMapper.getByInvoiceId(invoiceId));
+    }
+
+    @Override
+    public Result update(Invoice invoice)
+    {
+        invoiceMapper.update(invoice);
+        return Result.updateSuccess();
     }
 }
