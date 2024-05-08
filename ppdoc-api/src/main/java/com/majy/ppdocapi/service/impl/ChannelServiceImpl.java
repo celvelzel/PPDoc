@@ -13,6 +13,7 @@ import com.majy.ppdocapi.utils.ModelUtils.ZhiPuUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -52,6 +53,8 @@ public class ChannelServiceImpl implements ChannelService
             default:
                 return Result.fail("不支持的渠道类型");
         }
+        channel.setChannelStatus("未启用");
+        channel.setChannelCreateTime(LocalDateTime.now());
         channelMapper.insert(channel);
         return Result.createSuccess();
     }

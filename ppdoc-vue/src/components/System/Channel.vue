@@ -74,10 +74,16 @@ export default {
           ]
         }
       ],
+      ruleForm : {
+        channelName: '',
+        channelModelName: '',
+        channelApiKey: '',
+        channelSecretKey: '',
+      },
       rules: {
         channelName: [
           {required: true, message: '请输入渠道名称', trigger: 'blur'},
-          {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
+          {min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur'}
         ],
         channelModelName: [
           {required: true, message: '请选择模型', trigger: 'change'}
@@ -103,10 +109,23 @@ export default {
     }
   },
   methods: {
+    // 提交新增表单
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          console.log('submit!');
+          axios.post('http://localhost:8080/api/channels', this.ChannelInfoForm).then(res => {
+            axios.get('http://localhost:8080/api/channels', {
+              params: {
+                page: this.page,
+                pageSize: this.pageSize,
+              }
+            }).then(res => {
+              this.tableData = res.data.data.rows;
+              this.total = res.data.data.total;
+            });
+            this.showAddChannelDialog = false;
+          });
         } else {
           console.log('error submit!!');
           return false;
@@ -161,12 +180,13 @@ export default {
       // this.dialogVisible = true;
       axios.get('http://localhost:8080/api/channels/' + row.channelId).then(res => {
         this.showEditChannelDialog = true;
-        this.InfoForm = res.data.data;
+        this.ChannelInfoForm = res.data.data;
+
       });
     },
     handleDelete(index, row) {
       console.log(index, row);
-      this.$confirm('此操作将永久删除该文档, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该渠道, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -188,7 +208,7 @@ export default {
     },
     handleUpdate() {
       this.dialogVisible = false;
-      axios.put('http://localhost:8080/api/channels/', this.InfoForm).then(res => {
+      axios.put('http://localhost:8080/api/channels/', this.ChannelInfoForm).then(res => {
         console.log(res);
         //刷新表格
         axios.get('http://localhost:8080/api/channels', {
@@ -201,6 +221,7 @@ export default {
           this.total = res.data.data.total;
         });
       });
+      this.showEditChannelDialog = false;
     },
     handleCurrentChange(val) {
       this.page = val;
@@ -245,9 +266,9 @@ export default {
       <el-header>
         <div class="button-bar">
           <el-button type="primary" plain @click="showAddChannelDialog=true">添加新的渠道</el-button>
-          <el-button type="success" plain>测试所有渠道</el-button>
-          <el-button type="info" plain>测试禁用渠道</el-button>
-          <el-button type="danger" plain>删除禁用渠道</el-button>
+          <el-button type="success" plain @click="testAll">测试所有渠道</el-button>
+          <el-button type="info" plain @click="testDisabled">测试禁用渠道</el-button>
+          <el-button type="danger" plain @click="deleteDisabled">删除禁用渠道</el-button>
         </div>
       </el-header>
       <el-table :data="tableData" style="width: 100%" border>
@@ -315,20 +336,20 @@ export default {
       </el-footer>
     </el-container>
 
+    <!-- 创建渠道对话框 -->
     <el-dialog title="创建新的渠道"
-               :rules="rules"
                :visible.sync="showAddChannelDialog"
                :close-on-click-modal="false">
-      <el-form :model="ChannelInfoForm" label-width="auto" label-position="left" ref="NewChannelInfoForm">
+      <el-form :model="ChannelInfoForm" :rules="rules" label-width="auto" label-position="left" ref="ruleForm">
         <el-form-item label="模型" prop="channelModelName">
           <el-cascader
               :options="options"
               :props="{ expandTrigger: 'hover' }"
               @change="handleChange"
-              width="auto"
               size="medium"
               filterable
-              style="margin-left: 0;"
+              :show-all-levels="false"
+              style="margin-right: 450px;"
           ></el-cascader>
         </el-form-item>
         <el-form-item label="名称" prop="channelName">
@@ -337,7 +358,7 @@ export default {
         <el-form-item label="API密钥" prop="channelApiKey">
           <el-input v-model="ChannelInfoForm.channelApiKey"></el-input>
         </el-form-item>
-        <el-form-item label="密钥" prop="channelSecretKey" v-if="ChannelInfoForm.channelType ==='Moonshot AI'">
+        <el-form-item label="密钥" prop="channelSecretKey" v-if="ChannelInfoForm.channelType ==='百度文心大模型'">
           <el-input v-model="ChannelInfoForm.channelSecretKey"></el-input>
         </el-form-item>
         <el-form-item>
@@ -345,8 +366,37 @@ export default {
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
+    <!-- 编辑渠道对话框 -->
     </el-dialog>
     <el-dialog title="编辑渠道" :visible.sync="showEditChannelDialog">
+      <el-form :model="ChannelInfoForm" label-width="auto" label-position="right" ref="ruleForm">
+        <el-form-item label="模型" prop="channelModelName">
+          <el-cascader
+              :options="options"
+              :props="{ expandTrigger: 'hover' }"
+              v-model:value="ChannelInfoForm.channelModelName"
+              @change="handleChange"
+              width="auto"
+              size="medium"
+              filterable
+              :show-all-levels="false"
+              style="margin-right: 450px;"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="名称" prop="channelName">
+          <el-input v-model="ChannelInfoForm.channelName"></el-input>
+        </el-form-item>
+        <el-form-item label="API密钥" prop="channelApiKey">
+          <el-input v-model="ChannelInfoForm.channelApiKey"></el-input>
+        </el-form-item>
+        <el-form-item label="密钥" prop="channelSecretKey" v-if="ChannelInfoForm.channelType ==='百度文心大模型'">
+          <el-input v-model="ChannelInfoForm.channelSecretKey"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleUpdate('ruleForm')">保存</el-button>
+          <el-button @click="resetForm('ruleForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -370,17 +420,5 @@ export default {
 
 .el-form-item .el-cascader {
   margin-left: 0;
-}
-
-.green {
-  color: green;
-}
-
-.yellow {
-  color: #c8b705;
-}
-
-.red {
-  color: #880a0a;
 }
 </style>
