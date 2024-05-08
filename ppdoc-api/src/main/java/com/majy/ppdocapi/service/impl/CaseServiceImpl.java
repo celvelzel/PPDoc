@@ -51,7 +51,7 @@ public class CaseServiceImpl implements CaseService
     public Result delete(Integer case_id)
     {
         // 尝试执行删除操作
-        long rowsAffected = caseMapper.deleteCaseById(case_id);
+        Integer rowsAffected = caseMapper.deleteCaseById(case_id);
         // 检查是否成功删除
         if (rowsAffected > 0)
         {

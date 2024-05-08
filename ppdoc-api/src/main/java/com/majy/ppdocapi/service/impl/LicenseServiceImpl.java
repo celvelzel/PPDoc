@@ -47,9 +47,16 @@ public class LicenseServiceImpl implements LicenseService
     @Override
     public Result deleteByDocumentId(Integer documentId)
     {
-        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
-        licenseMapper.deleteByDocumentId(documentId);
+        if (documentMapper.getById(documentId).getDocument_url() != null)
+        {
+            ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
+        }
+        Integer rowsAffected = licenseMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
+        if (rowsAffected == 0)
+        {
+            return Result.deleteFailure();
+        }
         return Result.deleteSuccess();
     }
 
@@ -81,7 +88,11 @@ public class LicenseServiceImpl implements LicenseService
     @Override
     public Result update(License license)
     {
-        licenseMapper.update(license);
+        Integer rowsAffected = licenseMapper.update(license);
+        if (rowsAffected == 0)
+        {
+            return Result.updateFailure();
+        }
         return Result.updateSuccess();
     }
 }

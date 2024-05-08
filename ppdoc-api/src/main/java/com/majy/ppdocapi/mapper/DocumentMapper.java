@@ -40,14 +40,14 @@ public interface DocumentMapper
      * @param document_id 文档id
      */
     @Delete("delete from document where document_id = #{document_id}")
-    public void delete(Integer document_id);
+    public Integer delete(Integer document_id);
 
     /**
      * 更新数据
      *
      * @param document 文档对象
      */
-    public void update(Document document);
+    public Integer update(Document document);
 
     /**
      * 查询所有数据

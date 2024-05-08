@@ -1,41 +1,179 @@
 <script>
 import axios from 'axios'
+import Schema from "async-validator";
 
 export default {
   name: 'Channel',
   data() {
     return {
-      page: 1,
+      tableData: [],
       total: 0,
-      tableData: [
+      page: 1,
+      pageSize: 10,
+      showAddChannelDialog: false,
+      showEditChannelDialog: false,
+      options: [
         {
-          id: '1',
-          name: '渠道1',
-          type: 'MoonShot AI',
-          state: '禁用',
-          response_time: '0.1s',
-          create_time: '2023-03-05 12:00:00'
+          value: 'Moonshot AI',
+          label: 'Moonshot AI',
+          children: [
+            {
+              value: 'moonshot-v1-8k',
+              label: 'moonshot-v1-8k',
+            },
+            {
+              value: 'moonshot-v1-32k',
+              label: 'moonshot-v1-32k',
+            },
+            {
+              value: 'moonshot-v1-128k',
+              label: 'moonshot-v1-128k',
+            }
+          ]
         },
         {
-          id: '3',
-          name: '渠道3',
-          type: 'ChatGPT',
-          state: '禁用',
-          response_time: '0.1s',
-          create_time: '2023-03-01 12:00:00'
-        },
-        {
-          id: '2',
-          name: '渠道2',
-          type: 'ChatGLM',
-          state: '禁用',
-          response_time: '0.1s',
-          create_time: '2023-04-01 12:00:00'
-        },
-      ]
+          value: '智谱ChatGLM',
+          label: '智谱ChatGLM',
+          children: [
+            {
+              value: 'ChatGLM-3',
+              label: 'ChatGLM-3',
+            },
+            {
+              value: 'ChatGLM-4',
+              label: 'ChatGLM-4',
+            },
+          ]
+        }
+      ],
+      rules: {
+        channelName: [
+          {required: true, message: '请输入渠道名称', trigger: 'blur'},
+          {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
+        ],
+        channelModelName: [
+          {required: true, message: '请选择模型', trigger: 'change'}
+        ],
+        channelApiKey: <REDACTED_SECRET>
+          {required: true, message: '请输入API Key', trigger: 'blur'},
+        ],
+        channelSecretKey: <REDACTED_SECRET>
+          {required: true, message: '请输入Secret Key', trigger: 'blur'},
+        ]
+      },
+      ChannelInfoForm: {
+        channelId: null,
+        channelName: null,
+        channelType: null,
+        channelStatus: null,
+        channelResponseTime: null,
+        channelModelName: null,
+        channelCreateTime: null,
+        channelApiKey: <REDACTED_SECRET>
+        channelSecretKey: <REDACTED_SECRET>
+      }
     }
   },
-  methods: {},
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!');
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+    handleChange(value) {
+      this.ChannelInfoForm.channelType = value[0];
+      console.log("渠道类型为" + this.ChannelInfoForm.channelType);
+      this.ChannelInfoForm.channelModelName = value[1];
+      console.log("模型为" + this.ChannelInfoForm.channelModelName);
+    },
+    handleEdit(index, row) {
+      console.log(index, row);
+      // this.dialogVisible = true;
+      axios.get('http://localhost:8080/api/channels/' + row.channelId).then(res => {
+        this.showEditChannelDialog = true;
+        this.InfoForm = res.data.data;
+      });
+    },
+    handleDelete(index, row) {
+      console.log(index, row);
+      this.$confirm('此操作将永久删除该文档, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios.delete('http://localhost:8080/api/channels/' + row.channelId).then(res => {
+          console.log(res);
+          this.tableData.splice(index, 1);
+        });
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    handleUpdate() {
+      this.dialogVisible = false;
+      axios.put('http://localhost:8080/api/channels/', this.InfoForm).then(res => {
+        console.log(res);
+        //刷新表格
+        axios.get('http://localhost:8080/api/channels', {
+          params: {
+            page: this.page,
+            pageSize: this.pageSize,
+          }
+        }).then(res => {
+          this.tableData = res.data.data.rows;
+          this.total = res.data.data.total;
+        });
+      });
+    },
+    handleCurrentChange(val) {
+      this.page = val;
+      axios.get('http://localhost:8080/api/channels', {
+        params: {
+          page: val,
+          pageSize: this.pageSize,
+        }
+      }).then(res => {
+        this.tableData = res.data.data.rows;
+        this.total = res.data.data.total;
+      });
+      console.log(`当前页: ${val}`);
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;
+      axios.get('http://localhost:8080/api/channels', {
+        params: {
+          page: this.page,
+          pageSize: val,
+        }
+      }).then(res => {
+        this.tableData = res.data.data.rows;
+        this.total = res.data.data.total;
+      });
+      console.log(`每页 ${val} 条`);
+    }
+  },
+  mounted() {
+    axios.get('http://localhost:8080/api/channels').then(res => {
+      // 返回的数据是res.data
+      this.tableData = res.data.data.rows;
+      this.total = res.data.data.total;
+    });
+  },
 }
 </script>
 
@@ -44,19 +182,23 @@ export default {
     <el-container>
       <el-header>
         <div class="button-bar">
-        <el-button type="primary" plain>添加新的渠道</el-button>
+          <el-button type="primary" plain @click="showAddChannelDialog=true">添加新的渠道</el-button>
           <el-button type="success" plain>测试所有渠道</el-button>
           <el-button type="info" plain>测试禁用渠道</el-button>
           <el-button type="danger" plain>删除禁用渠道</el-button>
         </div>
       </el-header>
-      <el-table :data="tableData" style="width: 100%" border  >
-        <el-table-column prop="id" label="ID" width="180"></el-table-column>
-        <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="type" label="类型"></el-table-column>
-        <el-table-column prop="state" label="状态" width="80"></el-table-column>
-        <el-table-column prop="response_time" label="响应时间" width="80"></el-table-column>
-        <el-table-column prop="create_time" label="创建时间"></el-table-column>
+      <el-table :data="tableData" style="width: 100%" border>
+        <el-table-column prop="channelId" label="ID" width="180"></el-table-column>
+        <el-table-column prop="channelName" label="名称"></el-table-column>
+        <el-table-column prop="channelType" label="类型"></el-table-column>
+        <el-table-column prop="channelState" label="状态" width="80"></el-table-column>
+        <el-table-column prop="channelResponseTime" label="响应时间" width="80"></el-table-column>
+        <el-table-column prop="channelCreateTime" label="创建时间">
+          <template slot-scope="scope" v-if="scope.row.channelCreateTime">
+            {{ scope.row.channelCreateTime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '') }}
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" width="280" label="操作">
           <template slot-scope="scope">
             <el-button
@@ -70,7 +212,7 @@ export default {
                 @click="handleDelete(scope.$index, scope.row)">删除
             </el-button>
             <el-button
-                size="small"
+                size="mini"
                 type="warning"
                 @click="handleDisable(scope.$index, scope.row)">禁用
             </el-button>
@@ -95,9 +237,40 @@ export default {
         <br>
       </el-footer>
     </el-container>
-    <el-row>
 
-    </el-row>
+    <el-dialog title="创建新的渠道"
+               :rules="rules"
+               :visible.sync="showAddChannelDialog"
+               :close-on-click-modal="false">
+      <el-form :model="ChannelInfoForm" label-width="auto" label-position="left" ref="NewChannelInfoForm">
+        <el-form-item label="模型" prop="channelModelName">
+          <el-cascader
+              :options="options"
+              :props="{ expandTrigger: 'hover' }"
+              @change="handleChange"
+              width="auto"
+              size="medium"
+              filterable
+              style="margin-left: 0;"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="名称" prop="channelName">
+          <el-input v-model="ChannelInfoForm.channelName"></el-input>
+        </el-form-item>
+        <el-form-item label="API密钥" prop="channelApiKey">
+          <el-input v-model="ChannelInfoForm.channelApiKey"></el-input>
+        </el-form-item>
+        <el-form-item label="密钥" prop="channelSecretKey" v-if="ChannelInfoForm.channelType ==='Moonshot AI'">
+          <el-input v-model="ChannelInfoForm.channelSecretKey"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+          <el-button @click="resetForm('ruleForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <el-dialog title="编辑渠道" :visible.sync="showEditChannelDialog">
+    </el-dialog>
   </div>
 </template>
 
@@ -113,7 +286,12 @@ export default {
   /* 增大内边距*/
   padding: 20px 30px;
 }
+
 .button-bar {
   text-align: left;
+}
+
+.el-form-item .el-cascader {
+  margin-left: 0;
 }
 </style>

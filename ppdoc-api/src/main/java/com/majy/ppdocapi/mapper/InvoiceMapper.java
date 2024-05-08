@@ -21,13 +21,13 @@ public interface InvoiceMapper
      * @param invoice_id    发票id
      */
     @Delete("delete from invoice where invoice_id = #{invoice_id}")
-    public void delete(Integer invoice_id);
+    public Integer delete(Integer invoice_id);
 
     /**
      * 更新数据
      * @param invoice    发票对象
      */
-    public void update(Invoice invoice);
+    public Integer update(Invoice invoice);
 
     /**
      * 查询所有数据
@@ -57,13 +57,13 @@ public interface InvoiceMapper
      * @param document_id    document_id
      */
     @Delete("delete from invoice where document_id = #{document_id}")
-    public void deleteByDocumentId(Integer document_id);
+    public Integer deleteByDocumentId(Integer document_id);
 
     /**
      * 根据document_id更新发票数据
      * @param invoice    发票对象
      */
     @Update("update invoice set file_name= #{file_name},seller_name = #{seller_name},all_info = #{all_info},invoice_url = #{invoice_url},invoice_date = #{invoice_date},purchaser_name = #{purchaser_name},project_name = #{project_name},document_id = #{document_id},invoice_code = #{invoice_code},invoice_amount = #{invoice_amount} where document_id = #{document_id}")
-    public void updateByDocumentId(Invoice invoice);
+    public Integer updateByDocumentId(Invoice invoice);
 
 }

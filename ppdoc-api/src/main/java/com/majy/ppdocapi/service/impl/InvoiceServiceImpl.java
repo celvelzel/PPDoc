@@ -47,9 +47,16 @@ public class InvoiceServiceImpl implements InvoiceService
     @Override
     public Result deleteByDocumentId(Integer documentId)
     {
-        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
-        invoiceMapper.deleteByDocumentId(documentId);
+        if (null != documentMapper.getById(documentId).getDocument_url())
+        {
+            ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
+        }
+        Integer rowsAffected = invoiceMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
+        if (rowsAffected == 0)
+        {
+            return Result.deleteFailure();
+        }
         return Result.deleteSuccess();
     }
 
@@ -62,7 +69,6 @@ public class InvoiceServiceImpl implements InvoiceService
         invoiceMapper.insert(invoice);
         return Result.createSuccess();
     }
-
 
 
     @Override
@@ -83,7 +89,11 @@ public class InvoiceServiceImpl implements InvoiceService
     @Override
     public Result update(Invoice invoice)
     {
-        invoiceMapper.update(invoice);
+        Integer rowsAffected = invoiceMapper.update(invoice);
+        if (rowsAffected == 0)
+        {
+            return Result.updateFailure();
+        }
         return Result.updateSuccess();
     }
 }

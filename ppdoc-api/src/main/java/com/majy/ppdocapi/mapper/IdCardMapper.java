@@ -19,16 +19,17 @@ public interface IdCardMapper
      * 根据身份证id删除身份证信息
      */
     @Delete("delete from id_card where id = #{id}")
-    public void delete(Integer id);
+    public Integer delete(Integer id);
 
     /**
      * 根据document_id删除身份证信息
      */
     @Delete("delete from id_card where document_id = #{document_id}")
-    public void deleteByDocumentId(Integer document_id);
+    public Integer deleteByDocumentId(Integer document_id);
 
     /**
      * 根据身份证id查询身份证信息
+     *
      * @param id
      */
     @Select("select * from id_card where id = #{id}")
@@ -36,6 +37,7 @@ public interface IdCardMapper
 
     /**
      * 根据document_id查询身份证信息
+     *
      * @param document_id
      */
     @Select("select * from id_card where document_id = #{document_id}")
@@ -50,5 +52,5 @@ public interface IdCardMapper
     /**
      * 更新身份证信息
      */
-    void update(IdCard idCard);
+    Integer update(IdCard idCard);
 }

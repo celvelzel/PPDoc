@@ -7,29 +7,33 @@
         <id column="channel_id" property="channelId" jdbcType="INTEGER"/>
         <result column="channel_name" property="channelName" jdbcType="VARCHAR"/>
         <result column="channel_type" property="channelType" jdbcType="VARCHAR"/>
-        <result column="channel_state" property="channelState" jdbcType="VARCHAR"/>
+        <result column="channel_status" property="channelStatus" jdbcType="VARCHAR"/>
         <result column="channel_response_time" property="channelResponseTime" jdbcType="VARCHAR"/>
-        <result column="channel_crater_time" property="channelCraterTime" jdbcType="TIMESTAMP"/>
+        <result column="channel_create_time" property="channelCreateTime" jdbcType="TIMESTAMP"/>
         <result column="channel_model_name" property="channelModelName" jdbcType="VARCHAR"/>
         <result column="channel_api_key" property="channelApiKey" jdbcType="VARCHAR"/>
         <result column="channel_secret_key" property="channelSecretKey" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <select id="list" resultMap="BaseResultMap">
+        SELECT *
+        FROM channel
+    </select>
 
     <!-- 查询语句 -->
     <select id="selectByChannelId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         SELECT *
         FROM channel
-        WHERE channel_id = #{channelId,jdbcType=INTEGER}
+        WHERE channel_id = #{channelId}
     </select>
 
     <!-- 插入语句 -->
     <insert id="insert" parameterType="com.majy.ppdocapi.entity.po.Channel">
         INSERT INTO channel (channel_id, channel_name, channel_type,
-                             channel_state, channel_response_time, channel_crater_time,
+                             channel_status, channel_response_time, channel_create_time,
                              channel_model_name, channel_api_key, channel_secret_key)
         VALUES (#{channelId,jdbcType=INTEGER}, #{channelName,jdbcType=VARCHAR}, #{channelType,jdbcType=VARCHAR},
-                #{channelState,jdbcType=VARCHAR}, #{channelResponseTime,jdbcType=DECIMAL}, #{channelCraterTime,jdbcType=TIMESTAMP},
+                #{channelStatus,jdbcType=VARCHAR}, #{channelResponseTime,jdbcType=DECIMAL}, #{channelCreateTime},
                 #{channelModelName,jdbcType=VARCHAR}, #{channelApiKey,jdbcType=VARCHAR}, #{channelSecretKey,jdbcType=VARCHAR})
     </insert>
 
@@ -38,9 +42,9 @@
         UPDATE channel
         SET channel_name = #{channelName,jdbcType=VARCHAR},
             channel_type = #{channelType,jdbcType=VARCHAR},
-            channel_state = #{channelState,jdbcType=VARCHAR},
+            channel_status = #{channelStatus,jdbcType=VARCHAR},
             channel_response_time = #{channelResponseTime,jdbcType=DECIMAL},
-            channel_crater_time = #{channelCraterTime,jdbcType=TIMESTAMP},
+            channel_create_time = #{channelCreateTime,jdbcType=TIMESTAMP},
             channel_model_name = #{channelModelName,jdbcType=VARCHAR},
             channel_api_key = #{channelApiKey,jdbcType=VARCHAR},
             channel_secret_key = #{channelSecretKey,jdbcType=VARCHAR}

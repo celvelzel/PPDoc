@@ -26,7 +26,7 @@ public interface LicenseMapper
      * @param license_id
      */
     @Delete("delete from license where license_id = #{license_id}")
-    public void delete(Integer license_id);
+    public Integer delete(Integer license_id);
 
     /**
      * 根据license_id查询营业执照数据
@@ -45,7 +45,7 @@ public interface LicenseMapper
      *
      * @param license
      */
-    public void update(License license);
+    public Integer update(License license);
 
 
     /**
@@ -54,5 +54,5 @@ public interface LicenseMapper
      * @param document_id
      */
     @Delete("delete from license where document_id = #{document_id}")
-    public void deleteByDocumentId(Integer document_id);
+    public Integer deleteByDocumentId(Integer document_id);
 }

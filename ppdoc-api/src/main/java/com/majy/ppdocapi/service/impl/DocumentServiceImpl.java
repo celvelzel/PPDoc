@@ -54,9 +54,22 @@ public class DocumentServiceImpl implements DocumentService
     @Override
     public Result delete(Integer id)
     {
-        ossUtils.deleteFile(documentMapper.getById(id).getDocument_url());
-        documentMapper.delete(id);
-        return Result.deleteSuccess();
+        //删除对象存储中的对应文件
+        if (documentMapper.getById(id).getDocument_url() != null)
+        {
+            ossUtils.deleteFile(documentMapper.getById(id).getDocument_url());
+        }
+        // 尝试执行删除操作
+        Integer rowsAffected = documentMapper.delete(id);
+        // 检查是否成功删除
+        if (rowsAffected > 0)
+        {
+            return Result.deleteSuccess();
+        }
+        else
+        {
+            return Result.deleteFailure();
+        }
     }
 
     @Override
@@ -110,7 +123,11 @@ public class DocumentServiceImpl implements DocumentService
     @Override
     public Result update(Document document)
     {
-        documentMapper.update(document);
+        Integer rowsAffected =  documentMapper.update(document);
+        if (rowsAffected == 0)
+        {
+            return Result.updateFailure();
+        }
         return Result.updateSuccess();
     }
 

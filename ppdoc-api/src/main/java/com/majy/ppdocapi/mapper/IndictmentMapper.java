@@ -20,18 +20,18 @@ public interface IndictmentMapper
     * 删除起诉状
      */
     @Delete("delete from indictment where indictment_id = #{indictment_id}")
-    public void delete(Integer indictment_id);
+    public Integer delete(Integer indictment_id);
 
     /*
     * 根据文档ID删除起诉状
      */
     @Delete("delete from indictment where document_id = #{document_id}")
-    public void deleteByDocumentId(Integer document_id);
+    public Integer deleteByDocumentId(Integer document_id);
 
     /*
     * 更新起诉状
      */
-    public void update(Indictment indictment);
+    public Integer update(Indictment indictment);
 
     /*
     * 根据ID查询起诉状

@@ -27,7 +27,7 @@ public interface CaseMapper
      * 根据案件ID删除数据
      */
     @Delete("DELETE FROM t_case WHERE case_id = #{case_id}")
-    long deleteCaseById(Integer case_id);
+    Integer deleteCaseById(Integer case_id);
 
     /**
      * 根据案件ID更新数据

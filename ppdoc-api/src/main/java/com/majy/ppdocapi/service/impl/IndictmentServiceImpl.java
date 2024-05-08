@@ -45,9 +45,16 @@ public class IndictmentServiceImpl implements IndictmentService
     @Override
     public Result delete(Integer documentId)
     {
-        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
-        indictmentMapper.deleteByDocumentId(documentId);
+        if (documentMapper.getById(documentId).getDocument_url() != null)
+        {
+            ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
+        }
+        Integer rowsAffected =  indictmentMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);;
+        if (rowsAffected == 0)
+        {
+            return Result.deleteFailure();
+        }
         return Result.deleteSuccess();
     }
 
@@ -79,7 +86,11 @@ public class IndictmentServiceImpl implements IndictmentService
     @Override
     public Result update(Indictment indictment)
     {
-        indictmentMapper.update(indictment);
+        Integer rowsAffected = indictmentMapper.update(indictment);
+        if(rowsAffected == 0)
+        {
+            return Result.updateFailure();
+        }
         return Result.updateSuccess();
     }
 }

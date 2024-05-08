@@ -9,14 +9,13 @@ import java.util.List;
 @Mapper
 public interface ChannelMapper
 {
-    @Select("select * from channel")
     List<Channel> list();
 
-    Channel selectByChannelId();
+    Channel selectByChannelId(Integer ChannelId);
 
     void insert(Channel channel);
 
-    void update(Channel channel);
+    Integer update(Channel channel);
 
-    void deleteByChannelId(Integer channelId);
+    Integer deleteByChannelId(Integer channelId);
 }

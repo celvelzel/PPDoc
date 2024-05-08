@@ -56,9 +56,16 @@ public class IdCardServiceImpl implements IdCardService
     @Override
     public Result delete(Integer documentId)
     {
-        ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
-        idCardMapper.deleteByDocumentId(documentId);
+        if (documentMapper.getById(documentId).getDocument_url() != null)
+        {
+            ossUtils.deleteFile(documentMapper.getById(documentId).getDocument_url());
+        }
+        Integer rowsAffected = idCardMapper.deleteByDocumentId(documentId);
         documentMapper.delete(documentId);
+        if (rowsAffected == 0)
+        {
+            return Result.deleteFailure();
+        }
         return Result.deleteSuccess();
     }
 
@@ -96,7 +103,11 @@ public class IdCardServiceImpl implements IdCardService
     @Override
     public Result update(IdCard idCard)
     {
-        idCardMapper.update(idCard);
+        Integer rowsAffected = idCardMapper.update(idCard);
+        if(rowsAffected == 0)
+        {
+            return Result.updateFailure();
+        }
         return Result.updateSuccess();
     }
 }
