@@ -1,29 +1,35 @@
-package com.majy.ppdocapi.utils.LLMUtils;
+package com.majy.ppdocapi.utils.ModelUtils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.Method;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.zhipu.oapi.Constants;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class KimiUtils
 {
-    private String API_KEY = "<REDACTED_MODEL_API_KEY>";
+    private static String API_KEY = "<REDACTED_MODEL_API_KEY>";
     private static final String MODELS_URL = "https://api.moonshot.cn/v1/models";
     private static final String FILES_URL = "https://api.moonshot.cn/v1/files";
     private static final String ESTIMATE_TOKEN_COUNT_URL = "https://api.moonshot.cn/v1/tokenizers/estimate-token-count";
@@ -160,6 +166,48 @@ public class KimiUtils
                 new Message(RoleEnum.user.name(), "请你介绍一下hutool")
         );
         System.out.println(invokeChat(messages));
+    }
+
+    public static double getResponseTime(String apiKey,String modelName)
+    {
+        long startTime = System.currentTimeMillis();
+
+        // 带参数的响应时间测试
+        String result = HttpRequest.post("https://api.moonshot.cn/v1/chat/completions")
+                .header(Header.AUTHORIZATION, "Bearer " + apiKey)//头信息，多个头信息多次调用此方法即可
+                .contentType("application/json")
+                .body("{\"model\": \""+modelName+"\",\"messages\": [{\"role\": \"system\", \"content\": \"你好\"}]}")
+                .timeout(20000)//超时，毫秒
+                .execute().body();
+        log.info("带参数的响应内容Response Body: {}", result);
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        log.info("{}响应时间Response Time: {} ms", modelName, elapsedTime);
+
+//        try (CloseableHttpClient httpClient = HttpClients.createDefault())
+//        {
+//            HttpGet httpGet = new HttpGet(url);
+//            // 无参数的响应时间测试
+//            CloseableHttpResponse response = httpClient.execute(httpGet);
+//            try
+//            {
+//                // 确保读取完整的响应内容，以便计算完整的响应时间
+//                String responseBody = EntityUtils.toString(response.getEntity());
+//                log.info("不带参数的响应内容Response Body: {}", responseBody);
+//
+//                long endTime = System.currentTimeMillis();
+//                long elapsedTime = endTime - startTime;
+//                log.info("响应时间Response Time: {} ms", elapsedTime);
+//                return elapsedTime;
+//            } finally
+//            {
+//                response.close();
+//            }
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+        return (double) elapsedTime / 1000;
     }
 
     @Test

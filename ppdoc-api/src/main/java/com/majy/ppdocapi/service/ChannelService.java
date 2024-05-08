@@ -16,4 +16,6 @@ public interface ChannelService
     public Result deleteByChannelId(Integer channelId);
 
     public Result getByChannelId(Integer channelId);
+
+    public Result testByChannelId(Integer channelId);
 }

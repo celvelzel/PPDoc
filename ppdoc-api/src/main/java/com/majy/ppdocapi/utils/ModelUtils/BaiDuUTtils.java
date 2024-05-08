@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils.LLMUtils;
+package com.majy.ppdocapi.utils.ModelUtils;
 
 import cn.hutool.json.JSONUtil;
 import com.baidubce.qianfan.Qianfan;
@@ -34,7 +34,7 @@ public class BaiDuUTtils
 
     static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().readTimeout(30, TimeUnit.SECONDS).build();
 
-    public static String invokeChatBySDK(String systemPrompt,String userPrompt)
+    public static String invokeChatBySDK(String systemPrompt, String userPrompt)
     {
         ChatResponse response = new Qianfan(Auth.TYPE_OAUTH, API_KEY, SECRET_KEY).chatCompletion()
                 .model("ERNIE-Bot") // 使用model指定预置模型
@@ -57,6 +57,24 @@ public class BaiDuUTtils
                 .execute(); // 发起请求
         log.info("baidu返回的内容是:" + response.toString());
         return response.getResult();
+    }
+
+    public static double getResponseTime(String apiKey, String secretKey, String modelName)
+    {
+        long startTime = System.currentTimeMillis();
+
+        ChatResponse response = new Qianfan(Auth.TYPE_OAUTH, apiKey, secretKey).chatCompletion()
+                .model(modelName) // 使用model指定预置模型
+                // .endpoint("completions_pro") // 也可以使用endpoint指定任意模型 (二选一)
+                .addMessage("user", "你好") // 添加用户消息 (此方法可以调用多次，以实现多轮对话的消息传递)
+                .temperature(0.7) // 自定义超参数
+                .execute(); // 发起请求
+        long endTime = System.currentTimeMillis();
+        log.info("baidu返回的内容是:" + response.toString());
+        long elapsedTime = endTime - startTime;
+        log.info("baidu响应时间是:{}ms", elapsedTime);
+
+        return (double) elapsedTime / 1000;
     }
 
     //ERNIE-3.5-8K
@@ -105,7 +123,7 @@ public class BaiDuUTtils
 
     public static void main(String[] args) throws IOException
     {
-        String res = invokeChatBySDK("你好，为什么我调用api的过程中报错：error_code\":336002,\"error_msg\":\"Invalid JSON\",\"id\":\"as-iy1ffcvui9\"");
+        String res = invokeChatBySDK("你好");
         log.info(res);
     }
 }

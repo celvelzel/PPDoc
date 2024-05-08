@@ -1,4 +1,4 @@
-package com.majy.ppdocapi.utils.LLMUtils;
+package com.majy.ppdocapi.utils.ModelUtils;
 
 import com.alibaba.dashscope.aigc.generation.Generation;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
@@ -22,7 +22,7 @@ public class ALiUtils
         MessageManager msgManager = new MessageManager(10);
         Message systemMsg =
                 Message.builder().role(Role.SYSTEM.getValue()).content("You are a helpful assistant.").build();
-        Message userMsg = Message.builder().role(Role.USER.getValue()).content("如何做西红柿鸡蛋？").build();
+        Message userMsg = Message.builder().role(Role.USER.getValue()).content("你好").build();
         msgManager.add(systemMsg);
         msgManager.add(userMsg);
         QwenParam param =

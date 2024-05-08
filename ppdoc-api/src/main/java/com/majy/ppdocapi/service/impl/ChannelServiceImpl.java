@@ -7,6 +7,9 @@ import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Channel;
 import com.majy.ppdocapi.mapper.ChannelMapper;
 import com.majy.ppdocapi.service.ChannelService;
+import com.majy.ppdocapi.utils.ModelUtils.BaiDuUTtils;
+import com.majy.ppdocapi.utils.ModelUtils.KimiUtils;
+import com.majy.ppdocapi.utils.ModelUtils.ZhiPuUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,20 @@ public class ChannelServiceImpl implements ChannelService
     @Override
     public Result add(Channel channel)
     {
+        switch (channel.getChannelType())
+        {
+            case "智谱ChatGLM":
+                channel.setChannelResponseTime(String.valueOf(ZhiPuUtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelModelName())));
+                break;
+            case "Moonshot AI":
+                channel.setChannelResponseTime(String.valueOf(KimiUtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelModelName())));
+                break;
+            case"百度文心大模型":
+                channel.setChannelResponseTime(String.valueOf(BaiDuUTtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelSecretKey(), channel.getChannelModelName())));
+                break;
+            default:
+                return Result.fail("不支持的渠道类型");
+        }
         channelMapper.insert(channel);
         return Result.createSuccess();
     }
@@ -75,5 +92,36 @@ public class ChannelServiceImpl implements ChannelService
     public Result getByChannelId(Integer channelId)
     {
         return Result.selectSuccess(channelMapper.selectByChannelId(channelId));
+    }
+
+    @Override
+    public Result testByChannelId(Integer channelId)
+    {
+        Channel channel = channelMapper.selectByChannelId(channelId);
+        switch (channel.getChannelType())
+        {
+            case "智谱ChatGLM":
+                channel.setChannelResponseTime(String.valueOf(ZhiPuUtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelModelName())));
+                break;
+            case "Moonshot AI":
+                channel.setChannelResponseTime(String.valueOf(KimiUtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelModelName())));
+                break;
+            case"百度文心大模型":
+                channel.setChannelResponseTime(String.valueOf(BaiDuUTtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelSecretKey(), channel.getChannelModelName())));
+                break;
+            default:
+                return Result.fail("不支持的渠道类型");
+        }
+        // 尝试执行更新操作
+        Integer rowsAffected = channelMapper.update(channel);
+        // 检查是否成功更新
+        if (rowsAffected > 0)
+        {
+            return Result.updateSuccess(channel.getChannelResponseTime());
+        }
+        else
+        {
+            return Result.updateFailure();
+        }
     }
 }

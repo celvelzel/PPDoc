@@ -34,6 +34,13 @@ public class ChannelController
         return channelService.add(channel);
     }
 
+    @PostMapping("test/{channelId}")
+    public Result test(@PathVariable Integer channelId)
+    {
+        log.info("进行测试渠道，参数为:{}", channelId);
+        return channelService.testByChannelId(channelId);
+    }
+
     @PutMapping
     public Result update(@RequestBody Channel channel)
     {

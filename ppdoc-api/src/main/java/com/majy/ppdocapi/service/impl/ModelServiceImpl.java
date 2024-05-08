@@ -2,14 +2,13 @@ package com.majy.ppdocapi.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.majy.ppdocapi.service.ModelService;
-import com.majy.ppdocapi.utils.LLMUtils.BaiDuUTtils;
-import com.majy.ppdocapi.utils.LLMUtils.KimiUtils;
-import com.majy.ppdocapi.utils.LLMUtils.ZhiPuUtils;
+import com.majy.ppdocapi.utils.ModelUtils.BaiDuUTtils;
+import com.majy.ppdocapi.utils.ModelUtils.KimiUtils;
+import com.majy.ppdocapi.utils.ModelUtils.ZhiPuUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

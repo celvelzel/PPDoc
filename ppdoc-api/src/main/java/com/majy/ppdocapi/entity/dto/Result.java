@@ -43,14 +43,19 @@ public class Result<T>
         return new Result(200, "update success");
     }
 
+    public static <T> Result<T> updateSuccess(T Data)
+    {
+        return new Result(200, "update success", Data);
+    }
+
     public static Result updateFailure()
     {
-        return new Result(400 , "update failure");
+        return new Result(400, "update failure");
     }
 
     public static <T> Result<T> selectSuccess(T Data)
     {
-        return new Result(200, "select success",Data);
+        return new Result(200, "select success", Data);
     }
 
     public static Result selectFailure()

@@ -36,12 +36,40 @@ export default {
           label: '智谱ChatGLM',
           children: [
             {
-              value: 'ChatGLM-3',
-              label: 'ChatGLM-3',
+              value: 'GLM-3',
+              label: 'GLM-3',
             },
             {
-              value: 'ChatGLM-4',
-              label: 'ChatGLM-4',
+              value: 'GLM-4',
+              label: 'GLM-4',
+            },
+          ]
+        },
+        {
+          value: '百度文心大模型',
+          label: '百度文心大模型',
+          children: [
+            {
+              value: 'ERNIE-Bot',
+              label: 'ERNIE-Bot',
+            },
+            {
+              value: 'ERNIE-Bot-4',
+              label: 'ERNIE-Bot-4',
+            },
+          ]
+        },
+        {
+          value: '阿里通义千问大模型',
+          label: '阿里通义千问大模型',
+          children: [
+            {
+              value: 'qwen-turbo',
+              label: 'qwen-turbo',
+            },
+            {
+              value: 'qwen-max',
+              label: 'qwen-max',
             },
           ]
         }
@@ -87,6 +115,40 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+    },
+    getResponseTimeStatus(responseTime) {
+      if (responseTime > 0 && responseTime < 2) {
+        return 'success';
+      } else if (responseTime >= 2 && responseTime < 5) {
+        return 'warning';
+      } else {
+        return 'danger';
+      }
+    },
+    handleTest(index, row) {
+      axios.post('http://localhost:8080/api/channels/test/' + row.channelId).then(res => {
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message({
+            type: 'success',
+            message: '测试成功'
+          });
+          axios.get('http://localhost:8080/api/channels', {
+            params: {
+              page: this.page,
+              pageSize: this.pageSize,
+            }
+          }).then(res => {
+            this.tableData = res.data.data.rows;
+            this.total = res.data.data.total;
+          });
+        } else {
+          this.$message({
+            type: 'error',
+            message: '测试失败'
+          });
+        }
+      })
     },
     handleChange(value) {
       this.ChannelInfoForm.channelType = value[0];
@@ -191,9 +253,24 @@ export default {
       <el-table :data="tableData" style="width: 100%" border>
         <el-table-column prop="channelId" label="ID" width="180"></el-table-column>
         <el-table-column prop="channelName" label="名称"></el-table-column>
-        <el-table-column prop="channelType" label="类型"></el-table-column>
-        <el-table-column prop="channelState" label="状态" width="80"></el-table-column>
-        <el-table-column prop="channelResponseTime" label="响应时间" width="80"></el-table-column>
+        <el-table-column prop="channelType" label="类型">
+          <template slot-scope="scope">
+            <el-tag type="info">{{ scope.row.channelType }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="channelStatus" label="状态" width="80">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.channelStatus==='已启用'?'success':'danger'">{{ scope.row.channelStatus }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="channelResponseTime" label="响应时间" width="80">
+          <template slot-scope="scope">
+            <el-tag :type="getResponseTimeStatus(scope.row.channelResponseTime)">{{
+                scope.row.channelResponseTime
+              }}s
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="channelCreateTime" label="创建时间">
           <template slot-scope="scope" v-if="scope.row.channelCreateTime">
             {{ scope.row.channelCreateTime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '') }}
@@ -293,5 +370,17 @@ export default {
 
 .el-form-item .el-cascader {
   margin-left: 0;
+}
+
+.green {
+  color: green;
+}
+
+.yellow {
+  color: #c8b705;
+}
+
+.red {
+  color: #880a0a;
 }
 </style>
