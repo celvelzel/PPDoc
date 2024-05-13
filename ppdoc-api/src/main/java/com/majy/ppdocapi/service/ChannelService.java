@@ -26,4 +26,10 @@ public interface ChannelService
     public Result enableChannel(Integer channelId);
 
     public Result disableChannel(Integer channelId);
+
+    Result testAll();
+
+    Result testDisabled();
+
+    public void setResponseTime(Channel channel);
 }

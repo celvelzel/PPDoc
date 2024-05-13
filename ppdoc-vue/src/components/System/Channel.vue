@@ -145,6 +145,48 @@ export default {
         return 'danger';
       }
     },
+    testAll() {
+      axios.post('http://localhost:8080/api/channels/test/all').then(res => {
+        console.log(res);
+        if (res.data.code === 200) {
+          this.$message({
+            type: 'success',
+            message: '测试所有渠道成功'
+          });
+          //刷新页面
+          axios.get('http://localhost:8080/api/channels', {
+            params: {
+              page: this.page,
+              pageSize: this.pageSize,
+            }
+          }).then(res => {
+            this.tableData = res.data.data.rows;
+            this.total = res.data.data.total;
+          })
+        }
+      })
+    },
+    testDisabled() {
+      axios.post('http://localhost:8080/api/channels/test/disabled').then(res => {
+        console.log(res);
+        if (res.data.code === 200) {
+          this.$message({
+            type: 'success',
+            message: '测试禁用渠道成功'
+          });
+          //刷新页面
+          axios.get('http://localhost:8080/api/channels', {
+            params: {
+              page: this.page,
+              pageSize: this.pageSize,
+            }
+          }).then(res => {
+            this.tableData = res.data.data.rows;
+            this.total = res.data.data.total;
+          })
+        }
+      })
+    },
     handleTest(index, row) {
       axios.post('http://localhost:8080/api/channels/test/' + row.channelId).then(res => {
         console.log(res);
@@ -273,8 +315,7 @@ export default {
           type: 'error',
           message: '至少需要启用一个渠道'
         });
-      }
-      else {
+      } else {
         axios.put('http://localhost:8080/api/channels/disable/' + row.channelId).then(res => {
           console.log(res);
           this.$message({
@@ -329,7 +370,7 @@ export default {
           <el-button type="primary" plain @click="showAddChannelDialog=true">添加新的渠道</el-button>
           <el-button type="success" plain @click="testAll">测试所有渠道</el-button>
           <el-button type="info" plain @click="testDisabled">测试禁用渠道</el-button>
-          <el-button type="danger" plain @click="deleteDisabled">删除禁用渠道</el-button>
+          <!--          <el-button type="danger" plain @click="deleteDisabled">删除禁用渠道</el-button>-->
         </div>
       </el-header>
       <el-table :data="tableData" style="width: 100%" border>

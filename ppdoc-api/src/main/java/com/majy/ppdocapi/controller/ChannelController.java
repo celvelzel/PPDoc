@@ -41,6 +41,20 @@ public class ChannelController
         return channelService.testByChannelId(channelId);
     }
 
+    @PostMapping("test/all")
+    public Result testAll()
+    {
+        log.info("测试所有渠道");
+        return channelService.testAll();
+    }
+
+    @PostMapping("test/disabled")
+    public Result testDisabled()
+    {
+        log.info("测试禁用渠道");
+        return channelService.testDisabled();
+    }
+
     @PutMapping
     public Result update(@RequestBody Channel channel)
     {
