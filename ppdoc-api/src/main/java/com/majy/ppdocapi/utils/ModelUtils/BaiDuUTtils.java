@@ -34,7 +34,7 @@ public class BaiDuUTtils
 
     static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().readTimeout(30, TimeUnit.SECONDS).build();
 
-    public static String invokeChatBySDK(String systemPrompt, String userPrompt)
+    public String invokeChatBySDK(String systemPrompt, String userPrompt)
     {
         ChatResponse response = new Qianfan(Auth.TYPE_OAUTH, API_KEY, SECRET_KEY).chatCompletion()
                 .model("ERNIE-Bot") // 使用model指定预置模型

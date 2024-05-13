@@ -18,4 +18,8 @@ public interface ChannelMapper
     Integer update(Channel channel);
 
     Integer deleteByChannelId(Integer channelId);
+
+    Channel getByChannelName(String channelName);
+
+    Channel getChannelEnabled();
 }

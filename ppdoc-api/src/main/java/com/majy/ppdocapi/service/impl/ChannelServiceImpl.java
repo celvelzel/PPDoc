@@ -47,7 +47,7 @@ public class ChannelServiceImpl implements ChannelService
             case "Moonshot AI":
                 channel.setChannelResponseTime(String.valueOf(KimiUtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelModelName())));
                 break;
-            case"百度文心大模型":
+            case "百度文心大模型":
                 channel.setChannelResponseTime(String.valueOf(BaiDuUTtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelSecretKey(), channel.getChannelModelName())));
                 break;
             default:
@@ -109,7 +109,7 @@ public class ChannelServiceImpl implements ChannelService
             case "Moonshot AI":
                 channel.setChannelResponseTime(String.valueOf(KimiUtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelModelName())));
                 break;
-            case"百度文心大模型":
+            case "百度文心大模型":
                 channel.setChannelResponseTime(String.valueOf(BaiDuUTtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelSecretKey(), channel.getChannelModelName())));
                 break;
             default:
@@ -126,5 +126,17 @@ public class ChannelServiceImpl implements ChannelService
         {
             return Result.updateFailure();
         }
+    }
+
+    @Override
+    public Result getByChannelName(String channelName)
+    {
+        return Result.selectSuccess(channelMapper.getByChannelName(channelName));
+    }
+
+    @Override
+    public Channel getChannelEnabled()
+    {
+        return channelMapper.getChannelEnabled();
     }
 }

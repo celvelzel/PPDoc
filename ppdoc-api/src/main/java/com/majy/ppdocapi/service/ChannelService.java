@@ -18,4 +18,8 @@ public interface ChannelService
     public Result getByChannelId(Integer channelId);
 
     public Result testByChannelId(Integer channelId);
+
+    public Result getByChannelName(String channelName);
+
+    public Channel getChannelEnabled();
 }

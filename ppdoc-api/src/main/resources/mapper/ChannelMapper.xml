@@ -34,27 +34,40 @@
                              channel_model_name, channel_api_key, channel_secret_key)
         VALUES (#{channelId,jdbcType=INTEGER}, #{channelName,jdbcType=VARCHAR}, #{channelType,jdbcType=VARCHAR},
                 #{channelStatus,jdbcType=VARCHAR}, #{channelResponseTime,jdbcType=DECIMAL}, #{channelCreateTime},
-                #{channelModelName,jdbcType=VARCHAR}, #{channelApiKey,jdbcType=VARCHAR}, #{channelSecretKey,jdbcType=VARCHAR})
+                #{channelModelName,jdbcType=VARCHAR}, #{channelApiKey,jdbcType=VARCHAR},
+                #{channelSecretKey,jdbcType=VARCHAR})
     </insert>
 
     <!-- 更新语句 -->
     <update id="update" parameterType="com.majy.ppdocapi.entity.po.Channel">
         UPDATE channel
-        SET channel_name = #{channelName,jdbcType=VARCHAR},
-            channel_type = #{channelType,jdbcType=VARCHAR},
-            channel_status = #{channelStatus,jdbcType=VARCHAR},
+        SET channel_name          = #{channelName,jdbcType=VARCHAR},
+            channel_type          = #{channelType,jdbcType=VARCHAR},
+            channel_status        = #{channelStatus,jdbcType=VARCHAR},
             channel_response_time = #{channelResponseTime,jdbcType=DECIMAL},
-            channel_create_time = #{channelCreateTime,jdbcType=TIMESTAMP},
-            channel_model_name = #{channelModelName,jdbcType=VARCHAR},
-            channel_api_key = #{channelApiKey,jdbcType=VARCHAR},
-            channel_secret_key = #{channelSecretKey,jdbcType=VARCHAR}
+            channel_create_time   = #{channelCreateTime,jdbcType=TIMESTAMP},
+            channel_model_name    = #{channelModelName,jdbcType=VARCHAR},
+            channel_api_key       = #{channelApiKey,jdbcType=VARCHAR},
+            channel_secret_key    = #{channelSecretKey,jdbcType=VARCHAR}
         WHERE channel_id = #{channelId,jdbcType=INTEGER}
     </update>
 
     <!-- 删除语句 -->
     <delete id="deleteByChannelId" parameterType="java.lang.Integer">
-        DELETE FROM channel
+        DELETE
+        FROM channel
         WHERE channel_id = #{channelId,jdbcType=INTEGER}
     </delete>
 
+    <select id="getByChannelName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select *
+        from channel
+        where channel_name = #{channelName}
+    </select>
+
+    <select id="getChannelEnabled" resultMap="BaseResultMap">
+        select *
+        from channel
+        where channel_status like '已启用'
+    </select>
 </mapper>

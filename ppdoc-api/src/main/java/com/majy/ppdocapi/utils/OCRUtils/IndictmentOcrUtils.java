@@ -1,5 +1,7 @@
 package com.majy.ppdocapi.utils.OCRUtils;
 
+import com.majy.ppdocapi.entity.po.Channel;
+import com.majy.ppdocapi.service.ChannelService;
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,8 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
 {
     @Autowired
     private ModelService modelService;
-    @Value("${model.name}")
-    String modelName;
+    @Autowired
+    private ChannelService channelService;
 
     //全局变量
     private static final String NO_INFO_FOUND = "正则匹配未找到信息";
@@ -56,7 +58,10 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
      */
     public Map<String, String> invokeLLM(String trim)
     {
-        String LLMResult = modelService.extractInfo(modelName, trim, "案件类型,原告名称,原告id（公民身份号码或统一认证代码）,原告类型（如果有性别就是‘个人’）,原告地址,原告联系方式,被告名称,被告id（公民身份号码或统一认证代码）,被告类型（如果有性别就是‘个人’）,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期");
+        Channel channelEnabled = channelService.getChannelEnabled();
+        String modelType = channelEnabled.getChannelType();
+        String modelName = channelEnabled.getChannelModelName();
+        String LLMResult = modelService.extractInfo(modelType, modelName, trim, "案件类型,原告名称,原告id（公民身份号码或统一认证代码）,原告类型（如果有性别就是‘个人’）,原告地址,原告联系方式,被告名称,被告id（公民身份号码或统一认证代码）,被告类型（如果有性别就是‘个人’）,被告地址,被告联系方式,诉讼请求,事实背景,法律依据,证据清单,法院名称,起诉状日期");
         //log.info("LLM结果是：" + LLMResult);
 
         //提取信息

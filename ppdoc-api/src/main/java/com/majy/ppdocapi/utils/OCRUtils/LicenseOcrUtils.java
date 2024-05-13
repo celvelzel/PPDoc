@@ -1,5 +1,7 @@
 package com.majy.ppdocapi.utils.OCRUtils;
 
+import com.majy.ppdocapi.entity.po.Channel;
+import com.majy.ppdocapi.service.ChannelService;
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -19,8 +21,8 @@ public class LicenseOcrUtils extends PaddleOcrUtils
 {
     @Autowired
     private ModelService modelService;
-    @Value("${model.name}")
-    String modelName;
+    @Autowired
+    private ChannelService channelService;
 
     //全局变量
     private static final String NO_INFO_FOUND = "正则匹配未找到信息";
@@ -242,7 +244,11 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         String licenseLegalRepresentative = "";
         Map<String, String> invoiceLLMMap = new HashMap<>();
 
-        String LLMResult = modelService.extractInfo(modelName, trim, "经营范围，住所，法定代表人");
+
+        Channel channelEnabled = channelService.getChannelEnabled();
+        String modelType = channelEnabled.getChannelType();
+        String modelName = channelEnabled.getChannelModelName();
+        String LLMResult = modelService.extractInfo(modelType, modelName, trim, "经营范围，住所，法定代表人");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("经营范围.(.*)\\s*住所.(.*)\\s*法定代表人.(.*)");
         Matcher matcher = pattern.matcher(LLMResult);

@@ -1,5 +1,6 @@
 package com.majy.ppdocapi.service.impl;
 
+import cn.hutool.core.util.CreditCodeUtil;
 import cn.hutool.core.util.IdcardUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.Page;
@@ -103,9 +104,13 @@ public class CaseServiceImpl implements CaseService
             {
                 idcards.put("原告", idCardMapper.getByIdCardId(caseObj.getPlaintiff_id_card_id()));
             }
-            else
+            else if (CreditCodeUtil.isCreditCode(caseObj.getPlaintiff_id())) // 信用代码有效则为企业
             {
                 licenses.put("原告", licenseMapper.getByLicenseId(caseObj.getPlaintiff_license_id()));
+            }
+            else
+            {
+                log.info("原告id无效");
             }
         }
         else
@@ -119,9 +124,13 @@ public class CaseServiceImpl implements CaseService
             {
                 idcards.put("被告", idCardMapper.getByIdCardId(caseObj.getDefendant_id_card_id()));
             }
-            else
+            else if (CreditCodeUtil.isCreditCode(caseObj.getDefendant_id())) // 信用代码有效则为企业
             {
                 licenses.put("被告", licenseMapper.getByLicenseId(caseObj.getDefendant_license_id()));
+            }
+            else
+            {
+                log.info("被告id无效");
             }
         }
         else
@@ -135,7 +144,7 @@ public class CaseServiceImpl implements CaseService
         }
 
 
-        CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices, getPlaintiffRelatedCase(case_id),getDefendantRelatedCase(case_id));
+        CaseDetail caseDetail = new CaseDetail(caseObj, indictment, idcards, licenses, invoices, getPlaintiffRelatedCase(case_id), getDefendantRelatedCase(case_id));
         log.info("案件{}的详细信息：{}", case_id, caseDetail);
         GraphInfo originGraphInfo = new GraphInfo(caseDetail);
         return Result.success(originGraphInfo);

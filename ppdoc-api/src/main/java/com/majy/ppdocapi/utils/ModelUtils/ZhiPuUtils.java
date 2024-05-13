@@ -49,7 +49,7 @@ public class ZhiPuUtils
     // 请自定义自己的业务id
     private static final String requestIdTemplate = "MaJY_3120005347";
 
-    public static String sseInvokeChat(String prompt)
+    public String sseInvokeChat(String prompt)
     {
         List<ChatMessage> messages = new ArrayList<>();
         // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
@@ -63,7 +63,7 @@ public class ZhiPuUtils
         /* 构建一个ChatCompletionRequest对象，它包含了调用模型API所需的所有信息，
         如模型名称、是否使用流式响应、消息列表、请求ID、工具列表和工具选择策略。 */
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
-                .model(Constants.ModelChatGLM4)
+                .model(Constants.ModelChatGLM4) //ModelChatGLM4、ModelChatGLM3TURBO
                 .stream(Boolean.TRUE)
                 .messages(messages)
                 .requestId(requestId)
@@ -203,5 +203,83 @@ public class ZhiPuUtils
 //            e.printStackTrace();
 //        }
 //        return elapsedTime;
+    }
+
+    /*
+    * 调用ChatGLM-3-Turbo模型进行对话
+     */
+    public String sseInvokeChatGLM3Turbo(String prompt)
+    {
+        List<ChatMessage> messages = new ArrayList<>();
+        // ChatMessage对象存储用户的消息，并将其添加到消息列表中。
+        ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(), prompt);
+        //ocr_text和keyInfo是前端传入的OCR识别结果文本和用户指定的关键词
+
+        messages.add(chatMessage);
+        String requestId = String.format(requestIdTemplate, System.currentTimeMillis());//生成一个请求ID，用于标识这次API调用
+
+
+        /* 构建一个ChatCompletionRequest对象，它包含了调用模型API所需的所有信息，
+        如模型名称、是否使用流式响应、消息列表、请求ID、工具列表和工具选择策略。 */
+        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
+                .model(Constants.ModelChatGLM3TURBO) //ModelChatGLM4、ModelChatGLM3TURBO
+                .stream(Boolean.TRUE)
+                .messages(messages)
+                .requestId(requestId)
+//                .tools(chatToolList) //删除工具列表，不传递任何工具信息
+                .toolChoice("auto")
+                .build();
+
+
+        /* 使用client.invokeModelApi方法调用模型API，并获取响应 */
+        ModelApiResponse sseModelApiResp = client.invokeModelApi(chatCompletionRequest);
+
+
+        /*如果响应成功，使用mapStreamToAccumulator方法处理响应流，并实时打印工具调用和内容。*/
+        String res = "";
+        StringBuilder sb = new StringBuilder();
+        if (sseModelApiResp.isSuccess())
+        {
+            AtomicBoolean isFirst = new AtomicBoolean(true);
+            ChatMessageAccumulator chatMessageAccumulator = mapStreamToAccumulator(sseModelApiResp.getFlowable())
+                    .doOnNext(accumulator ->
+                    {
+                        {
+                            if (isFirst.getAndSet(false))
+                            {
+                                System.out.print("Response: ");
+                            }
+                            if (accumulator.getDelta() != null && accumulator.getDelta().getTool_calls() != null)
+                            {
+                                String jsonString = mapper.writeValueAsString(accumulator.getDelta().getTool_calls());
+                                System.out.println("tool_calls: " + jsonString);
+                            }
+                            if (accumulator.getDelta() != null && accumulator.getDelta().getContent() != null)
+                            {
+                                System.out.print(accumulator.getDelta().getContent());
+                                sb.append(accumulator.getDelta().getContent());
+                            }
+                        }
+                    })
+                    .doOnComplete(System.out::println)
+                    .lastElement()
+                    .blockingGet();
+
+            //当响应完成时，创建一个Choice对象，并将其添加到choices列表中
+            Choice choice = new Choice(chatMessageAccumulator.getChoice().getFinishReason(), 0L, chatMessageAccumulator.getDelta());
+            List<Choice> choices = new ArrayList<>();
+            choices.add(choice);
+            //创建一个ModelData对象，并将其设置为响应数据
+            ModelData data = new ModelData();
+            data.setChoices(choices);
+            data.setUsage(chatMessageAccumulator.getUsage());
+            data.setId(chatMessageAccumulator.getId());
+            data.setCreated(chatMessageAccumulator.getCreated());
+            data.setRequestId(chatCompletionRequest.getRequestId());
+            sseModelApiResp.setFlowable(null);
+            sseModelApiResp.setData(data);
+        }
+        res = sb.toString();
+        return res;
     }
 }

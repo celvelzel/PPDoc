@@ -25,7 +25,7 @@ public class ModelServiceImpl implements ModelService
     private BaiDuUTtils baiDuUTtils;
 
     @Override
-    public String extractInfo(String modelName, String ocrResult, String keyInfo)
+    public String extractInfo(String modelType, String modelName, String ocrResult, String keyInfo)
     {
         String systemPrompt = "你现在的任务是从OCR文字识别的结果中提取我指定的关键信息。" +
                 "请注意OCR的文字识别结果可能存在长句子换行被切断、不合理的分词、对应错位等问题，" +
@@ -45,28 +45,22 @@ public class ModelServiceImpl implements ModelService
                 "<OCR>\n" + ocrResult + "</OCR>\n要抽取的关键信息：<key_info>\n" + keyInfo + "\n</key_info>";
         //ocr_text和keyInfo是前端传入的OCR识别结果文本和用户指定的关键词
         String finalPrompt = systemPrompt + userPrompt;
-        if (modelName.equals("zhipu"))
+
+        //调用模型进行对话
+        String result = invokeChat(modelType, modelName, userPrompt, systemPrompt, finalPrompt);
+        if (result != null)
         {
-            return zhiPuUtils.sseInvokeChat(finalPrompt);
+            return result;
         }
-        else if (modelName.equals("kimi"))
+        else
         {
-            List<KimiUtils.Message> messages = CollUtil.newArrayList(
-                    new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
-                    new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
-            );
-            return kimiUtils.invokeChat(messages);
+            log.info("提取信息错误：未找到对应的模型");
+            return "提取信息错误：未找到对应的模型";
         }
-        else if (modelName.equals("baidu"))
-        {
-            return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
-        }
-        log.info("提取信息错误：未找到对应的模型");
-        return "提取信息错误：未找到对应的模型";
     }
 
     @Override
-    public String generateSummary(String modelName, String ocrResult, String summaryType)
+    public String generateSummary(String modelType, String modelName, String ocrResult, String summaryType)
     {
         //摘要选项
         Map<String, String> summaryOptions = new HashMap<>();
@@ -91,28 +85,23 @@ public class ModelServiceImpl implements ModelService
                 "\n" +
                 "OCR文字：<OCR>\n" + ocrResult + "\n</OCR>";
         String finalPrompt = systemPrompt + userPrompt;
-        if (modelName.equals("zhipu"))
+
+
+        //调用模型进行对话
+        String result = invokeChat(modelType, modelName, userPrompt, systemPrompt, finalPrompt);
+        if (result != null)
         {
-            return zhiPuUtils.sseInvokeChat(finalPrompt);
+            return result;
         }
-        else if (modelName.equals("kimi"))
+        else
         {
-            List<KimiUtils.Message> messages = CollUtil.newArrayList(
-                    new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
-                    new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
-            );
-            return kimiUtils.invokeChat(messages);
+            log.info("摘要生成错误：未找到对应的模型");
+            return "摘要生成错误：未找到对应的模型";
         }
-        else if (modelName.equals("baidu"))
-        {
-            return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
-        }
-        log.info("摘要生成错误：未找到对应的模型");
-        return "摘要生成错误：未找到对应的模型";
     }
 
     @Override
-    public String classification(String modelName, String ocrResult)
+    public String classification(String modelType, String modelName, String ocrResult)
     {
         String systemPrompt = "您的任务是根据文档的OCR结果对文档进行分类和打标签。" +
                 "OCR结果可能包含一些错误或不完整的文本，但您应该尽力理解文档的主要内容并提取关键信息。" +
@@ -124,23 +113,86 @@ public class ModelServiceImpl implements ModelService
                 "\n" +
                 "OCR结果：<OCR>\n" + ocrResult + "\n</OCR>";
         String finalPrompt = systemPrompt + userPrompt;
-        if (modelName.equals("zhipu"))
+
+
+        //调用模型进行对话
+        String result = invokeChat(modelType, modelName, userPrompt, systemPrompt, finalPrompt);
+        if (result != null)
         {
-            return zhiPuUtils.sseInvokeChat(finalPrompt);
+            return result;
         }
-        else if (modelName.equals("kimi"))
+        else
         {
-            List<KimiUtils.Message> messages = CollUtil.newArrayList(
-                    new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
-                    new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
-            );
-            return kimiUtils.invokeChat(messages);
+            log.info("分类错误：未找到对应的模型");
+            return "分类错误：未找到对应的模型";
         }
-        else if (modelName.equals("baidu"))
-        {
-            return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
-        }
-        log.info("分类错误：未找到对应的模型");
-        return "分类错误：未找到对应的模型";
     }
+
+    /**
+     * 调用不同类型的聊天模型进行对话。
+     *
+     * @param modelType 模型类型，例如智谱ChatGLM、Moonshot AI、百度文心大模型。
+     * @param modelName 模型名称，针对不同模型类型，支持的模型名称不同。
+     * @param userPrompt 用户提示语，用户发起的对话内容。
+     * @param systemPrompt 系统提示语，系统回复的内容。
+     * @param finalPrompt 最终提示语，用于特定模型的对话邀请或结束语。
+     * @return 根据调用的模型不同，返回对应的对话结果。
+     */
+    public String invokeChat(String modelType, String modelName, String userPrompt, String systemPrompt, String finalPrompt)
+    {
+        // 智谱ChatGLM模型的处理逻辑
+        if (modelType.equals("智谱ChatGLM"))
+        {
+            if (modelName.equals("GLM-4"))
+            {
+                // 调用GLM-4模型进行对话
+                return zhiPuUtils.sseInvokeChat(finalPrompt);
+            }
+            else if (modelName.equals("GLM-3"))
+            {
+                // 调用GLM-3模型进行对话，使用Turbo模式
+                return zhiPuUtils.sseInvokeChatGLM3Turbo(finalPrompt);
+            }
+            else
+            {
+                // 日志记录未找到对应的智谱ChatGLM模型
+                log.info("未找到对应的智谱ChatGLM模型");
+            }
+        }
+        // Moonshot AI模型的处理逻辑
+        else if (modelType.equals("Moonshot AI"))
+        {
+            if (modelName.equals("moonshot-v1-8k"))
+            {
+                // 准备对话消息，调用Moonshot AI模型进行对话
+                List<KimiUtils.Message> messages = CollUtil.newArrayList(
+                        new KimiUtils.Message(KimiUtils.RoleEnum.system.name(), systemPrompt),
+                        new KimiUtils.Message(KimiUtils.RoleEnum.user.name(), userPrompt)
+                );
+                return kimiUtils.invokeChat(modelName, messages);
+            }
+            else
+            {
+                // 日志记录未找到对应的Moonshot AI模型
+                log.info("未找到对应的Moonshot AI模型");
+            }
+        }
+        // 百度文心大模型的处理逻辑
+        else if (modelType.equals("百度文心大模型"))
+        {
+            if (modelName.equals("ERNIE-Bot"))
+            {
+                // 调用百度文心ERNIE-Bot模型进行对话
+                return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
+            }
+            else
+            {
+                // 日志记录未找到对应的百度文心大模型
+                log.info("未找到对应的百度文心大模型");
+            }
+        }
+        // 未找到对应模型类型时的返回
+        return "未找到对应的模型类型：" + modelType;
+    }
+
 }

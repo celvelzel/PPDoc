@@ -1,5 +1,7 @@
 package com.majy.ppdocapi.utils.OCRUtils;
 
+import com.majy.ppdocapi.entity.po.Channel;
+import com.majy.ppdocapi.service.ChannelService;
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,8 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
 {
     @Autowired
     private ModelService modelService;
-    @Value("${model.name}")
-    String modelName;
+    @Autowired
+    private ChannelService channelService;
 
     //全局变量
     private static final String NO_INFO_FOUND = "正则匹配未找到信息";
@@ -150,7 +152,11 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
         String sellerName = "";
         Map<String, String> invoiceInfoMap = new HashMap<>();
 
-        String LLMResult = modelService.extractInfo(modelName, trim, "项目名称，购买方名称，销售方名称");
+
+        Channel channelEnabled = channelService.getChannelEnabled();
+        String modelType = channelEnabled.getChannelType();
+        String modelName = channelEnabled.getChannelModelName();
+        String LLMResult = modelService.extractInfo(modelType, modelName, trim, "项目名称，购买方名称，销售方名称");
         log.info("智谱LLM结果是：" + LLMResult);
         Pattern pattern = Pattern.compile("项目名称.([\u4e00-\u9fa5]*)\\s*购买方名称.([\u4e00-\u9fa5]*)\\s*销售方名称.([\u4e00-\u9fa5]*)");
         Matcher matcher = pattern.matcher(LLMResult);

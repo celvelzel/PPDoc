@@ -1,13 +1,13 @@
 package com.majy.ppdocapi.controller;
 
-import com.majy.ppdocapi.entity.dto.Result;
+import com.majy.ppdocapi.entity.po.Channel;
+import com.majy.ppdocapi.service.ChannelService;
 import com.majy.ppdocapi.service.ModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -16,24 +16,13 @@ public class ModelController
 {
     @Autowired
     ModelService modelService;
-    //    @Value("${model.name}")
-    String ModelName = "zhipu";
-    //zhipu
-    //baidu
-    //kimi
+    @Autowired
+    ChannelService channelService;
 
-
-    @PostMapping("/models")
-    public Result changeModel(RequestParam modelName)
-    {
-        ModelName = String.valueOf(modelName);
-        return Result.success("切换模型成功");
-    }
 
     @PostMapping("/api/extractinfo")
     public String extractInfo(@RequestBody String requestBody) throws Exception
     {
-        System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         log.info("前端传回的提取字段和OCR结果：{}", requestBody);
         // 创建一个 JSONObject 对象
         JSONObject jsonObject = new JSONObject(requestBody);
@@ -42,13 +31,13 @@ public class ModelController
         String fieldsValue = jsonObject.getString("fields");
         String ocrTextValue = jsonObject.getString("ocr_text");
 
-        return modelService.extractInfo(ModelName, ocrTextValue, fieldsValue);
+        Channel channel = channelService.getChannelEnabled();
+        return modelService.extractInfo(channel.getChannelType(), channel.getChannelModelName(), ocrTextValue, fieldsValue);
     }
 
     @PostMapping("/api/generatesummary")
     public String generateSummary(@RequestBody String requestBody)
     {
-        System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         log.info("前端传回的摘要选项和OCR结果：{}", requestBody);
         // 创建一个 JSONObject 对象
         JSONObject jsonObject = new JSONObject(requestBody);
@@ -57,13 +46,13 @@ public class ModelController
         String ocrTextValue = jsonObject.getString("ocr_text");
         String summaryOptionValue = jsonObject.getString("summary_option");
 
-        return modelService.generateSummary(ModelName, ocrTextValue, summaryOptionValue);
+        Channel channel = channelService.getChannelEnabled();
+        return modelService.generateSummary(channel.getChannelType(), channel.getChannelModelName(), ocrTextValue, summaryOptionValue);
     }
 
     @PostMapping("/api/classification")
     public String classification(@RequestBody String requestBody)
     {
-        System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         //log.info("前端传回的OCR结果：{}", requestBody);
         // 创建一个 JSONObject 对象
         JSONObject jsonObject = new JSONObject(requestBody);
@@ -71,6 +60,7 @@ public class ModelController
         //提取各个字段的值
         String ocrTextValue = jsonObject.getString("ocr_text");
 
-        return modelService.classification(ModelName, ocrTextValue);
+        Channel channel = channelService.getChannelEnabled();
+        return modelService.classification(channel.getChannelType(), channel.getChannelModelName(), ocrTextValue);
     }
 }

@@ -50,9 +50,9 @@ public class KimiUtils
         return chat(MODEL_NAME, messages);
     }
 
-    public String invokeChat(List<Message> messages)
+    public String invokeChat(String modelName,List<Message> messages)
     {
-        return chat(MODEL_NAME, messages);
+        return chat(modelName, messages);
     }
 
     /**
@@ -165,7 +165,7 @@ public class KimiUtils
                 new Message(RoleEnum.system.name(), "你是kimi AI"),
                 new Message(RoleEnum.user.name(), "请你介绍一下hutool")
         );
-        System.out.println(invokeChat(messages));
+        System.out.println(invokeChat("moonshot-v1-8k",messages));
     }
 
     public static double getResponseTime(String apiKey,String modelName)
