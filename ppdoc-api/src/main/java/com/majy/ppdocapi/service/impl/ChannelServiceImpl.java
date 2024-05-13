@@ -139,4 +139,48 @@ public class ChannelServiceImpl implements ChannelService
     {
         return channelMapper.getChannelEnabled();
     }
+
+    /**
+     * 启用指定的渠道
+     *
+     * @param channelId 需要启用的渠道ID
+     * @return 返回操作结果，如果操作成功，则返回更新成功的结果
+     */
+    @Override
+    public Result enableChannel(Integer channelId)
+    {
+        // 获取当前已启用的渠道，并将其状态更新为“未启用”
+        Channel enabledChannel =  channelMapper.getChannelEnabled();
+        enabledChannel.setChannelStatus("未启用");
+        channelMapper.update(enabledChannel);
+
+        // 根据指定的渠道ID，获取该渠道并将其状态更新为“已启用”
+        Channel disabledChannel = channelMapper.selectByChannelId(channelId);
+        disabledChannel.setChannelStatus("已启用");
+        channelMapper.update(disabledChannel);
+
+        // 返回操作成功的结果
+        return Result.updateSuccess();
+    }
+
+
+    /**
+     * 禁用指定的渠道。
+     *
+     * @param channelId 渠道ID，用于标识需要被禁用的渠道。
+     * @return 返回一个结果对象，表示禁用操作是否成功。
+     */
+    @Override
+    public Result disableChannel(Integer channelId)
+    {
+        // 根据渠道ID查询渠道信息
+        Channel channel = channelMapper.selectByChannelId(channelId);
+        // 设置渠道状态为"未启用"
+        channel.setChannelStatus("未启用");
+        // 更新渠道状态
+        channelMapper.update(channel);
+        // 返回禁用成功的结果
+        return Result.updateSuccess();
+    }
+
 }

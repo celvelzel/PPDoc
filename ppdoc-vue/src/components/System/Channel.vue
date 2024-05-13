@@ -12,6 +12,7 @@ export default {
       pageSize: 10,
       showAddChannelDialog: false,
       showEditChannelDialog: false,
+      SwitchValue: false,
       options: [
         {
           value: 'Moonshot AI',
@@ -74,7 +75,7 @@ export default {
           ]
         }
       ],
-      ruleForm : {
+      ruleForm: {
         channelName: '',
         channelModelName: '',
         channelApiKey: '',
@@ -223,6 +224,66 @@ export default {
       });
       this.showEditChannelDialog = false;
     },
+    handleEnable(index, row) {
+      let enabledChannelId = null;
+      let enabledChannelName = null;
+      this.tableData.forEach(item => {
+        if (item.channelStatus === '已启用') {
+          enabledChannelId = item.channelId;
+          enabledChannelName = item.channelName;
+        }
+      })
+      axios.put('http://localhost:8080/api/channels/enable/' + row.channelId).then(res => {
+        console.log(res);
+        this.$message({
+          type: 'success',
+          message: '启用' + row.channelName + '成功'
+        });
+
+        if (enabledChannelId !== null) {
+          axios.put('http://localhost:8080/api/channels/disable/' + enabledChannelId).then(res => {
+            console.log(res);
+            this.$message({
+              type: 'info',
+              message: '禁用' + enabledChannelName + '成功'
+            });
+            //刷新表格
+            axios.get('http://localhost:8080/api/channels', {
+              params: {
+                page: this.page,
+                pageSize: this.pageSize,
+              }
+            }).then(res => {
+              this.tableData = res.data.data.rows;
+              this.total = res.data.data.total;
+            });
+          })
+        }
+      })
+    },
+    handleDisable(index, row) {
+      let enabledChannelCount = 0;
+      this.tableData.forEach(item => {
+        if (item.channelStatus === '已启用') {
+          enabledChannelCount++;
+        }
+      })
+      if (enabledChannelCount <= 1) {
+        this.$message({
+          type: 'error',
+          message: '至少需要启用一个渠道'
+        });
+      }
+      else {
+        axios.put('http://localhost:8080/api/channels/disable/' + row.channelId).then(res => {
+          console.log(res);
+          this.$message({
+            type: 'info',
+            message: '禁用' + row.channelName + '成功'
+          });
+        })
+      }
+    },
     handleCurrentChange(val) {
       this.page = val;
       axios.get('http://localhost:8080/api/channels', {
@@ -272,7 +333,7 @@ export default {
         </div>
       </el-header>
       <el-table :data="tableData" style="width: 100%" border>
-        <el-table-column prop="channelId" label="ID" width="180"></el-table-column>
+        <el-table-column prop="channelId" label="ID" width="80"></el-table-column>
         <el-table-column prop="channelName" label="名称"></el-table-column>
         <el-table-column prop="channelType" label="类型">
           <template slot-scope="scope">
@@ -305,11 +366,13 @@ export default {
                 @click="handleTest(scope.$index, scope.row)">测试
             </el-button>
             <el-button
+                v-if="scope.row.channelStatus==='未启用'"
                 size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除
+                type="primary"
+                @click="handleEnable(scope.$index, scope.row)">启用
             </el-button>
             <el-button
+                v-if="scope.row.channelStatus==='已启用'"
                 size="mini"
                 type="warning"
                 @click="handleDisable(scope.$index, scope.row)">禁用
@@ -318,6 +381,11 @@ export default {
                 size="mini"
                 type="info"
                 @click="handleEdit(scope.$index, scope.row)">编辑
+            </el-button>
+            <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.$index, scope.row)">删除
             </el-button>
           </template>
         </el-table-column>
@@ -366,7 +434,7 @@ export default {
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
-    <!-- 编辑渠道对话框 -->
+      <!-- 编辑渠道对话框 -->
     </el-dialog>
     <el-dialog title="编辑渠道" :visible.sync="showEditChannelDialog">
       <el-form :model="ChannelInfoForm" label-width="auto" label-position="right" ref="ruleForm">

@@ -22,4 +22,8 @@ public interface ChannelService
     public Result getByChannelName(String channelName);
 
     public Channel getChannelEnabled();
+
+    public Result enableChannel(Integer channelId);
+
+    public Result disableChannel(Integer channelId);
 }

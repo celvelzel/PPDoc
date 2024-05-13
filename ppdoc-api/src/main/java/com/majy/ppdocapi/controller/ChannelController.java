@@ -61,4 +61,18 @@ public class ChannelController
         log.info("进行查询渠道，参数为:{}", channelId);
         return channelService.getByChannelId(channelId);
     }
+
+    @PutMapping("/enable/{channelId}")
+    public Result enable(@PathVariable Integer channelId)
+    {
+        log.info("进行启用渠道，参数为:{}", channelId);
+        return channelService.enableChannel(channelId);
+    }
+
+    @PutMapping("/disable/{channelId}")
+    public Result disable(@PathVariable Integer channelId)
+    {
+        log.info("进行禁用渠道，参数为:{}", channelId);
+        return channelService.disableChannel(channelId);
+    }
 }
