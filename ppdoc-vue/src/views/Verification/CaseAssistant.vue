@@ -4,9 +4,10 @@ import axios from "axios";
 import {defineComponent} from "vue";
 import MyMenu from "@/components/Utils/MyMenu.vue";
 import CaseList from "@/components/Display/CaseList.vue";
+import AntGraph from "@/components/Utils/AntGraph.vue";
 
 export default defineComponent({
-  components: {CaseList, MyMenu},
+  components: {AntGraph, CaseList, MyMenu},
   data() {
     return {
       activeStep: 2,
@@ -86,9 +87,10 @@ export default defineComponent({
               <el-step title="结案后"></el-step>
             </el-steps>
             </el-row>
-<!--          <el-row v-show="isSelected">-->
-<!--&lt;!&ndash;            流程图组件&ndash;&gt;-->
-<!--          </el-row>-->
+          <el-row v-show="isSelected">
+<!--            流程图组件-->
+            <ant-graph></ant-graph>
+          </el-row>
           </el-main>
         </el-container>
     </el-container>

@@ -9,28 +9,76 @@ import com.alibaba.dashscope.common.Role;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@Slf4j
 public class ALiUtils
 {
-    public static void callWithMessage()
-            throws NoApiKeyException, ApiException, InputRequiredException
+    public static String invokeChat(String userPrompt)
     {
-        Generation gen = new Generation();
+        MessageManager msgManager = new MessageManager(10);
+        Message userMsg = Message.builder().role(Role.USER.getValue()).content(userPrompt).build();
+        msgManager.add(userMsg);
+        try
+        {
+            return callWithMessage(msgManager);
+        } catch (NoApiKeyException e)
+        {
+            throw new RuntimeException(e);
+        } catch (InputRequiredException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String invokeChat(String systemPrompt, String userPrompt)
+    {
         MessageManager msgManager = new MessageManager(10);
         Message systemMsg =
-                Message.builder().role(Role.SYSTEM.getValue()).content("You are a helpful assistant.").build();
-        Message userMsg = Message.builder().role(Role.USER.getValue()).content("你好").build();
+                Message.builder().role(Role.SYSTEM.getValue()).content(systemPrompt).build();
+        Message userMsg = Message.builder().role(Role.USER.getValue()).content(userPrompt).build();
         msgManager.add(systemMsg);
         msgManager.add(userMsg);
+        try
+        {
+            return callWithMessage(msgManager);
+        } catch (NoApiKeyException e)
+        {
+            throw new RuntimeException(e);
+        } catch (InputRequiredException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String callWithMessage(MessageManager msgManager) throws NoApiKeyException, InputRequiredException
+    {
+        Generation gen = new Generation();
         QwenParam param =
                 QwenParam.builder().model(Generation.Models.QWEN_TURBO).messages(msgManager.get())
                         .resultFormat(QwenParam.ResultFormat.MESSAGE)
                         .build();
         GenerationResult result = gen.call(param);
-        System.out.println(result);
+        String resultText = result.getOutput().getChoices().get(0).getMessage().getContent();
+        log.info("阿里通义大模型的返回消息是：{}", resultText);
+        return resultText;
+    }
+
+
+    public static double getResponseTime(String modelName)
+    {
+        long startTime = System.currentTimeMillis();
+
+        invokeChat("你好");
+
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        log.info("{}响应时间Response Time: {} ms", modelName, elapsedTime);
+
+        return (double) elapsedTime / 1000;
     }
 
 
@@ -38,8 +86,8 @@ public class ALiUtils
     {
         try
         {
-            callWithMessage();
-        } catch (ApiException | NoApiKeyException | InputRequiredException e)
+            System.out.println("阿里通义大模型的响应内容Response Body: "+invokeChat("你好"));
+        } catch (ApiException e)
         {
             System.out.println(e.getMessage());
         }

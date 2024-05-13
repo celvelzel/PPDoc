@@ -1,9 +1,10 @@
 <script>
 import Channel from "@/components/System/Channel.vue";
 import MyMenu from "@/components/Utils/MyMenu.vue";
+import PromptManagement from "@/components/System/promptManagement.vue";
 
 export default {
-  components: {MyMenu, Channel},
+  components: {PromptManagement, MyMenu, Channel},
   data() {
     return {
       activeName: 'channel'
@@ -33,7 +34,7 @@ export default {
               <Channel></Channel>
             </el-tab-pane>
             <el-tab-pane label="提示词管理" name="prompt">
-              提示词管理
+              <prompt-management></prompt-management>
             </el-tab-pane>
           </el-tabs>
         </el-main>

@@ -2,6 +2,7 @@ package com.majy.ppdocapi.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.majy.ppdocapi.service.ModelService;
+import com.majy.ppdocapi.utils.ModelUtils.ALiUtils;
 import com.majy.ppdocapi.utils.ModelUtils.BaiDuUTtils;
 import com.majy.ppdocapi.utils.ModelUtils.KimiUtils;
 import com.majy.ppdocapi.utils.ModelUtils.ZhiPuUtils;
@@ -189,6 +190,22 @@ public class ModelServiceImpl implements ModelService
             {
                 // 日志记录未找到对应的百度文心大模型
                 log.info("未找到对应的百度文心大模型");
+            }
+        }
+        else if (modelType.equals("阿里通义千问大模型"))
+        {
+            if (modelName.equals("qwen-turbo"))
+            {
+                return ALiUtils.invokeChat(systemPrompt,userPrompt);
+            }
+//            else if (modelName.equals("qwen-plus"))
+//            {
+//                return ALiUtils.invokeChat(systemPrompt,userPrompt);
+//            }
+            else
+            {
+                // 日志记录未找到对应的阿里通义千问大模型
+                log.info("未找到对应的阿里通义千问大模型");
             }
         }
         // 未找到对应模型类型时的返回

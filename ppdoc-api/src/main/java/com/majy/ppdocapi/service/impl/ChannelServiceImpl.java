@@ -7,6 +7,7 @@ import com.majy.ppdocapi.entity.dto.Result;
 import com.majy.ppdocapi.entity.po.Channel;
 import com.majy.ppdocapi.mapper.ChannelMapper;
 import com.majy.ppdocapi.service.ChannelService;
+import com.majy.ppdocapi.utils.ModelUtils.ALiUtils;
 import com.majy.ppdocapi.utils.ModelUtils.BaiDuUTtils;
 import com.majy.ppdocapi.utils.ModelUtils.KimiUtils;
 import com.majy.ppdocapi.utils.ModelUtils.ZhiPuUtils;
@@ -164,6 +165,8 @@ public class ChannelServiceImpl implements ChannelService
         for (Channel channel : channelList)
         {
             setResponseTime(channel);
+            // 更新渠道状态
+            channelMapper.update(channel);
         }
         return Result.selectSuccess(channelList);
     }
@@ -176,6 +179,8 @@ public class ChannelServiceImpl implements ChannelService
         {
             if (channel.getChannelStatus().equals("未启用"));
             setResponseTime(channel);
+            // 更新渠道状态
+            channelMapper.update(channel);
         }
         return Result.selectSuccess(channelList);
     }
@@ -194,6 +199,8 @@ public class ChannelServiceImpl implements ChannelService
             case "百度文心大模型":
                 channel.setChannelResponseTime(String.valueOf(BaiDuUTtils.getResponseTime(channel.getChannelApiKey(), channel.getChannelSecretKey(), channel.getChannelModelName())));
                 break;
+            case"阿里通义千问大模型":
+                channel.setChannelResponseTime(String.valueOf(ALiUtils.getResponseTime(channel.getChannelModelName())));
         }
     }
 }
