@@ -9,13 +9,29 @@ export default {
           id: 'node1', // String，该节点存在则必须，节点的唯一标识
           x: 100, // Number，可选，节点位置的 x 值
           y: 200, // Number，可选，节点位置的 y 值
-          label: '起始点', // 节点文本
+          label: '起诉状提交', // 节点文本
+          class:'c0',
         },
         {
           id: 'node2', // String，该节点存在则必须，节点的唯一标识
           x: 300, // Number，可选，节点位置的 x 值
           y: 200, // Number，可选，节点位置的 y 值
-          label: '目标点',
+          label: '自然人身份证提交',
+          class:'c1',
+        },
+        {
+          id: 'node3', // String，该节点存在则必须，节点的唯一标识
+          x: 500, // Number，可选，节点位置的 x 值
+          y: 200, // Number，可选，节点位置的 y 值
+          label: '企业营业执照提交', // 节点文本
+          class:'c1',
+        },
+        {
+          id: 'node4', // String，该节点存在则必须，节点的唯一标识
+          x: 700, // Number，可选，节点位置的 x 值
+          y: 200, // Number，可选，节点位置的 y 值
+          label: '案件相关材料提交', // 节点文本
+          class:'c1',
         },
       ],
       // 边集
@@ -23,8 +39,18 @@ export default {
         {
           source: 'node1', // String，必须，起始点 id
           target: 'node2', // String，必须，目标点 id
-          label: '连线', // 边的文本
+          label: '连线1', // 边的文本
         },
+          {
+            source: 'node3', // String，必须，起始点 id
+            target: 'node4', // String，必须，目标点 id
+            label: '连线3', // 边的文本
+          },
+          {
+            source: 'node2', // String，必须，起始点 id
+            target: 'node3', // String，必须，目标点 id
+            label: '连线2', // 边的文本
+          },
       ],
     }
   },
@@ -39,12 +65,63 @@ export default {
         default: ['drag-canvas', 'zoom-canvas', 'drag-node'],
       },
       defaultNode: {
-        size: 30, // Number | Array，可选，节点大小
+        size: 50, // Number | Array，可选，节点大小
+        style: {
+          fill: 'steelblue', // 节点填充色
+          stroke: '#666', // 节点描边色
+          lineWidth: 1, // 节点描边粗细
+        },
+        // 节点上的标签文本配置
+        labelCfg: {
+          // 节点上的标签文本样式配置
+          style: {
+            fill: '#fff', // 节点标签文字颜色
+          },
+        },
       },
-      fitView: true, //设置是否将图适配到画布中
+      // 边在默认状态下的样式配置（style）和其他配置
+      defaultEdge: {
+        type:'polyline',
+        // 边样式配置
+        style: {
+          opacity: 0.6, // 边透明度
+          stroke: 'grey', // 边描边颜色
+          endArrow: true, // 边是否显示尾部箭头
+        },
+        // 边上的标签文本配置
+        labelCfg: {
+          autoRotate: true, // 边上的标签文本根据边的方向旋转
+        },
+      },
+      //fitView: true, //设置是否将图适配到画布中
       //fitViewPadding: [5, 5, 5, 5], // 画布上四周的留白宽度。
       animate: true, // 是否开启动画
     });
+
+    this.nodes.forEach((node) => {
+      if (!node.style) {
+        node.style = {};
+      }
+      switch (
+          node.class // 根据节点数据中的 class 属性配置图形
+          ) {
+        case 'c0': {
+          node.type = 'rect';
+          node.size = [100, 30];
+          node.style.fill = '#ace2b3';
+          node.style.radius = 10;
+          break;
+        }
+        case 'c1': {
+          node.type = 'rect';
+          node.size = [100,30]; // class = 'c1' 时节点大小
+          node.style.fill = '#acc2e2';
+          node.style.radius = 10;
+          break;
+        }
+      }
+    });
+
     graph.data({
       nodes: this.nodes,
       edges: this.edges,
