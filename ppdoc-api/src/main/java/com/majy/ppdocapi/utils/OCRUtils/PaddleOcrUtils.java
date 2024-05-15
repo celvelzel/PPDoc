@@ -60,6 +60,33 @@ public class PaddleOcrUtils
         return null;
     }
 
+    //传入单个pdf,先转图片list，再进行ocr
+    public static List pdfToOcrText(InputStream pdfInputStream)
+    {
+        try
+        {
+            //创建准备进行ocr操作的图片list
+            List<MultipartFile> imageFiles = new ArrayList<MultipartFile>();
+
+            // 写入数据到图片list
+            PdfToImageUtils.pdf2ImageList(pdfInputStream, imageFiles, "png");
+            log.info("pdf转图片完成");
+
+            //传入图片文件，调用ocr模块进行识别，返回json格式的识别结果
+            List res = PaddleOcrUtils.getOcrText(imageFiles);
+            log.info("图片提取ocr文本完成");
+
+            pdfInputStream.close();
+
+            //返回OCR内容
+            return res;
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /*接受一个图片list，调用OCR模块的服务，
      * 返回OCR识别的结果
      * 包括文字、置信度和文字区域的坐标*/

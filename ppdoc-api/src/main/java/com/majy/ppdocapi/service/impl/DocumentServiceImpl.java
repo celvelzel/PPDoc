@@ -12,6 +12,7 @@ import com.majy.ppdocapi.utils.OCRUtils.DocOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import com.majy.ppdocapi.utils.OSSUtils;
 import com.majy.ppdocapi.utils.PdfToEditablePdfUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class DocumentServiceImpl implements DocumentService
 {
     @Autowired
@@ -92,7 +94,7 @@ public class DocumentServiceImpl implements DocumentService
                 List jsons = PaddleOcrUtils.pdfToOcrText(file);
                 // 根据识别文本提取信息
                 Map<String, String> dataMap = DocOcrUtils.getStringStringMap(jsons);
-//                pdfToEditablePdfUtils.pdf2Dpdf(file, jsons);
+//                pdfToEditablePdfUtils.pdf2Dpdf(inputStream, jsons);
 //                File dPdfFile = new File(dpdfPath);
                 URL url = ossUtils.uploadFile(file);
 //                dPdfFile.delete();

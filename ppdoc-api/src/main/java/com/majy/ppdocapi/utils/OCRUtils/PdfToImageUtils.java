@@ -93,4 +93,45 @@ public class PdfToImageUtils
 
         }
     }
+
+    public static void pdf2ImageList(InputStream pdfInputStream, List<File> files) {
+        try
+        {
+            // 加载PDF文档
+            PDDocument document = PDDocument.load(pdfInputStream);
+
+            // 创建PDF渲染器
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+
+            // 获取PDF页数
+            int pageCount = document.getNumberOfPages();
+
+
+            // 循环处理每一页
+            for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                // 创建一个BufferedImage对象来代表每一页
+                // 渲染当前页为BufferedImage
+                BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 480); // DPI分辨率渲染
+
+                // 对该页图片创建临时文件
+                File tempFile = File.createTempFile("temp", ".tmp");
+
+                FileOutputStream imageOutPutStream = new FileOutputStream(tempFile);
+
+                // 将BufferedImage写入输出流
+                ImageIO.write(image, "png", imageOutPutStream);
+
+
+                //将一张或多张图片写入MultipartFile List
+                files.add(pageIndex, tempFile);
+            }
+
+            // 关闭PDF文档
+            document.close();
+        } catch (IOException e)
+        {
+
+        }
+    }
+
 }

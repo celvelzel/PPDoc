@@ -5,6 +5,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.pdf.*;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
+import com.majy.ppdocapi.utils.OCRUtils.PdfToImageUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -29,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,7 @@ public class PdfToEditablePdfUtils
 
     }
 
-    public void pdf2Dpdf(InputStream pdfFile, List jsons) throws IOException, DocumentException
+    public void pdf2Dpdf(File pdfFile, List jsons) throws IOException, DocumentException
     {
         // 加载PDF文档
         PDDocument document = PDDocument.load(pdfFile);
@@ -56,43 +58,95 @@ public class PdfToEditablePdfUtils
         // 创建PDF渲染器
         PDFRenderer pdfRenderer = new PDFRenderer(document);
 
+        PDDocument Dpdf = new PDDocument();
+
         // 获取PDF页数
         int pageCount = document.getNumberOfPages();
         log.info("PDF总页数: {}", pageCount);
-
-        PDDocument Dpdf = new PDDocument();
 
         FontFactory.registerDirectory(fontPath);
         //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         // 创建字体对象，用于在PDF中显示文字
         BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
 
+        List<File> imageList = new ArrayList<>();
+        PdfToImageUtils.pdf2ImageList(Files.newInputStream(pdfFile.toPath()), imageList);
 
         // 循环处理每一页
         for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
         {
-            log.info("当前页数: {}", pageIndex);
+            log.info("当前页数: {}", pageIndex + 1);
 
-            // 创建一个BufferedImage对象来代表每一页
-            // 渲染当前页为BufferedImage
-            BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 480); // DPI分辨率渲染
+
             //读取图片的宽和高
+            BufferedImage image = ImageIO.read(imageList.get(pageIndex));
             int width = image.getWidth();
             int height = image.getHeight();
-            float[] imgSize = new float[]{(float) width, (float) height};
+            float[] imgSize;
+            if (width == 0 || height == 0)
+            {
+                imgSize = new float[]{612.0F, 792.0F};
+            } else
+            {
+                imgSize = new float[]{(float) width, (float) height};
+            }
+            log.info("第{}页的图片尺寸: {}", pageIndex + 1, imgSize);
 
-            // 获取页面的边界矩形，用于确定图像尺寸
-            PDRectangle pdr = document.getPage(pageIndex).getBBox();
-            float[] pdfSize = new float[]{pdr.getWidth(), pdr.getHeight()};
+
+            PDDocument doc = new PDDocument();
+            float[] pdfSize;
+            try
+            {
+                // 创建PDF页面并添加到文档
+                PDPage page = new PDPage();
+                doc.addPage(page);
+                // 从图片文件创建PDImageXObject对象
+                PDImageXObject pdImage = PDImageXObject.createFromFileByContent(imageList.get(pageIndex), doc);
+                // 创建内容流，用于向页面添加图像
+                PDPageContentStream contents = new PDPageContentStream(doc, page);
+
+                // 获取页面的边界矩形，用于确定图像尺寸
+                PDRectangle pdr = document.getPage(pageIndex).getBBox();
+                pdfSize = new float[]{pdr.getWidth(), pdr.getHeight()};
+
+                // 在页面上绘制图像
+                contents.drawImage(pdImage, 0.0F, 0.0F, pdr.getWidth(), pdr.getHeight());
+                // 关闭内容流
+                contents.close();
+                // 保存PDF文档
+                doc.save("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf");
+            } catch (Exception var17)
+            {
+                // 处理异常，输出错误信息
+                System.out.println("图片转pdf发生错误!!");
+                var17.printStackTrace();
+                // 发生异常时，返回A4纸的尺寸
+                pdfSize = new float[]{612.0F, 792.0F};
+            } finally
+            {
+                // 确保文档被关闭
+                try
+                {
+                    doc.close();
+                } catch (IOException var16)
+                {
+                    // 处理关闭文档时可能发生的IO异常
+                    var16.printStackTrace();
+                }
+
+            }
 
 
             // 读取PDF文档
-            PdfReader reader = new PdfReader(pdfFile);
+            FileInputStream input = new FileInputStream("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf");
+            PdfReader reader = new PdfReader(input);
             // 对该页图片创建双层pdf临时文件
             // 输出流用于创建新的PDF文件
-            OutputStream output = new FileOutputStream(new File(filePath));
+            OutputStream output = new FileOutputStream(new File("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf"));
             PdfStamper stamper = new PdfStamper(reader, output);
-            PdfContentByte page = stamper.getOverContent(pageIndex + 1);
+            // 获取pdf当前页，接收页数作为变量，1表示第一页
+            PdfContentByte page = stamper.getOverContent(1);
+
 
             // 开始在PDF页面上绘制文本
             page.beginText();
@@ -118,7 +172,7 @@ public class PdfToEditablePdfUtils
                 List textRegion = (List) item.get("text_region");
 
                 // 处理信息
-                log.info("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
+                //log.info("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
                 // 设置文字的位置
                 List point = (List) textRegion.get(0);
                 Integer origX = (Integer) point.get(0);
@@ -135,27 +189,24 @@ public class PdfToEditablePdfUtils
 //                        }
                 page.showText(textContent); // 显示文字
             }
-
-
-            PDDocument tempPDf = PDDocument.load(new File(filePath));
-            // 添加要合并的PDF文件
-            Dpdf.addPage(tempPDf.getPage(0));
-
             log.info("结束文本绘制");
+
+
             // 结束文本绘制
             page.endText();
             // 关闭相关资源
             stamper.close();
             reader.close();
+            input.close();
             output.close();
-        }
-        //检查文件是否已经存在
-        if (new File(filePath).exists())
-        {
-            new File(filePath).delete();
+            doc.close();
+
+            PDDocument tempPDF = PDDocument.load(new File("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf"));
+            // 添加要合并的PDF文件
+            Dpdf.addPage(tempPDF.getPage(0));
         }
         log.info("PDF文件已保存");
-        Dpdf.save(new File(filePath));
+        Dpdf.save(new File("<LOCAL_PATH_REDACTED>"));
         Dpdf.close();
         // 关闭PDF文档
         document.close();
@@ -343,24 +394,22 @@ public class PdfToEditablePdfUtils
     public static boolean pdfCopyableChecker(InputStream inputStream) throws IOException
     {
         PDDocument document = PDDocument.load(inputStream);
-        if (! document.isEncrypted())
+        if (!document.isEncrypted())
         { // 检查PDF是否被加密
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
-            if (! text.trim().isEmpty())
+            if (!text.trim().isEmpty())
             {
                 log.info("文档可以直接复制文本。");
                 document.close();
                 return true;
-            }
-            else
+            } else
             {
                 log.info("文档中没有可见的文本，无法直接复制。");
                 document.close();
                 return false;
             }
-        }
-        else
+        } else
         {
             System.out.println("文档已加密，无法判断文本是否可直接复制。");
             document.close();
@@ -515,12 +564,17 @@ public class PdfToEditablePdfUtils
 //        String jpgPath = "<LOCAL_PATH_REDACTED>";
 //        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
 //        requestPPOCR(jpgPath, dpdfFolder);
+
         String pdfFolder = "<LOCAL_PATH_REDACTED>";
         File pdfFile = new File(pdfFolder);
         InputStream input = new FileInputStream(pdfFile);
-        System.out.println("OCR识别结果"+getPdfText(input));
-        System.out.println("pdf可编辑检验结果："+pdfCopyableChecker(input));
-        pdf2Dpdf();
+
+        List jsons = PaddleOcrUtils.pdfToOcrText(input);
+
+        pdf2Dpdf(pdfFile, jsons);
+
+//        System.out.println("OCR识别结果" + getPdfText(input));
+//        System.out.println("pdf可编辑检验结果：" + pdfCopyableChecker(input));
     }
 }
 
