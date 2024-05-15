@@ -150,50 +150,6 @@ public class CaseServiceImpl implements CaseService
         return Result.success(originGraphInfo);
     }
 
-    public GraphInfo mergeGraph(GraphInfo graph1, GraphInfo graph2)
-    {
-        GraphInfo mergedGraph = new GraphInfo();
-        mergedGraph.setTypes(graph1.getTypes());
-        mergedGraph.setCategories(graph1.getCategories());
-        mergedGraph.setNodes(new ArrayList<>());
-        mergedGraph.setLinks(new ArrayList<>());
-
-        // 创建一个哈希表来存储第一个图中每个节点的索引
-        Map<String, Integer> graph1NodeIndex = new HashMap<>();
-        for (int i = 0; i < graph1.getNodes().size(); i++)
-        {
-            graph1NodeIndex.put(graph1.getNodes().get(i).getName(), i);
-        }
-
-        // 遍历第二个图的节点，找到相同的节点并合并连接
-        for (Node node2 : graph2.getNodes())
-        {
-            Integer index1 = graph1NodeIndex.get(node2.getName());
-            if (index1 != null)
-            {
-                // 如果找到了相同的节点，合并连接
-                mergedGraph.getLinks().addAll(graph1.getLinks());
-                mergedGraph.getLinks().addAll(graph2.getLinks());
-                // 添加合并后的连接
-                for (Link link : graph2.getLinks())
-                {
-                    if (link.getSource() == index1 || link.getTarget() == index1)
-                    {
-                        mergedGraph.getLinks().add(link);
-                    }
-                }
-            }
-            else
-            {
-                // 如果找不到相同的节点，直接添加第二个图的节点和连接
-                mergedGraph.getNodes().add(node2);
-                mergedGraph.getLinks().addAll(graph2.getLinks());
-            }
-        }
-
-        return mergedGraph;
-    }
-
     public List<Case> getPlaintiffRelatedCase(Integer case_id)
     {
         List<Case> Result = new ArrayList<>();

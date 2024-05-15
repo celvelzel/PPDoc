@@ -48,25 +48,31 @@ public class PdfToEditablePdfUtils
 
     }
 
-    public void pdf2Dpdf(MultipartFile pdfFile, List jsons) throws IOException, DocumentException, URISyntaxException
+    public void pdf2Dpdf(InputStream pdfFile, List jsons) throws IOException, DocumentException
     {
         // 加载PDF文档
-        byte[] pdfInput = pdfFile.getBytes();
-        PDDocument document = PDDocument.load(pdfInput);
+        PDDocument document = PDDocument.load(pdfFile);
 
         // 创建PDF渲染器
         PDFRenderer pdfRenderer = new PDFRenderer(document);
 
         // 获取PDF页数
         int pageCount = document.getNumberOfPages();
-
-        float[] pdfSize;
+        log.info("PDF总页数: {}", pageCount);
 
         PDDocument Dpdf = new PDDocument();
+
+        FontFactory.registerDirectory(fontPath);
+        //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        // 创建字体对象，用于在PDF中显示文字
+        BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+
 
         // 循环处理每一页
         for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
         {
+            log.info("当前页数: {}", pageIndex);
+
             // 创建一个BufferedImage对象来代表每一页
             // 渲染当前页为BufferedImage
             BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 480); // DPI分辨率渲染
@@ -77,15 +83,11 @@ public class PdfToEditablePdfUtils
 
             // 获取页面的边界矩形，用于确定图像尺寸
             PDRectangle pdr = document.getPage(pageIndex).getBBox();
-            pdfSize = new float[]{pdr.getWidth(), pdr.getHeight()};
+            float[] pdfSize = new float[]{pdr.getWidth(), pdr.getHeight()};
 
 
-            FontFactory.registerDirectory(fontPath);
-            //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            // 创建字体对象，用于在PDF中显示文字
-            BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
             // 读取PDF文档
-            PdfReader reader = new PdfReader(pdfInput);
+            PdfReader reader = new PdfReader(pdfFile);
             // 对该页图片创建双层pdf临时文件
             // 输出流用于创建新的PDF文件
             OutputStream output = new FileOutputStream(new File(filePath));
@@ -147,6 +149,12 @@ public class PdfToEditablePdfUtils
             reader.close();
             output.close();
         }
+        //检查文件是否已经存在
+        if (new File(filePath).exists())
+        {
+            new File(filePath).delete();
+        }
+        log.info("PDF文件已保存");
         Dpdf.save(new File(filePath));
         Dpdf.close();
         // 关闭PDF文档
@@ -501,17 +509,18 @@ public class PdfToEditablePdfUtils
 
     }
 
-//    @Test
-//    public void test() throws DocumentException, IOException
-//    {
-////        String jpgPath = "<LOCAL_PATH_REDACTED>";
-////        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
-////        requestPPOCR(jpgPath, dpdfFolder);
-//        String pdfFolder = "<LOCAL_PATH_REDACTED>";
-//        File pdfFile = new File(pdfFolder);
-//        InputStream input = new FileInputStream(pdfFile);
-//        System.out.println(getPdfText(input));
-////        pdfCopyableChecker(pdfFolder);
-//    }
+    @Test
+    public void test() throws DocumentException, IOException
+    {
+//        String jpgPath = "<LOCAL_PATH_REDACTED>";
+//        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
+//        requestPPOCR(jpgPath, dpdfFolder);
+        String pdfFolder = "<LOCAL_PATH_REDACTED>";
+        File pdfFile = new File(pdfFolder);
+        InputStream input = new FileInputStream(pdfFile);
+        System.out.println("OCR识别结果"+getPdfText(input));
+        System.out.println("pdf可编辑检验结果："+pdfCopyableChecker(input));
+        pdf2Dpdf();
+    }
 }
 
