@@ -9,6 +9,7 @@
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
+          <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="1050"></iframe>
           <el-card class="box-card">
             <!-- 显示主体内容的卡片 -->
             <el-card class="box-card">
@@ -135,10 +136,12 @@
 import Editor from 'vue2-ace-editor'
 import jsonView from 'vue-json-views'
 import MyMenu from "@/components/Utils/MyMenu.vue";
+import PDFViewer from "@/components/Utils/PDFViewer.vue";
 
 export default {
   data() {
     return {
+      pdfUrl: 'http://localhost:8080/pdf/example.pdf',
       // 用例详细信息展示的窗口
       dialogVisible: false,
       caseInfo: {
@@ -254,6 +257,7 @@ export default {
 
   },
   components: {
+    PDFViewer,
     MyMenu,
     Editor,
     jsonView,

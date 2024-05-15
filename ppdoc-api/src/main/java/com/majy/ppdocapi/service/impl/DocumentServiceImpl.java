@@ -37,8 +37,9 @@ public class DocumentServiceImpl implements DocumentService
     @Autowired
     OSSUtils ossUtils;
 
-    @Value("${file.dpdf.path}")
-    private static String dpdfPath;
+    @Value("${file.pdf.path}")
+    private String pdfFolder;
+//    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
 
     @Override
     public PageBean page(Integer start, Integer pageSize)
@@ -67,8 +68,7 @@ public class DocumentServiceImpl implements DocumentService
         if (rowsAffected > 0)
         {
             return Result.deleteSuccess();
-        }
-        else
+        } else
         {
             return Result.deleteFailure();
         }
@@ -88,21 +88,20 @@ public class DocumentServiceImpl implements DocumentService
         {
             InputStream inputStream = file.getInputStream();
             //若pdf没有可复制的文本
-            if (! pdfToEditablePdfUtils.pdfCopyableChecker(inputStream))
+            if (!pdfToEditablePdfUtils.pdfCopyableChecker(inputStream))
             {
                 // pdf识别，提取文字
-                List jsons = PaddleOcrUtils.pdfToOcrText(file);
+                List ocrResult = PaddleOcrUtils.pdfToOcrText(file);
                 // 根据识别文本提取信息
-                Map<String, String> dataMap = DocOcrUtils.getStringStringMap(jsons);
-//                pdfToEditablePdfUtils.pdf2Dpdf(inputStream, jsons);
-//                File dPdfFile = new File(dpdfPath);
-                URL url = ossUtils.uploadFile(file);
-//                dPdfFile.delete();
+                Map<String, String> dataMap = DocOcrUtils.getStringStringMap(ocrResult);
+                String finalPdfPath = pdfFolder + System.getProperty("file.separator") + "FinalDpdf.pdf";
+                file.transferTo(new File(pdfFolder + System.getProperty("file.separator") + "originPdf.pdf"));
+                pdfToEditablePdfUtils.pdf2Dpdf(new File(pdfFolder + System.getProperty("file.separator") + "originPdf.pdf"), ocrResult, finalPdfPath);
+                URL url = ossUtils.uploadFile(new File(finalPdfPath));
                 inputStream.close();
 
                 return Result.getSuccessResult(url, dataMap);
-            }
-            else
+            } else
             {
                 //若pdf有可复制的文本，直接使用pdf中的文本
                 String pdfText = PdfToEditablePdfUtils.getPdfText(file.getInputStream());
@@ -111,6 +110,9 @@ public class DocumentServiceImpl implements DocumentService
                 return Result.getSuccessResult(fileUrl, dataMap);
             }
         } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        } catch (DocumentException e)
         {
             throw new RuntimeException(e);
         }
@@ -125,7 +127,7 @@ public class DocumentServiceImpl implements DocumentService
     @Override
     public Result update(Document document)
     {
-        Integer rowsAffected =  documentMapper.update(document);
+        Integer rowsAffected = documentMapper.update(document);
         if (rowsAffected == 0)
         {
             return Result.updateFailure();

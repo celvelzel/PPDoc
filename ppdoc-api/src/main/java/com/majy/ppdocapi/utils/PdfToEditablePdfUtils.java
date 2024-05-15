@@ -7,8 +7,6 @@ import com.itextpdf.text.pdf.*;
 import com.majy.ppdocapi.utils.OCRUtils.PaddleOcrUtils;
 import com.majy.ppdocapi.utils.OCRUtils.PdfToImageUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
-import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -19,19 +17,12 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
-import cn.hutool.json.JSONUtil;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,17 +31,20 @@ import java.util.Map;
 @Component
 public class PdfToEditablePdfUtils
 {
-    @Value("${font.path}")
-    private String fontPath;
-    @Value("${file.dpdf.path}")
-    private String filePath;
+//    @Value("${font.path}")
+//    private String fontPath;
+//    @Value("${file.pdf.path}")
+//    private String pdfFolder;
+
+    private String fontPath = "<LOCAL_PATH_REDACTED>";
+    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
 
     public static void pdf2EditablePdfUtil(InputStream pdfInputStream, OutputStream pdfOutputStream, List<List<Map>> ocrText) throws IOException
     {
 
     }
 
-    public void pdf2Dpdf(File pdfFile, List jsons) throws IOException, DocumentException
+    public void pdf2Dpdf(File pdfFile, List jsons, String dPdfFilePath) throws IOException, DocumentException
     {
         // 加载PDF文档
         PDDocument document = PDDocument.load(pdfFile);
@@ -58,159 +52,213 @@ public class PdfToEditablePdfUtils
         // 创建PDF渲染器
         PDFRenderer pdfRenderer = new PDFRenderer(document);
 
-        PDDocument Dpdf = new PDDocument();
-
         // 获取PDF页数
         int pageCount = document.getNumberOfPages();
         log.info("PDF总页数: {}", pageCount);
 
-        FontFactory.registerDirectory(fontPath);
-        //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        // 创建字体对象，用于在PDF中显示文字
-        BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-
-        List<File> imageList = new ArrayList<>();
-        PdfToImageUtils.pdf2ImageList(Files.newInputStream(pdfFile.toPath()), imageList);
+        //
+        List<File> imageList = PdfToImageUtils.pdf2ImageList(Files.newInputStream(pdfFile.toPath()));
 
         // 循环处理每一页
         for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
         {
             log.info("当前页数: {}", pageIndex + 1);
 
-
             //读取图片的宽和高
             BufferedImage image = ImageIO.read(imageList.get(pageIndex));
-            int width = image.getWidth();
-            int height = image.getHeight();
-            float[] imgSize;
-            if (width == 0 || height == 0)
-            {
-                imgSize = new float[]{612.0F, 792.0F};
-            } else
-            {
-                imgSize = new float[]{(float) width, (float) height};
-            }
+            float[] imgSize = getImageSize(image);
             log.info("第{}页的图片尺寸: {}", pageIndex + 1, imgSize);
 
+            // 将图片转换为PDF
+            float[] pdfSize = convertImageToPdf(document, imageList, pageIndex);
+            log.info("第{}页的PDF尺寸: {}", pageIndex + 1, pdfSize);
 
-            PDDocument doc = new PDDocument();
-            float[] pdfSize;
-            try
-            {
-                // 创建PDF页面并添加到文档
-                PDPage page = new PDPage();
-                doc.addPage(page);
-                // 从图片文件创建PDImageXObject对象
-                PDImageXObject pdImage = PDImageXObject.createFromFileByContent(imageList.get(pageIndex), doc);
-                // 创建内容流，用于向页面添加图像
-                PDPageContentStream contents = new PDPageContentStream(doc, page);
-
-                // 获取页面的边界矩形，用于确定图像尺寸
-                PDRectangle pdr = document.getPage(pageIndex).getBBox();
-                pdfSize = new float[]{pdr.getWidth(), pdr.getHeight()};
-
-                // 在页面上绘制图像
-                contents.drawImage(pdImage, 0.0F, 0.0F, pdr.getWidth(), pdr.getHeight());
-                // 关闭内容流
-                contents.close();
-                // 保存PDF文档
-                doc.save("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf");
-            } catch (Exception var17)
-            {
-                // 处理异常，输出错误信息
-                System.out.println("图片转pdf发生错误!!");
-                var17.printStackTrace();
-                // 发生异常时，返回A4纸的尺寸
-                pdfSize = new float[]{612.0F, 792.0F};
-            } finally
-            {
-                // 确保文档被关闭
-                try
-                {
-                    doc.close();
-                } catch (IOException var16)
-                {
-                    // 处理关闭文档时可能发生的IO异常
-                    var16.printStackTrace();
-                }
-
-            }
-
-
-            // 读取PDF文档
-            FileInputStream input = new FileInputStream("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf");
-            PdfReader reader = new PdfReader(input);
-            // 对该页图片创建双层pdf临时文件
-            // 输出流用于创建新的PDF文件
-            OutputStream output = new FileOutputStream(new File("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf"));
-            PdfStamper stamper = new PdfStamper(reader, output);
-            // 获取pdf当前页，接收页数作为变量，1表示第一页
-            PdfContentByte page = stamper.getOverContent(1);
-
-
-            // 开始在PDF页面上绘制文本
-            page.beginText();
-            page.setFontAndSize(baseFont, 11.0F); // 设置字体大小
-            BaseColor color = new BaseColor(255, 0, 0, 0); // 设置文字颜色
-            page.setColorFill(color);
-
-            float iw = imgSize[0];//图片的宽度，单位为像素
-            float ih = imgSize[1];//图片的高度，单位为像素
-            float pw = pdfSize[0]; // 目标PDF的宽度
-            float ph = pdfSize[1]; // 目标PDF的高度
-            //PDF 页面的尺寸，单位是点（points）
-            // 1 点等于 1/72 英寸
-            // 这是 PDF 文档中默认的页面尺寸单位，也是 iTextPDF 中的标准单位。
-
-            //对对应页数的pdf文件进行绘制
-            List resultArray = (List) jsons.get(pageIndex);
-            for (int j = 0; j < resultArray.size(); j++)
-            {
-                Map item = (Map) resultArray.get(j);
-                double confidence = (double) item.get("confidence");
-                String textContent = (String) item.get("text");
-                List textRegion = (List) item.get("text_region");
-
-                // 处理信息
-                //log.info("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
-                // 设置文字的位置
-                List point = (List) textRegion.get(0);
-                Integer origX = (Integer) point.get(0);
-                int intorigX = origX.intValue();
-                float x = (float) intorigX * (pw + 10.0F) / iw;
-                Integer origY = (Integer) point.get(1);
-                int intorigY = origY.intValue();
-                float y = (float) intorigY * (ph + 10.0F) / ih;
-                page.setTextMatrix(x, y);
-                // 对识别得分较低的字符添加方括号标记
-//                        if (0.9 > confidence)
-//                        {
-//                            textContent = "[" + textContent + "]";
-//                        }
-                page.showText(textContent); // 显示文字
-            }
-            log.info("结束文本绘制");
-
-
-            // 结束文本绘制
-            page.endText();
-            // 关闭相关资源
-            stamper.close();
-            reader.close();
-            input.close();
-            output.close();
-            doc.close();
-
-            PDDocument tempPDF = PDDocument.load(new File("<LOCAL_PATH_REDACTED>" + (pageIndex + 1) + ".pdf"));
-            // 添加要合并的PDF文件
-            Dpdf.addPage(tempPDF.getPage(0));
+            // 在 PDF 页面上绘制文本
+            annotatePdf(imgSize, pdfSize, pageIndex, jsons);
         }
+        // 合并并保存双层PDF文件
+        mergePdf(pageCount, dPdfFilePath);
         log.info("PDF文件已保存");
-        Dpdf.save(new File("<LOCAL_PATH_REDACTED>"));
-        Dpdf.close();
-        // 关闭PDF文档
         document.close();
     }
+
+
+    public float[] getImageSize(BufferedImage image)
+    {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        return (width == 0 || height == 0) ? new float[]{612.0F, 792.0F} : new float[]{width, height};
+    }
+
+    /**
+     * 将图片转换为PDF文件。
+     *
+     * @param document  用于存放转换结果的PDF文档对象
+     * @param imageList 包含要转换为PDF的图片文件的列表
+     * @param pageIndex 要转换的图片在列表中的索引
+     * @return 转换后的PDF页面尺寸（宽度和高度）
+     * @throws IOException 如果处理图片或保存PDF时发生IO错误
+     */
+    public float[] convertImageToPdf(PDDocument document, List<File> imageList, int pageIndex) throws IOException
+    {
+        PDDocument image2PdfDoc = new PDDocument();
+        float[] pdfSize;
+        // 将图片添加到PDF文档中
+        try
+        {
+            // 创建一个新的PDF页面并将其添加到文档中
+            PDPage page = new PDPage();
+            image2PdfDoc.addPage(page);
+
+            // 根据提供的图片列表中的索引，创建PDImageXObject对象
+            PDImageXObject pdImage = PDImageXObject.createFromFileByContent(imageList.get(pageIndex), image2PdfDoc);
+
+            // 创建一个内容流，用于向页面添加图像
+            PDPageContentStream contents = new PDPageContentStream(image2PdfDoc, page);
+
+            // 获取指定页面的边界矩形，以确定PDF页面的大小
+            PDRectangle pdr = document.getPage(pageIndex).getBBox();
+            pdfSize = new float[]{pdr.getWidth(), pdr.getHeight()};
+
+            // 在页面上绘制图像
+            contents.drawImage(pdImage, 0.0F, 0.0F, pdr.getWidth(), pdr.getHeight());
+
+            // 关闭内容流以确保所有更改都已保存
+            contents.close();
+
+            // 保存转换后的PDF文件
+            image2PdfDoc.save(pdfFolder + System.getProperty("file.separator") + "imagePDF" + (pageIndex + 1) + ".pdf");
+        } catch (Exception var17)
+        {
+            // 处理任何在转换过程中发生的异常
+            System.out.println("图片转pdf发生错误!!");
+            var17.printStackTrace();
+
+            // 发生异常时返回A4纸的尺寸
+            pdfSize = new float[]{612.0F, 792.0F};
+        } finally
+        {
+            // 确保在方法退出前关闭PDF文档以释放资源
+            try
+            {
+                image2PdfDoc.close();
+            } catch (IOException var16)
+            {
+                // 处理关闭文档时可能发生的IO异常
+                var16.printStackTrace();
+            }
+        }
+        return pdfSize;
+    }
+
+    public void annotatePdf(float[] imgSize, float[] pdfSize, int pageIndex, List ocrResult) throws DocumentException, IOException
+    {
+        FontFactory.registerDirectory(fontPath);
+        //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        // 创建字体对象，用于在PDF中显示文字
+        BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+
+
+        // 读取图片转成的PDF文档
+        FileInputStream input = new FileInputStream(pdfFolder + System.getProperty("file.separator") + "imagePDF" + (pageIndex + 1) + ".pdf");
+        PdfReader reader = new PdfReader(input);
+        // 对该页图片创建双层pdf临时文件
+        // 输出流用于创建新的PDF文件
+        OutputStream output = new FileOutputStream(new File(pdfFolder + System.getProperty("file.separator") + "dpdf" + (pageIndex + 1) + ".pdf"));
+        PdfStamper stamper = new PdfStamper(reader, output);
+        // 获取pdf当前页，接收页数作为变量，1表示第一页
+        PdfContentByte page = stamper.getOverContent(1);
+
+        // 开始在PDF页面上绘制文本
+        page.beginText();
+        page.setFontAndSize(baseFont, 11.0F); // 设置字体大小
+        BaseColor color = new BaseColor(255, 0, 0, 0); // 设置文字颜色
+        page.setColorFill(color);
+
+        float iw = imgSize[0];//图片的宽度，单位为像素
+        float ih = imgSize[1];//图片的高度，单位为像素
+        float pw = pdfSize[0]; // 目标PDF的宽度
+        float ph = pdfSize[1]; // 目标PDF的高度
+        //PDF 页面的尺寸，单位是点（points）
+        // 1 点等于 1/72 英寸
+        // 这是 PDF 文档中默认的页面尺寸单位，也是 iTextPDF 中的标准单位。
+
+        //对对应页数的pdf文件进行绘制
+        List resultArray = (List) ocrResult.get(pageIndex);
+        // 对当前页面每个文字区块进行绘制
+        for (int j = 0; j < resultArray.size(); j++)
+        {
+            Map textItem = (Map) resultArray.get(j);
+            JSONObject item = new JSONObject(textItem);
+            double confidence = item.getDouble("confidence");
+            String textContent = item.getString("text");
+            JSONArray textRegion = item.getJSONArray("text_region");
+
+            // 处理信息
+            //log.info("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
+            // 设置文字的位置
+            JSONArray point = textRegion.getJSONArray(0);
+            page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F) / iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
+            // 绘制文字
+            page.showText(textContent);
+        }
+        log.info("结束文本绘制");
+
+
+        // 结束文本绘制
+        page.endText();
+        // 关闭相关资源
+        stamper.close();
+        reader.close();
+        input.close();
+        output.close();
+    }
+
+    /**
+     * 合并PDF文件方法
+     * 将指定目录下的多个PDF文件合并成一个PDF文件。
+     *
+     * @param pageCount 需要合并的PDF文件数量。
+     * @throws IOException 如果在读取或保存PDF文件时发生IO异常。
+     */
+    public void mergePdf(int pageCount, String finalPdfPath) throws IOException
+    {
+        // 创建一个新的PDF文档
+        PDDocument Dpdf = new PDDocument();
+        for(int i = 1; i <= pageCount; i++)
+        {
+            // 构建当前PDF文件的路径
+            File file = new File(pdfFolder + System.getProperty("file.separator") + "dpdf" + i + ".pdf");
+            if (file.exists()) // 检查文件是否存在
+            {
+                FileInputStream input = new FileInputStream(file);
+                PDDocument tempPDF = PDDocument.load(file);
+                // 将当前PDF页面添加到合并后的文档中
+                Dpdf.addPage(tempPDF.getPage(0));
+            }
+        }
+        try
+        {
+            // 保存合并后的PDF文件
+            Dpdf.save(new File(finalPdfPath));
+        } catch (IOException e)
+        {
+            log.error("保存合并后的双层PDF文件失败");
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            try
+            {
+                // 确保在方法退出前关闭PDF文档
+                Dpdf.close();
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     /**
      * 请求PPOCR服务进行OCR识别，并将识别结果绘制在PDF文件中。
@@ -223,6 +271,7 @@ public class PdfToEditablePdfUtils
     {
         // 将图像转换为PDF文件，并获取PDF的尺寸
         float[] pdfSize = img2pdf2(imgPath, pdfFolder);
+        log.info("PDF尺寸：[" + pdfSize[0] + "," + pdfSize[1] + "]");
         //读取图片的宽和高
         BufferedImage image = ImageIO.read(new File(imgPath));
         int width = image.getWidth();
@@ -355,7 +404,7 @@ public class PdfToEditablePdfUtils
                         JSONArray textRegion = item.getJSONArray("text_region");
 
                         // 处理信息
-                        System.out.println("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
+//                        System.out.println("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
                         // 设置文字的位置
                         JSONArray point = textRegion.getJSONArray(0);
                         page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F) / iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
@@ -571,7 +620,7 @@ public class PdfToEditablePdfUtils
 
         List jsons = PaddleOcrUtils.pdfToOcrText(input);
 
-        pdf2Dpdf(pdfFile, jsons);
+        pdf2Dpdf(pdfFile, jsons, "<LOCAL_PATH_REDACTED>");
 
 //        System.out.println("OCR识别结果" + getPdfText(input));
 //        System.out.println("pdf可编辑检验结果：" + pdfCopyableChecker(input));

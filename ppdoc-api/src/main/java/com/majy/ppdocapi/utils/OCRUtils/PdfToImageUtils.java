@@ -94,7 +94,9 @@ public class PdfToImageUtils
         }
     }
 
-    public static void pdf2ImageList(InputStream pdfInputStream, List<File> files) {
+    public static List<File> pdf2ImageList(InputStream pdfInputStream) {
+        //初始化结果列表
+        List<File> files = new ArrayList<>();
         try
         {
             // 加载PDF文档
@@ -105,7 +107,6 @@ public class PdfToImageUtils
 
             // 获取PDF页数
             int pageCount = document.getNumberOfPages();
-
 
             // 循环处理每一页
             for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
@@ -121,8 +122,7 @@ public class PdfToImageUtils
                 // 将BufferedImage写入输出流
                 ImageIO.write(image, "png", imageOutPutStream);
 
-
-                //将一张或多张图片写入MultipartFile List
+                //将一张或多张图片写入File List
                 files.add(pageIndex, tempFile);
             }
 
@@ -130,8 +130,9 @@ public class PdfToImageUtils
             document.close();
         } catch (IOException e)
         {
-
+            log.error("pdf转image失败");
         }
+        return files;
     }
 
 }
