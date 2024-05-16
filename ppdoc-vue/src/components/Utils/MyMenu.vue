@@ -3,7 +3,11 @@ export default {}
 </script>
 
 <template>
-  <el-menu style="text-align: left;">
+  <el-menu unique-opened  style="text-align: left;">
+    <el-menu-item index="0">
+      <span class="el-icon-s-home"></span>
+      <router-link to="/home">首页</router-link>
+    </el-menu-item>
     <el-submenu index="1">
       <template slot="title">
         <span class="iconfont icon-jingqingluru"></span>
