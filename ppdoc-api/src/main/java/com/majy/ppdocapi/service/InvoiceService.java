@@ -18,6 +18,8 @@ public interface InvoiceService
 
     Map<String, String> file2StringStringMap(MultipartFile file);
 
+    Result handlePdfFile(MultipartFile file);
+
     Result getByInvoiceId(Integer invoiceId);
 
     Result update(Invoice invoice);

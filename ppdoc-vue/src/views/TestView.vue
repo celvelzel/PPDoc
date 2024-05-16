@@ -141,7 +141,7 @@ import PDFViewer from "@/components/Utils/PDFViewer.vue";
 export default {
   data() {
     return {
-      pdfUrl: 'http://localhost:8080/pdf/example.pdf',
+      pdfUrl: '',
       // 用例详细信息展示的窗口
       dialogVisible: false,
       caseInfo: {

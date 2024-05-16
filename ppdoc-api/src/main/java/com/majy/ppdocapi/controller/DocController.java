@@ -37,7 +37,7 @@ public class DocController extends OcrController
     @PostMapping
     public Result save(@RequestBody Document document)
     {
-        log.info("新增文档记录:{}",document);
+        log.info("新增文档记录:{}", document);
         return documentService.add(document);
     }
 
@@ -53,8 +53,9 @@ public class DocController extends OcrController
     }
 
     @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Integer id){
-        log.info("根据文档id删除文档:{}",id);
+    public Result delete(@PathVariable Integer id)
+    {
+        log.info("根据文档id删除文档:{}", id);
         //调用service删除文档
         return documentService.delete(id);
     }
@@ -62,14 +63,14 @@ public class DocController extends OcrController
     @PutMapping
     public Result update(@RequestBody Document document)
     {
-        log.info("更新文档信息:{}",document);
+        log.info("更新文档信息:{}", document);
         return documentService.update(document);
     }
 
     @GetMapping("/{document_id}")
     public Result getById(@PathVariable Integer document_id)
     {
-        log.info("根据文档id查询文档:{}",document_id);
+        log.info("根据文档id查询文档:{}", document_id);
         return documentService.getById(document_id);
     }
 }

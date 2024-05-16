@@ -24,13 +24,8 @@ public class LicenseController extends OcrController
     @PostMapping("/upload")
     public Result licenseOcr(MultipartFile file) throws IOException
     {
-        //调用父类方法，上传文件到OSS
-        URL urlResult = uploadFile(file);
-
-        Map<String, String> dataMap = licenseService.file2StringStringMap(file);
-
-        //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult,dataMap);
+        //调用Service中的方法，获取提取到的信息
+        return licenseService.handlePdfFile(file);
     }
 
     @PostMapping

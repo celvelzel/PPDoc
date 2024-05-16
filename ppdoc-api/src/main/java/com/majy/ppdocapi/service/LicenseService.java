@@ -18,6 +18,8 @@ public interface LicenseService
 
     Map<String, String> file2StringStringMap(MultipartFile file);
 
+    Result handlePdfFile(MultipartFile file);
+
     Result getByLicenseId(Integer licenseId);
 
     Result update(License license);

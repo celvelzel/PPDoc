@@ -24,20 +24,14 @@ public class InvoiceController extends OcrController
     @PostMapping("/upload")
     public Result invoiceOcr(MultipartFile file) throws IOException
     {
-        // 调用父类方法，上传文件到OSS
-        URL urlResult = uploadFile(file);
-
         //调用Service中的方法，获取提取到的信息
-        Map<String,String> dataMap = invoiceService.file2StringStringMap(file);
-
-        //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult,dataMap);
+        return invoiceService.handlePdfFile(file);
     }
 
     @PostMapping
     public Result save(@RequestBody Invoice invoice)
     {
-        log.info("新增发票文档记录:{}",invoice);
+        log.info("新增发票文档记录:{}", invoice);
         return invoiceService.add(invoice);
     }
 
@@ -61,13 +55,14 @@ public class InvoiceController extends OcrController
     @PutMapping
     public Result update(@RequestBody Invoice invoice)
     {
-        log.info("更新发票文档记录:{}",invoice);
+        log.info("更新发票文档记录:{}", invoice);
         return invoiceService.update(invoice);
     }
 
     @DeleteMapping("/{documentId}")
-    public Result delete(@PathVariable Integer documentId){
-        log.info("根据文档id删除发票文档:{}",documentId);
+    public Result delete(@PathVariable Integer documentId)
+    {
+        log.info("根据文档id删除发票文档:{}", documentId);
         //调用service，根据文档ID删除发票
         return invoiceService.deleteByDocumentId(documentId);
     }

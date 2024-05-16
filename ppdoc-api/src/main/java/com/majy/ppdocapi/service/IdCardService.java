@@ -19,9 +19,13 @@ public interface IdCardService
 
     Result add(IdCard idCard);
 
+    Result handlePdfFile(MultipartFile file);
+
     Map<String, String> pdfFile2StringStringMap(MultipartFile file);
 
     Map<String, String> imageFile2StringStringMap(MultipartFile file) throws IOException;
 
     Result update(IdCard idCard);
+
+    Result handleImageFile(MultipartFile file);
 }

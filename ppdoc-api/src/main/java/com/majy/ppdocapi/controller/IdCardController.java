@@ -24,25 +24,15 @@ public class IdCardController extends OcrController
     @PostMapping("/pdf/upload")
     public Result idCardPdfOcr(MultipartFile file) throws IOException
     {
-        // 调用父类方法，上传文件到OSS
-        URL urlResult = uploadFile(file);
-
-        Map<String, String> dataMap = idCardService.pdfFile2StringStringMap(file);
-
-        //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult, dataMap);
+        //调用Service中的方法，获取提取到的信息
+        return idCardService.handlePdfFile(file);
     }
 
     @PostMapping("/image/upload")
     public Result idCardImageOcr(MultipartFile file) throws IOException
     {
-        //调用父类方法，上传文件到OSS
-        URL urlResult = uploadFile(file);
-
-        Map<String, String> dataMap = idCardService.imageFile2StringStringMap(file);
-
-        //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult, dataMap);
+        // 调用Service中的方法，获取提取到的信息
+        return idCardService.handleImageFile(file);
     }
 
     @PostMapping

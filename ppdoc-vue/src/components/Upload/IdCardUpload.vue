@@ -108,7 +108,10 @@ export default {
     // https://element.eleme.cn/#/zh-CN/component/upload
     handleSuccessImage(response) {
       console.log(response)
-      this.userInfoForm = response
+      this.pdfUrl = response.data.url;
+      this.userInfoForm = response.data.data;
+      //表格收到数据后关闭加载动效
+      this.fullscreenLoading = false;
     },
     handleSuccessPdf(response, file) {
       this.pdfUrl = response.data.url;

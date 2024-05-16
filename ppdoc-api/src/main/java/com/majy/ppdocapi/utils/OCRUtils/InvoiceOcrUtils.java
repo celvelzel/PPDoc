@@ -53,6 +53,29 @@ public class InvoiceOcrUtils extends PaddleOcrUtils
         return invoiceInfoMap;
     }
 
+    public Map<String, String> getStringStringMap(String pdfText)
+    {
+        Map<String, String> invoiceInfoMap = new HashMap<>();
+
+        String allInfo = pdfText;
+        String invoiceNumber = invoiceNumber(pdfText);
+        String invoiceCode = invoiceCode(pdfText);
+        String invoiceDate = invoiceDate(pdfText);
+        String invoiceAmount = invoiceAmount(pdfText);
+
+        invoiceInfoMap.put("invoiceNumber", invoiceNumber);
+        invoiceInfoMap.put("invoiceCode", invoiceCode);
+        invoiceInfoMap.put("invoiceDate", invoiceDate);
+        invoiceInfoMap.put("invoiceAmount", invoiceAmount);
+        invoiceInfoMap.put("allInfo", allInfo);
+
+        //调用LLM
+        Map<String, String> invoiceLLMMap = invokeLLM(pdfText);
+        invoiceInfoMap.putAll(invoiceLLMMap);
+
+        return invoiceInfoMap;
+    }
+
 
     /**
      * 获取发票代码

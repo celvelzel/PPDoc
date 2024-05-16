@@ -17,12 +17,14 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,32 +33,24 @@ import java.util.Map;
 @Component
 public class PdfToEditablePdfUtils
 {
-//    @Value("${font.path}")
-//    private String fontPath;
-//    @Value("${file.pdf.path}")
-//    private String pdfFolder;
+    @Value("${font.path}")
+    private String fontPath;
+    @Value("${file.pdf.path}")
+    private String pdfFolder;
 
-    private String fontPath = "<LOCAL_PATH_REDACTED>";
-    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
+//    private String fontPath = "<LOCAL_PATH_REDACTED>";
+//    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
 
-    public static void pdf2EditablePdfUtil(InputStream pdfInputStream, OutputStream pdfOutputStream, List<List<Map>> ocrText) throws IOException
-    {
-
-    }
-
-    public void pdf2Dpdf(File pdfFile, List jsons, String dPdfFilePath) throws IOException, DocumentException
+    public void pdf2Dpdf(File pdfFile, List ocrResult, String dPdfFilePath) throws IOException, DocumentException
     {
         // 加载PDF文档
         PDDocument document = PDDocument.load(pdfFile);
-
-        // 创建PDF渲染器
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
 
         // 获取PDF页数
         int pageCount = document.getNumberOfPages();
         log.info("PDF总页数: {}", pageCount);
 
-        //
+        // 将PDF转换为图片
         List<File> imageList = PdfToImageUtils.pdf2ImageList(Files.newInputStream(pdfFile.toPath()));
 
         // 循环处理每一页
@@ -74,12 +68,31 @@ public class PdfToEditablePdfUtils
             log.info("第{}页的PDF尺寸: {}", pageIndex + 1, pdfSize);
 
             // 在 PDF 页面上绘制文本
-            annotatePdf(imgSize, pdfSize, pageIndex, jsons);
+            annotatePdf(imgSize, pdfSize, pageIndex, ocrResult);
         }
         // 合并并保存双层PDF文件
         mergePdf(pageCount, dPdfFilePath);
         log.info("PDF文件已保存");
         document.close();
+    }
+
+    public void image2Dpdf(File imageFile, List ocrResult, String dPdfFilePath) throws IOException, DocumentException
+    {
+        // 将图像转换为PDF文件，并获取PDF的尺寸
+        String imgPath = imageFile.getAbsolutePath();
+        float[] pdfSize = img2pdf2(imgPath, pdfFolder);
+        log.info("PDF尺寸：[" + pdfSize[0] + "," + pdfSize[1] + "]");
+        //读取图片的宽和高
+        BufferedImage image = ImageIO.read(new File(imgPath));
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float[] imgSize = new float[]{(float) width, (float) height};
+        log.info("图片尺寸：[" + imgSize[0] + "," + imgSize[1] + "]");
+
+        // 根据输入图像路径和文件夹路径，生成PDF路径和双层PDF路径
+        String pdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + ".pdf";
+        // 根据OCR结果绘制双层PDF文件
+        pdf2Dpdf2(pdfPath, pdfSize, imgSize, new JSONArray(ocrResult), dPdfFilePath);
     }
 
 
@@ -225,7 +238,7 @@ public class PdfToEditablePdfUtils
     {
         // 创建一个新的PDF文档
         PDDocument Dpdf = new PDDocument();
-        for(int i = 1; i <= pageCount; i++)
+        for (int i = 1; i <= pageCount; i++)
         {
             // 构建当前PDF文件的路径
             File file = new File(pdfFolder + System.getProperty("file.separator") + "dpdf" + i + ".pdf");
@@ -245,8 +258,7 @@ public class PdfToEditablePdfUtils
         {
             log.error("保存合并后的双层PDF文件失败");
             throw new RuntimeException(e);
-        }
-        finally
+        } finally
         {
             try
             {
@@ -281,12 +293,16 @@ public class PdfToEditablePdfUtils
 
         // 使用PPOCR服务进行OCR识别，获取OCR识别结果
         JSONObject rerJObject = PaddleOcrUtils.requestOcr(imgPath);
-        log.info(rerJObject.toString());
+        JSONArray result = null;
+        if (0 == rerJObject.getInt("status"))
+        {
+            result = rerJObject.getJSONArray("results");
+        }
         // 根据输入图像路径和文件夹路径，生成PDF路径和双层PDF路径
         String pdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + ".pdf";
         String DpdfPath = pdfFolder + System.getProperty("file.separator") + FileUtil.getFileName(imgPath) + "_d.pdf";
         // 根据OCR结果绘制双层PDF文件
-        pdf2Dpdf2(pdfPath, pdfSize, imgSize, rerJObject, DpdfPath);
+        pdf2Dpdf2(pdfPath, pdfSize, imgSize, result, DpdfPath);
 //        pdf2Dpdf6(pdfPath, pdfSize, rerJObject, DpdfPath);
     }
 
@@ -357,7 +373,7 @@ public class PdfToEditablePdfUtils
      * @param textJO   包含转换后文本信息的JSONObject对象。
      * @param DpdfPath 目标PDF文件的路径，即转换后包含文本的PDF文件保存路径。
      */
-    public void pdf2Dpdf2(String pdfPath, float[] pdfSize, float[] imgSize, JSONObject textJO, String DpdfPath)
+    public void pdf2Dpdf2(String pdfPath, float[] pdfSize, float[] imgSize, JSONArray textJO, String DpdfPath)
     {
         try
         {
@@ -389,32 +405,29 @@ public class PdfToEditablePdfUtils
 
 
             // 解析并处理传入的JSONObject，将文本添加到PDF中
-            if (0 == textJO.getInt("status"))
+            JSONArray results = textJO;
+            // 遍历OCR结果数组
+            for (int i = 0; i < results.length(); i++)
             {
-                JSONArray results = (JSONArray) textJO.get("results");
-                // 遍历OCR结果数组
-                for (int i = 0; i < results.length(); i++)
+                JSONArray resultArray = results.getJSONArray(i);
+                for (int j = 0; j < resultArray.length(); j++)
                 {
-                    JSONArray resultArray = results.getJSONArray(i);
-                    for (int j = 0; j < resultArray.length(); j++)
-                    {
-                        JSONObject item = resultArray.getJSONObject(j);
-                        double confidence = item.getDouble("confidence");
-                        String textContent = item.getString("text");
-                        JSONArray textRegion = item.getJSONArray("text_region");
+                    JSONObject item = resultArray.getJSONObject(j);
+                    double confidence = item.getDouble("confidence");
+                    String textContent = item.getString("text");
+                    JSONArray textRegion = item.getJSONArray("text_region");
 
-                        // 处理信息
+                    // 处理信息
 //                        System.out.println("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
-                        // 设置文字的位置
-                        JSONArray point = textRegion.getJSONArray(0);
-                        page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F) / iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
-                        // 对识别得分较低的字符添加方括号标记
+                    // 设置文字的位置
+                    JSONArray point = textRegion.getJSONArray(0);
+                    page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F) / iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
+                    // 对识别得分较低的字符添加方括号标记
 //                        if (0.9 > confidence)
 //                        {
 //                            textContent = "[" + textContent + "]";
 //                        }
-                        page.showText(textContent); // 显示文字
-                    }
+                    page.showText(textContent); // 显示文字
                 }
             }
             log.info("结束文本绘制");

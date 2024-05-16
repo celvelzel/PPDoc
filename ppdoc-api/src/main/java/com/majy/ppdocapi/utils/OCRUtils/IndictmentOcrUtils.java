@@ -50,6 +50,20 @@ public class IndictmentOcrUtils extends PaddleOcrUtils
         return indictmentInfoMap;
     }
 
+    public Map<String, String> getStringStringMap(String pdfText)
+    {
+        Map<String, String> indictmentInfoMap = new HashMap<>();
+
+        String allInfo = pdfText;
+        indictmentInfoMap.put("allInfo", allInfo);
+
+        // 调用LLM进行处理，并将结果添加到map中
+        Map<String, String> invoiceLLMMap = invokeLLM(pdfText);
+        indictmentInfoMap.putAll(invoiceLLMMap);
+
+        return indictmentInfoMap;
+    }
+
 
     /**
      * 调用智谱API，分析文本

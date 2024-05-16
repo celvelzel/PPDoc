@@ -2,9 +2,7 @@ package com.majy.ppdocapi.controller;
 
 import com.majy.ppdocapi.entity.dto.PageBean;
 import com.majy.ppdocapi.entity.dto.Result;
-import com.majy.ppdocapi.entity.po.Document;
 import com.majy.ppdocapi.entity.po.Indictment;
-import com.majy.ppdocapi.entity.po.Invoice;
 import com.majy.ppdocapi.service.IndictmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -24,16 +20,10 @@ public class IndictmentController extends OcrController
     private IndictmentService indictmentService;
 
     @PostMapping("/upload")
-    public Result invoiceOcr(MultipartFile file) throws IOException
+    public Result indictmentOcr(MultipartFile file) throws IOException
     {
-        // 调用父类方法，上传文件到OSS
-        URL urlResult = uploadFile(file);
-
         //调用Service中的方法，获取提取到的信息
-        Map<String,String> dataMap = indictmentService.file2StringStringMap(file);
-
-        //调用父类方法，构建返回结果
-        return getResuleSuccess(urlResult,dataMap);
+        return indictmentService.handlePdfFile(file);
     }
 
     @PostMapping

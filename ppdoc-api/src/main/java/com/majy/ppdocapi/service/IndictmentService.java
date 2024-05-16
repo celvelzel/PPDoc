@@ -18,6 +18,8 @@ public interface IndictmentService
 
     Map<String, String> file2StringStringMap(MultipartFile file);
 
+    Result handlePdfFile(MultipartFile file);
+
     Result getByIndictmentId(Integer indictmentId);
 
     Result update(Indictment indictment);

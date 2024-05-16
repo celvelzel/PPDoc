@@ -33,7 +33,6 @@ public class LicenseOcrUtils extends PaddleOcrUtils
         String trim = jsonToString(jsons);
 
         String allInfo = trim;
-        //List<Map> maps = jsons.get(0);
         String licenseNumber = licenseNumber(trim);
         String licenseCode = licenseCode(trim);
         String licenseEnterpriseName = licenseEnterpriseName(trim);
@@ -56,6 +55,36 @@ public class LicenseOcrUtils extends PaddleOcrUtils
 
         //调用LLM
         Map<String, String> licenseLLMMap = invokeLLM(trim);
+        licenseInfoMap.putAll(licenseLLMMap);
+
+        return licenseInfoMap;
+    }
+
+    public Map<String, String> getStringStringMap(String pdfText)
+    {
+        String allInfo = pdfText;
+        String licenseNumber = licenseNumber(pdfText);
+        String licenseCode = licenseCode(pdfText);
+        String licenseEnterpriseName = licenseEnterpriseName(pdfText);
+        String licenseEnterpriseType = licenseEnterpriseType(pdfText);
+        String licenseRegisteredCapital = licenseRegisteredCapital(pdfText);
+        String licenseEstablishDate = licenseEstablishDate(pdfText);
+        String licenseOperationPeriodStart = licenseOperationPeriod(pdfText)[0];
+        String licenseOperationPeriodEnd = licenseOperationPeriod(pdfText)[1];
+
+        Map<String, String> licenseInfoMap = new HashMap<>();
+        licenseInfoMap.put("licenseCode", licenseCode);
+        licenseInfoMap.put("licenseNumber", licenseNumber);
+        licenseInfoMap.put("licenseEnterpriseName", licenseEnterpriseName);
+        licenseInfoMap.put("licenseEnterpriseType", licenseEnterpriseType);
+        licenseInfoMap.put("licenseRegisteredCapital", licenseRegisteredCapital);
+        licenseInfoMap.put("licenseEstablishDate", licenseEstablishDate);
+        licenseInfoMap.put("licenseOperationPeriodStart", licenseOperationPeriodStart);
+        licenseInfoMap.put("licenseOperationPeriodEnd", licenseOperationPeriodEnd);
+        licenseInfoMap.put("allInfo", allInfo);
+
+        //调用LLM
+        Map<String, String> licenseLLMMap = invokeLLM(pdfText);
         licenseInfoMap.putAll(licenseLLMMap);
 
         return licenseInfoMap;

@@ -87,19 +87,28 @@ public class DocumentServiceImpl implements DocumentService
         try
         {
             InputStream inputStream = file.getInputStream();
-            //若pdf没有可复制的文本
+            //若pdf没有可复制的文本,进行转换
             if (!pdfToEditablePdfUtils.pdfCopyableChecker(inputStream))
             {
                 // pdf识别，提取文字
                 List ocrResult = PaddleOcrUtils.pdfToOcrText(file);
                 // 根据识别文本提取信息
                 Map<String, String> dataMap = DocOcrUtils.getStringStringMap(ocrResult);
-                String finalPdfPath = pdfFolder + System.getProperty("file.separator") + "FinalDpdf.pdf";
-                file.transferTo(new File(pdfFolder + System.getProperty("file.separator") + "originPdf.pdf"));
-                pdfToEditablePdfUtils.pdf2Dpdf(new File(pdfFolder + System.getProperty("file.separator") + "originPdf.pdf"), ocrResult, finalPdfPath);
-                URL url = ossUtils.uploadFile(new File(finalPdfPath));
-                inputStream.close();
 
+                // 生成双层pdf
+                // 上传的pdf文件存储路径
+                String originPdfPath = pdfFolder + System.getProperty("file.separator") + "originPdf.pdf";
+                // 最终生成的双层pdf文件存储路径
+                String finalPdfPath = pdfFolder + System.getProperty("file.separator") + "FinalDpdf.pdf";
+                // 将上传的pdf文件保存到本地
+                file.transferTo(new File(originPdfPath));
+                // 调用工具类生成双层pdf
+                pdfToEditablePdfUtils.pdf2Dpdf(new File(originPdfPath), ocrResult, finalPdfPath);
+                // 上传双层pdf文件到对象存储，并返回URL
+                URL url = ossUtils.uploadFile(new File(finalPdfPath));
+
+                // 关闭文件流
+                inputStream.close();
                 return Result.getSuccessResult(url, dataMap);
             } else
             {
@@ -107,12 +116,12 @@ public class DocumentServiceImpl implements DocumentService
                 String pdfText = PdfToEditablePdfUtils.getPdfText(file.getInputStream());
                 Map<String, String> dataMap = DocOcrUtils.getStringStringMap(pdfText);
                 URL fileUrl = ossUtils.uploadFile(file);
+
+                // 关闭文件流
+                inputStream.close();
                 return Result.getSuccessResult(fileUrl, dataMap);
             }
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        } catch (DocumentException e)
+        } catch (IOException | DocumentException e)
         {
             throw new RuntimeException(e);
         }

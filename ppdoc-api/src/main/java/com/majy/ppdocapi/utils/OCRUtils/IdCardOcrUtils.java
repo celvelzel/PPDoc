@@ -14,7 +14,6 @@ public class IdCardOcrUtils extends PaddleOcrUtils
 {
     public static Map<String, String> getStringStringMap(List<List> jsons)
     {
-
         try
         {
             //调用父类的jsonToString方法，拼接OCR结果
@@ -55,6 +54,7 @@ public class IdCardOcrUtils extends PaddleOcrUtils
             throw new RuntimeException(e);
         }
     }
+
 
 
     /**
