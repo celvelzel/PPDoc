@@ -138,9 +138,9 @@ export default {
     <el-table :data="tableData" border>
       <el-table-column prop="case_id" label="案件ID" width="100"></el-table-column>
       <el-table-column prop="case_type" label="案件类型" width="180"></el-table-column>
-      <el-table-column prop="plaintiff_name" label="原告姓名" width="200"></el-table-column>
+      <el-table-column prop="plaintiff_name" label="原告姓名" width="140"></el-table-column>
       <el-table-column prop="plaintiff_id" label="原告ID" width="200"></el-table-column>
-      <el-table-column prop="defendant_name" label="被告姓名" width="200"></el-table-column>
+      <el-table-column prop="defendant_name" label="被告姓名" width="140"></el-table-column>
       <el-table-column prop="defendant_id" label="被告ID" width="200"></el-table-column>
       <el-table-column fixed="right" width="210" label="操作">
         <template slot-scope="scope">

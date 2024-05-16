@@ -10,7 +10,7 @@ export default defineComponent({
   components: {AntGraph, CaseList, MyMenu},
   data() {
     return {
-      activeStep: 2,
+      activeStep: 1,
       isSelected: false,
       caseInfoForm: {
         case_id: "",
@@ -64,19 +64,21 @@ export default defineComponent({
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
+          <!--选择案件界面 -->
+          <h1 v-show="!isSelected">选择案件</h1>
           <el-row v-show="!isSelected">
             <CaseList @select-case="handleCaseSelection"></CaseList>
           </el-row>
+          <!--案件信息界面 -->
+          <h1 v-show="isSelected">案件辅助</h1>
           <el-row v-show="isSelected">
-            <el-descriptions title="案件信息" column="4">
+            <el-descriptions title="案件基本信息" column="4" border direction="horizontal" content-style="background: #f9f9f9;">
               <el-descriptions-item label="案号">{{this.caseInfoForm.case_id}}</el-descriptions-item>
               <el-descriptions-item label="原告">{{this.caseInfoForm.plaintiff_name}}</el-descriptions-item>
               <el-descriptions-item label="被告">{{ this.caseInfoForm.defendant_name }}</el-descriptions-item>
               <el-descriptions-item label="案件类型">{{this.caseInfoForm.case_type}}</el-descriptions-item>
             </el-descriptions>
-          </el-row>
-          <el-row v-show="isSelected">
-            <el-steps :active="activeStep" align-center>
+            <el-steps :active="activeStep" align-center finish-status="success">
               <el-step title="立案前"></el-step>
               <el-step title="立案"></el-step>
               <el-step title="排期送达"></el-step>
@@ -99,15 +101,78 @@ export default defineComponent({
 </template>
 
 <style scoped>
+/* 全局样式 */
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f4f4;
+}
+
+/* 容器样式 */
+.el-container {
+  margin: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* 头部样式 */
+.el-header {
+  background-color: #409EFF;
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 60px;
+  text-align: center;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 侧边栏样式 */
+.custom-side {
+  background-color: #fff;
+  border-right: 1px solid #eee;
+}
+
+/* 主要内容区域样式 */
+.el-main {
+  padding: 20px;
+}
+
+/* 标题样式 */
+h1 {
+  font-size: 1.6rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* 描述列表样式 */
+.el-descriptions {
+  margin-top: 20px;
+  color: #666;
+}
+
+/* 步骤条样式 */
+.el-steps {
+  margin-top: 40px;
+}
+
+/* 流程图组件样式 */
+.ant-graph {
+  margin-top: 40px;
+}
+
+/* 行样式 */
 .el-row {
-  margin-top: 1rem; /* 增加顶部外边距，提高呼吸感 */
-  margin-bottom: 3rem; /* 同上，底部外边距 */
-  border: 1px solid rgba(238, 238, 238, 0.3); /* 柔和的边框颜色，增加透明度以适应更多背景 */
-  border-radius: 8px; /* 添加圆角，使元素显得不那么生硬 */
-  background-color: #f9f9f9; /* 轻微的背景色，提升层次感 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影，增强立体效果 */
-  transition: all 0.3s ease; /* 平滑的过渡效果，提升用户体验 */
-  /* 增大内边距*/
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(238, 238, 238, 0.3);
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   padding: 20px 30px;
 }
+
 </style>

@@ -17,6 +17,12 @@ const routes = [
         meta: {title: "测试",},
     },
     {
+        path: '/home',
+        name: 'homepage',
+        component: () => import('../views/HomePageView.vue'),
+        meta: {title: "首页",},
+    },
+    {
         path: '/doc',
         name: 'doc',
         component: () => import('../views/Display/DocView.vue'),

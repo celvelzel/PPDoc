@@ -3,7 +3,7 @@ export default {}
 </script>
 
 <template>
-  <el-menu :default-openeds="['1']" style="text-align: left;font-size: 14px;color: #333">
+  <el-menu style="text-align: left;">
     <el-submenu index="1">
       <template slot="title">
         <span class="iconfont icon-jingqingluru"></span>
@@ -133,4 +133,59 @@ export default {}
   display: inline-block;
   vertical-align: middle;
 }
+
+/* 菜单整体样式 */
+.el-menu {
+  border: none; /* 移除边框 */
+  background-color: #f9f9f9; /* 轻微的背景色，提升层次感 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加轻微阴影 */
+}
+
+/* 菜单标题样式 */
+.el-menu .el-submenu__title {
+  font-size: 16px; /* 增大字体大小 */
+  font-weight: bold; /* 字体加粗 */
+  color: #333; /* 更深色的字体颜色 */
+  padding: 0 20px; /* 增加水平 padding，提供更多空间 */
+}
+
+/* 菜单项样式 */
+.el-menu-item {
+  font-size: 14px; /* 设置菜单项字体大小 */
+  padding: 0 20px; /* 增加水平 padding */
+}
+
+/* 激活状态下的菜单项样式 */
+.el-menu-item.is-active {
+  color: #007bff; /* 蓝色字体，表示激活状态 */
+  background-color: #e7f1ff; /* 轻微的背景色，表示激活状态 */
+}
+
+/* 鼠标悬停时的菜单项样式 */
+.el-menu-item:hover {
+  background-color: #f1f1f1; /* 悬停时改变背景色 */
+}
+
+/* 为图标添加样式 */
+.iconfont {
+  margin-right: 10px; /* 留出适当的空间 */
+  font-size: 18px; /* 增大图标大小 */
+  vertical-align: middle; /* 垂直居中对齐 */
+}
+
+/* 菜单链接样式 */
+.router-link-exact-active,
+.router-link-active {
+  text-decoration: none; /* 去除下划线 */
+  color: inherit; /* 继承父元素的字体颜色 */
+}
+
+/* 菜单分组标题样式 */
+.el-menu-item-group__title {
+  padding: 10px 20px; /* 增加上下 padding，提供更好的视觉分隔 */
+  font-size: 14px; /* 设置分组标题字体大小 */
+  color: #666; /* 分组标题使用较淡的颜色 */
+}
+
+
 </style>

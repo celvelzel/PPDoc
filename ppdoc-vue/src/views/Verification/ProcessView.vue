@@ -40,7 +40,7 @@ export default {
         related_invoice_id: "",
         all_info: "",
       },
-      activeStep: 1,
+      activeStep: 0,
     };
   },
   methods: {
@@ -121,8 +121,8 @@ export default {
           <MyMenu></MyMenu>
         </el-aside>
         <el-main>
-          <el-steps :active="activeStep" align-center>
-            <el-step title="选择案件"></el-step>
+          <el-steps :active="activeStep" align-center finish-status="success">
+            <el-step title="选择起诉状"></el-step>
             <el-step title="原告信息审查"></el-step>
             <el-step title="被告信息审查"></el-step>
             <el-step title="其他材料审查"></el-step>
@@ -131,28 +131,28 @@ export default {
           <br>
           <br>
           <!--          案件选择组件-->
-          <CaseDisplay v-if="1==this.activeStep" @select-case="handleCaseSelection"></CaseDisplay>
+          <CaseDisplay v-if="0==this.activeStep" @select-case="handleCaseSelection"></CaseDisplay>
           <!--          案件选择组件-->
           <!--          原告信息审查组件-->
-          <PlaintiffInfoVerification v-if="2==this.activeStep"
+          <PlaintiffInfoVerification v-if="1==this.activeStep"
                                      :caseInfoForm="caseInfoForm"
                                      :display-form="displayForm"
                                      @select-id-card="handleIdCardSelection"
                                      @select-license="handleLicenseSelection"></PlaintiffInfoVerification>
           <!--          被告信息审查组件-->
-          <defendant-info-verification v-if="3==this.activeStep"
+          <defendant-info-verification v-if="2==this.activeStep"
                                        :caseInfoForm="caseInfoForm"
                                        :display-form="displayForm"
                                        @select-id-card="handleIdCardSelection"
                                        @select-license="handleLicenseSelection"></defendant-info-verification>
           <!--          其他信息审查组件-->
-          <invoice-verification v-if="4==this.activeStep"
+          <invoice-verification v-if="3==this.activeStep"
                                 :caseInfoForm="caseInfoForm"
                                 :display-form="displayForm"
                                 @select-invoice="handleInvoiceSelection"
                                 @skip="handleSkip"></invoice-verification>
           <!--          完成立案审查组件-->
-          <finish-verification v-if="5==this.activeStep"
+          <finish-verification v-if="4==this.activeStep"
                                :caseInfoForm="caseInfoForm"
                                :display-form="displayForm"></finish-verification>
           <br>
