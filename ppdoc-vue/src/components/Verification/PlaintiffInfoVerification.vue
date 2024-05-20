@@ -15,6 +15,9 @@ export default {
     caseInfoForm: [],
   },
   methods: {
+    handleSkip() {
+      this.$emit('skip')
+    },
     handleIdCardSelect(index, row) {
       this.$confirm('确认选择该记录?', '提示', {
         confirmButtonText: '确定',
@@ -172,6 +175,13 @@ export default {
           </el-table-column>
         </el-table>
         <br>
+        <el-button
+            size="mini"
+            align="center"
+            type="warning"
+            style="margin-top: 20px; margin-bottom: 30px"
+            @click="handleSkip()">跳过
+        </el-button>
         <el-pagination
             background
             layout="total, sizes, prev, pager, next,jumper"
@@ -214,6 +224,13 @@ export default {
           </el-table-column>
         </el-table>
         <br>
+        <el-button
+            size="mini"
+            align="center"
+            type="warning"
+            style="margin-top: 20px; margin-bottom: 30px"
+            @click="handleSkip()">跳过
+        </el-button>
         <el-pagination
             background
             layout="total, sizes, prev, pager, next,jumper"

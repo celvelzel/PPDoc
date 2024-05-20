@@ -68,6 +68,11 @@ public class CaseServiceImpl implements CaseService
     public Result add(Case caseModel)
     {
         caseMapper.insert(caseModel);
+        // 初始化材料提交状态
+        caseModel.setIs_defendant_submit(false);
+        caseModel.setIs_plaintiff_submit(false);
+        caseModel.setIs_related_submit(false);
+        // 返回成功结果
         return Result.createSuccess();
     }
 

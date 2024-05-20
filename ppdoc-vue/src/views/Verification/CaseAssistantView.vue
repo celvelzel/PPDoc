@@ -4,10 +4,10 @@ import axios from "axios";
 import {defineComponent} from "vue";
 import MyMenu from "@/components/Utils/MyMenu.vue";
 import CaseList from "@/components/Display/CaseList.vue";
-import AntGraph from "@/components/Utils/AntGraph.vue";
+import CaseAssistant from "@/components/Verification/CaseAssistant.vue";
 
 export default defineComponent({
-  components: {AntGraph, CaseList, MyMenu},
+  components: {CaseAssistant, CaseList, MyMenu},
   data() {
     return {
       activeStep: 1,
@@ -25,6 +25,9 @@ export default defineComponent({
         plaintiff_id_card_id: "",
         defendant_id_card_id: "",
         plaintiff_license_id: "",
+        is_plaintiff_submit: "",
+        is_defendant_submit: "",
+        is_related_submit: "",
       }
     }
   },
@@ -44,12 +47,15 @@ export default defineComponent({
         this.caseInfoForm.plaintiff_id_card_id = res.data.data.plaintiff_id_card_id;
         this.caseInfoForm.defendant_id_card_id = res.data.data.defendant_id_card_id;
         this.caseInfoForm.plaintiff_license_id = res.data.data.plaintiff_license_id;
+        this.caseInfoForm.is_plaintiff_submit = res.data.data.is_plaintiff_submit;
+        this.caseInfoForm.is_defendant_submit = res.data.data.is_defendant_submit;
+        this.caseInfoForm.is_related_submit = res.data.data.is_related_submit;
         this.isSelected = true;
 
         this.showGraphDialog = true;
       })
     },
-}
+  }
 })
 </script>
 
@@ -70,13 +76,13 @@ export default defineComponent({
             <CaseList @select-case="handleCaseSelection"></CaseList>
           </el-row>
           <!--案件信息界面 -->
-          <h1 v-show="isSelected">案件辅助</h1>
           <el-row v-show="isSelected">
-            <el-descriptions title="案件基本信息" column="4" border direction="horizontal" content-style="background: #f9f9f9;">
-              <el-descriptions-item label="案号">{{this.caseInfoForm.case_id}}</el-descriptions-item>
-              <el-descriptions-item label="原告">{{this.caseInfoForm.plaintiff_name}}</el-descriptions-item>
+            <el-descriptions title="案件基本信息" column="4" border direction="horizontal"
+                             content-style="background: #f9f9f9;">
+              <el-descriptions-item label="案号">{{ this.caseInfoForm.case_id }}</el-descriptions-item>
+              <el-descriptions-item label="原告">{{ this.caseInfoForm.plaintiff_name }}</el-descriptions-item>
               <el-descriptions-item label="被告">{{ this.caseInfoForm.defendant_name }}</el-descriptions-item>
-              <el-descriptions-item label="案件类型">{{this.caseInfoForm.case_type}}</el-descriptions-item>
+              <el-descriptions-item label="案件类型">{{ this.caseInfoForm.case_type }}</el-descriptions-item>
             </el-descriptions>
             <el-steps :active="activeStep" align-center finish-status="success">
               <el-step title="立案前"></el-step>
@@ -88,13 +94,13 @@ export default defineComponent({
               <el-step title="结案"></el-step>
               <el-step title="结案后"></el-step>
             </el-steps>
-            </el-row>
-          <el-row v-show="isSelected">
-<!--            流程图组件-->
-            <ant-graph></ant-graph>
           </el-row>
-          </el-main>
-        </el-container>
+          <el-row v-show="isSelected">
+            <!--            流程图组件-->
+            <case-assistant :case-info-form="caseInfoForm"></case-assistant>
+          </el-row>
+        </el-main>
+      </el-container>
     </el-container>
   </div>
 

@@ -1,49 +1,68 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.majy.ppdocapi.mapper.CaseMapper">
+    <insert id="insert" parameterType="com.majy.ppdocapi.entity.po.Case">
+        insert into t_case (indictment_id, case_type, plaintiff_name, plaintiff_id, plaintiff_type, defendant_name,
+                            defendant_id, defendant_type, plaintiff_id_card_id, defendant_id_card_id,
+                            plaintiff_license_id, defendant_license_id, related_invoice_id,
+                            is_plaintiff_submit, is_defendant_submit, is_related_submit)
+        values (#{indictment_id}, #{case_type}, #{plaintiff_name}, #{plaintiff_id}, #{plaintiff_type},
+                #{defendant_name}, #{defendant_id}, #{defendant_type}, #{plaintiff_id_card_id},
+                #{defendant_id_card_id}, #{plaintiff_license_id}, #{defendant_license_id},
+                #{related_invoice_id}, #{is_plaintiff_submit}, #{is_defendant_submit}, #{is_related_submit})
+    </insert>
     <update id="update" parameterType="com.majy.ppdocapi.entity.po.Case">
-            update t_case
-            <set>
-                <if test="indictment_id != null">
-                    indictment_id = #{indictment_id},
-                </if>
-                <if test="case_type != null">
-                    case_type = #{case_type},
-                </if>
-                <if test="plaintiff_name != null">
-                    plaintiff_name = #{plaintiff_name},
-                </if>
-                <if test="plaintiff_id != null">
-                        plaintiff_id = #{plaintiff_id},
-                    </if>
-                <if test="plaintiff_type != null">
-                    plaintiff_type = #{plaintiff_type},
-                </if>
-                <if test="defendant_name != null">
-                    defendant_name = #{defendant_name},
-                </if>
-                <if test="defendant_id != null">
-                    defendant_id = #{defendant_id},
-                </if>
-                <if test="defendant_type != null">
-                    defendant_type = #{defendant_type},
-                </if>
-                <if test="plaintiff_id_card_id != null">
-                    plaintiff_id_card_id = #{plaintiff_id_card_id},
-                </if>
-                <if test="defendant_id_card_id != null">
-                    defendant_id_card_id = #{defendant_id_card_id},
-                </if>
-                <if test="plaintiff_license_id != null">
-                    plaintiff_license_id = #{plaintiff_license_id},
-                </if>
-                <if test="defendant_license_id != null">
-                    defendant_license_id = #{defendant_license_id},
-                </if>
-                <if test="related_invoice_id != null">
-                    related_invoice_id = #{related_invoice_id},
-                </if>
-            </set>
-            where case_id = #{case_id}
-        </update>
+        update t_case
+        <set>
+            <if test="indictment_id != null">
+                indictment_id = #{indictment_id},
+            </if>
+            <if test="case_type != null">
+                case_type = #{case_type},
+            </if>
+            <if test="plaintiff_name != null">
+                plaintiff_name = #{plaintiff_name},
+            </if>
+            <if test="plaintiff_id != null">
+                plaintiff_id = #{plaintiff_id},
+            </if>
+            <if test="plaintiff_type != null">
+                plaintiff_type = #{plaintiff_type},
+            </if>
+            <if test="defendant_name != null">
+                defendant_name = #{defendant_name},
+            </if>
+            <if test="defendant_id != null">
+                defendant_id = #{defendant_id},
+            </if>
+            <if test="defendant_type != null">
+                defendant_type = #{defendant_type},
+            </if>
+            <if test="plaintiff_id_card_id != null">
+                plaintiff_id_card_id = #{plaintiff_id_card_id},
+            </if>
+            <if test="defendant_id_card_id != null">
+                defendant_id_card_id = #{defendant_id_card_id},
+            </if>
+            <if test="plaintiff_license_id != null">
+                plaintiff_license_id = #{plaintiff_license_id},
+            </if>
+            <if test="defendant_license_id != null">
+                defendant_license_id = #{defendant_license_id},
+            </if>
+            <if test="related_invoice_id != null">
+                related_invoice_id = #{related_invoice_id},
+            </if>
+            <if test="is_plaintiff_submit != null">
+                is_plaintiff_submit = #{is_plaintiff_submit},
+            </if>
+            <if test="is_defendant_submit != null">
+                is_defendant_submit = #{is_defendant_submit},
+            </if>
+            <if test="is_related_submit != null">
+                is_related_submit = #{is_related_submit},
+            </if>
+        </set>
+        where case_id = #{case_id}
+    </update>
 </mapper>

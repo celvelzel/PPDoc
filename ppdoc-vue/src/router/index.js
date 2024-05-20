@@ -97,7 +97,7 @@ const routes = [
     {
         path: '/assistant',
         name: 'assistant',
-        component: () => import('../views/Verification/CaseAssistant.vue'),
+        component: () => import('../views/Verification/CaseAssistantView.vue'),
         meta: {title: "案件辅助",},
     },
     {

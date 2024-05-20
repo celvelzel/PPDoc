@@ -19,8 +19,6 @@ public interface CaseMapper
      * 添加数据
      */
     @Options(useGeneratedKeys = true, keyProperty = "case_id")
-    @Insert("INSERT INTO t_case (indictment_id, case_type, plaintiff_name, plaintiff_id, plaintiff_type, defendant_name, defendant_id, defendant_type, plaintiff_id_card_id, defendant_id_card_id, plaintiff_license_id, defendant_license_id, related_invoice_id) " +
-            "VALUES (#{indictment_id}, #{case_type}, #{plaintiff_name}, #{plaintiff_id}, #{plaintiff_type}, #{defendant_name}, #{defendant_id}, #{defendant_type}, #{plaintiff_id_card_id}, #{defendant_id_card_id}, #{plaintiff_license_id}, #{defendant_license_id}, #{related_invoice_id})")
     void insert(Case caseModel);
 
     /**

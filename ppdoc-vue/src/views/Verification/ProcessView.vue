@@ -130,21 +130,23 @@ export default {
           </el-steps>
           <br>
           <br>
-          <!--          案件选择组件-->
+          <!--          起诉状选择组件-->
           <CaseDisplay v-if="0==this.activeStep" @select-case="handleCaseSelection"></CaseDisplay>
-          <!--          案件选择组件-->
+          <!--          起诉状选择组件-->
           <!--          原告信息审查组件-->
           <PlaintiffInfoVerification v-if="1==this.activeStep"
                                      :caseInfoForm="caseInfoForm"
                                      :display-form="displayForm"
                                      @select-id-card="handleIdCardSelection"
-                                     @select-license="handleLicenseSelection"></PlaintiffInfoVerification>
+                                     @select-license="handleLicenseSelection"
+                                     @skip="handleSkip"></PlaintiffInfoVerification>
           <!--          被告信息审查组件-->
           <defendant-info-verification v-if="2==this.activeStep"
                                        :caseInfoForm="caseInfoForm"
                                        :display-form="displayForm"
                                        @select-id-card="handleIdCardSelection"
-                                       @select-license="handleLicenseSelection"></defendant-info-verification>
+                                       @select-license="handleLicenseSelection"
+                                       @skip="handleSkip"></defendant-info-verification>
           <!--          其他信息审查组件-->
           <invoice-verification v-if="3==this.activeStep"
                                 :caseInfoForm="caseInfoForm"

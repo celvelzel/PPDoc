@@ -23,4 +23,7 @@ public class Case
     private Integer plaintiff_license_id;
     private Integer defendant_license_id;
     private Integer related_invoice_id;
+    private Boolean is_plaintiff_submit;
+    private Boolean is_defendant_submit;
+    private Boolean is_related_submit;
 }
