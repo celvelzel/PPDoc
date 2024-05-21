@@ -337,8 +337,7 @@ export default {
     <div v-if="this.dialogVisible === true">
       <case-assistant-dialog :case-info-form="this.caseInfoForm"
                              :handle-node="this.handleNode"
-                             @exit-dialog="hideDialog"
-                             @close="hideDialog"></case-assistant-dialog>
+                             @exit-dialog="hideDialog"></case-assistant-dialog>
     </div>
   </div>
 </template>

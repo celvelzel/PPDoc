@@ -4,6 +4,46 @@ import axios from "axios";
 export default {
   data() {
     return {
+      // 在线上传文件相关
+      userInfoForm: {
+        name: undefined,
+        nation: undefined,
+        address: undefined,
+        cardNumber: '',
+        sex: undefined,
+        birthday: '',
+        allInfo: ''
+      },
+      licenseInfoForm: {  // 营业执照信息表单
+        licenseCode: '',
+        licenseNumber: '',
+        licenseEnterpriseName: '',
+        licenseEnterpriseType: '',
+        licenseLegalRepresentative: '',
+        licenseBusinessScope: '',
+        licenseRegisteredCapital: '',
+        licenseEstablishDate: '',
+        licenseOperationPeriodStart: '',
+        licenseOperationPeriodEnd: '',
+        licenseDomicile: '',
+        allInfo: ''
+      },
+      invoiceInfoForm: {  // 发票信息表单
+        invoiceCode: '',
+        invoiceNumber: '',
+        invoiceAmount: '',
+        invoiceDate: '',
+        allInfo: '',
+        purchaserName: '',
+        sellerName: '',
+        projectName: ''
+      },
+      pdfUrl: "",
+      fileName: "",
+      fullscreenLoading: false,
+      limit: 1,
+
+      //  弹窗相关
       materialTypeDialogVisible: "",
       submitProcess: "",
       submitDialogVisible: false,
@@ -145,6 +185,7 @@ export default {
   methods: {
     handleExit() {
       this.materialTypeDialogVisible = false;
+      this.submitDialogVisible = false;
       this.$emit('exit-dialog');
     },
     handleMaterialTypeSelected() {
@@ -270,26 +311,123 @@ export default {
         return 'highlight-row';
       }
     },
-    handleSuccess() {
+    // 文件上传成功回调函数
+    handleSuccess(response, file) {
+      switch (this.materialType) {
+        case 1:
+          this.userInfoForm = response.data.data;
+          break;
+        case 2:
+          this.licenseInfoForm = response.data.data;
+          break;
+        case 3:
+          this.invoiceInfoForm = response.data.data;
+          break;
+      }
+      // 获取文件的url
+      this.pdfUrl = response.data.url;
+      //表格收到数据后关闭加载动效
+      this.fullscreenLoading = false;
+      //获取文档名
+      this.fileName = file.name;
 
+      const newFile = {
+        name: file.name, // 文件名
+        url: response.url // 服务器返回的文件URL
+      };
+      // 将新文件添加到fileList数组中
+      this.fileList.push(newFile);
+      // 如果有文件数量限制，需要进行相应的处理
+      if (this.fileList.length > this.limit) {
+        // 可以选择移除最早的文件
+        this.fileList.shift();
+      }
     },
+    // 上传文件之前钩子函数
     beforeUpload() {
       this.fullscreenLoading = true;
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
+    // 文件超出个数限制时的钩子函数
     handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
     },
     beforeRemove(file) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    submitUpload() {
+      this.submitProcess += 1;
+      this.submitDialogVisible = false;
+      this.previewDialogVisible = true;
+    },
     submitIdCard() {
-
+      axios.post('http://localhost:8080/api/idcards', {
+        id: "",
+        document_Id: "",
+        id_card_url: this.pdfUrl,
+        file_name: this.fileName,
+        name: this.userInfoForm.name,
+        nation: this.userInfoForm.nation,
+        sex: this.userInfoForm.sex,
+        birthday: this.userInfoForm.birthday,
+        address: this.userInfoForm.address,
+        card_number: this.userInfoForm.cardNumber,
+        all_info: this.userInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
+          }
+      )
     },
     submitLicense() {
-
+      axios.post('http://localhost:8080/api/licenses', {
+        license_id: "",
+        document_Id: "",
+        license_url: this.pdfUrl,
+        file_name: this.fileName,
+        license_code: this.licenseInfoForm.licenseCode,
+        license_number: this.licenseInfoForm.licenseNumber,
+        license_enterprise_name: this.licenseInfoForm.licenseEnterpriseName,
+        license_enterprise_type: this.licenseInfoForm.licenseEnterpriseType,
+        license_legal_representative: this.licenseInfoForm.licenseLegalRepresentative,
+        license_business_scope: this.licenseInfoForm.licenseBusinessScope,
+        license_registered_capital: this.licenseInfoForm.licenseRegisteredCapital,
+        license_establish_date: this.licenseInfoForm.licenseEstablishDate,
+        license_operation_period: this.licenseInfoForm.licenseOperationPeriodStart.toString() +
+            "至" + this.licenseInfoForm.licenseOperationPeriodEnd.toString(),
+        license_domicile: this.licenseInfoForm.licenseDomicile,
+        all_info: this.licenseInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
+          }
+      )
     },
     submitInvoice() {
       axios.post('http://localhost:8080/api/invoices', {
@@ -315,7 +453,7 @@ export default {
               });
             } else {
               this.$message({
-                showClose: true,
+                show: true,
                 message: '提交数据库失败',
                 type: 'error'
               });
@@ -378,12 +516,14 @@ export default {
         });
       }
     },
-  },
+  }
+  ,
   mounted() {
     this.materialTypeDialogVisible = true;
     this.submitProcess = 1;
     console.log("组件刷新");
   }
+  ,
 }
 </script>
 
@@ -394,7 +534,7 @@ export default {
         :visible.sync="materialTypeDialogVisible"
         title="证据提交"
         width="50%"
-        @close="handleExit">
+        :close-on-click-modal="false">
       <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
       <br>
       <h1>请选择证据材料类型：</h1>
@@ -417,7 +557,7 @@ export default {
         :visible.sync="submitDialogVisible"
         title="证据提交"
         width="50%"
-        @close="this.$emit('exit-dialog')">
+        :close-on-click-modal="false">
       <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
       <br>
       <el-radio-group v-model="submitOption" @input="handleSubmitOptionSelected">
@@ -508,57 +648,72 @@ export default {
             @current-change="handleCurrentChange"
             :total="total">
         </el-pagination>
+      </div>
 
-        <!--上传新的材料-->
-        <div v-if="submitOption === 2">
-          <el-upload
-              v-if="materialType ===1"
-              action="http://localhost:8080/api/idcards/upload"
-              :on-success="handleSuccess"
-              :on-remove="handleRemove"
-              :before-upload="beforeUpload"
-              :before-remove="beforeRemove"
-              :limit="1"
-              :on-exceed="handleExceed"
-              :file-list="fileList"
+      <!--上传新的材料-->
+      <div v-if="submitOption === 2">
+        <br>
+        <el-upload
+            v-if="materialType ===1"
+            action="http://localhost:8080/api/idcards/upload"
+            :on-success="handleSuccess"
+            :on-remove="handleRemove"
+            :before-upload="beforeUpload"
+            :before-remove="beforeRemove"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :file-list="fileList"
 
-              v-loading.fullscreen.lock="fullscreenLoading"
-              element-loading-text="加载中"
-              element-loading-spinner="el-icon-loading"
-              element-loading-background="rgba(0, 0, 0, 0.8)">
-            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-            <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
-            </el-button>
-          </el-upload>
-          <el-upload
-              v-if="materialType ===2"
-              action="http://localhost:8080/api/licenses/upload"
-              :on-success="handleSuccess"
-              :on-error="handleError"
-              :file-list="fileList">
-            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-            <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
-            </el-button>
-          </el-upload>
-          <el-upload
-              v-if="materialType ===3"
-              action="http://localhost:8080/api/invoices/upload"
-              :on-success="handleSuccess"
-              :on-error="handleError"
-              :file-list="fileList">
-            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-            <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
-            </el-button>
-          </el-upload>
-        </div>
+            v-loading.fullscreen.lock="fullscreenLoading"
+            element-loading-text="加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.8)">
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
+          </el-button>
+        </el-upload>
+        <el-upload
+            v-if="materialType ===2"
+            action="http://localhost:8080/api/licenses/upload"
+            :on-success="handleSuccess"
+            :on-error="handleError"
+            :file-list="fileList">
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
+          </el-button>
+        </el-upload>
+        <el-upload
+            v-if="materialType ===3"
+            action="http://localhost:8080/api/invoices/upload"
+            :on-success="handleSuccess"
+            :on-error="handleError"
+            :file-list="fileList">
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
+          </el-button>
+        </el-upload>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleExit">取 消</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog>
+    <!-- 材料预览对话框-->
+    <el-dialog :visible.sync="previewDialogVisible"
+               title="材料预览"
+               width="50%"
+               :close-on-click-modal="false">
+      <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
+      <br>
+    </el-dialog>
 
+    <!-- 确认提交对话框-->
+    <el-dialog :visible.sync="confirmDialogVisible"
+               title="确认提交"
+               width="50%"
+               :close-on-click-modal="false">
+      <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
+      <br>
     </el-dialog>
   </div>
 </template>

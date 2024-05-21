@@ -15,6 +15,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -164,6 +165,9 @@ public class PdfToEditablePdfUtils
         return pdfSize;
     }
 
+    /*
+     * 绘制双层pdf
+     */
     public void annotatePdf(float[] imgSize, float[] pdfSize, int pageIndex, List ocrResult) throws DocumentException, IOException
     {
         FontFactory.registerDirectory(fontPath);
@@ -185,7 +189,7 @@ public class PdfToEditablePdfUtils
         // 开始在PDF页面上绘制文本
         page.beginText();
         page.setFontAndSize(baseFont, 11.0F); // 设置字体大小
-        BaseColor color = new BaseColor(255, 0, 0, 0); // 设置文字颜色
+        BaseColor color = new BaseColor(255, 0, 0, 0); // 设置文字颜色和透明度，alpha为0表示文字透明
         page.setColorFill(color);
 
         float iw = imgSize[0];//图片的宽度，单位为像素
@@ -225,6 +229,112 @@ public class PdfToEditablePdfUtils
         reader.close();
         input.close();
         output.close();
+    }
+
+    /*
+     * 绘制OCR识别文档
+     */
+    public void createPdf(float[] imgSize, float[] pdfSize, int pageIndex, List ocrResult) throws DocumentException, IOException
+    {
+        try
+        {
+            FontFactory.registerDirectory(fontPath);
+            //FontFactory.getFont("字体名称", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            // 创建字体对象，用于在PDF中显示文字
+            BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+
+            // 创建一个空白的PDF文件
+            PDDocument ocr2PdfDoc = new PDDocument();
+            // 创建一个自定义尺寸的页面
+            PDRectangle customSize = new PDRectangle(pdfSize[0], pdfSize[1]);
+            // 创建一个新的空白PDF页面并将其添加到文档中
+            PDPage ocrPage = new PDPage(customSize);
+            // 将页面添加到文档中
+            ocr2PdfDoc.addPage(ocrPage);
+
+            // 保存文档
+            try
+            {
+                ocr2PdfDoc.save(pdfFolder + System.getProperty("file.separator") + "blank.pdf");
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } finally
+            {
+                // 关闭文档
+                try
+                {
+                    ocr2PdfDoc.close();
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            // 读取生成的空白PDF文档
+            FileInputStream input = new FileInputStream(pdfFolder + System.getProperty("file.separator") + "blank.pdf");
+
+            PdfReader reader = new PdfReader(input);
+            // 对该页图片创建双层pdf临时文件
+            // 输出流用于创建新的PDF文件
+            OutputStream output = new FileOutputStream(new File(pdfFolder + System.getProperty("file.separator") + "ocr_pdf_" + (pageIndex + 1) + ".pdf"));
+            PdfStamper stamper = new PdfStamper(reader, output);
+            // 获取pdf当前页，接收页数作为变量，1表示第一页
+            PdfContentByte page = stamper.getOverContent(1);
+
+            // 开始在PDF页面上绘制文本
+            page.beginText();
+            page.setFontAndSize(baseFont, 11.0F); // 设置字体大小
+            BaseColor color = new BaseColor(0, 0, 0, 255); // 设置文字颜色和透明度，设为黑色
+            page.setColorFill(color);
+
+            float iw = imgSize[0];//图片的宽度，单位为像素
+            float ih = imgSize[1];//图片的高度，单位为像素
+            float pw = pdfSize[0]; // 目标PDF的宽度
+            float ph = pdfSize[1]; // 目标PDF的高度
+            //PDF 页面的尺寸，单位是点（points）
+            // 1 点等于 1/72 英寸
+            // 这是 PDF 文档中默认的页面尺寸单位，也是 iTextPDF 中的标准单位。
+
+            //对对应页数的pdf文件进行绘制
+            List resultArray = (List) ocrResult.get(pageIndex);
+            // 对当前页面每个文字区块进行绘制
+            for (int j = 0; j < resultArray.size(); j++)
+            {
+                Map textItem = (Map) resultArray.get(j);
+                JSONObject item = new JSONObject(textItem);
+                double confidence = item.getDouble("confidence");
+                String textContent = item.getString("text");
+                JSONArray textRegion = item.getJSONArray("text_region");
+
+                // 处理信息
+                //log.info("Confidence: " + confidence + ", Text: " + textContent + ", Text Region: " + textRegion);
+                // 设置文字的位置
+                JSONArray point = textRegion.getJSONArray(0);
+                page.setTextMatrix((float) point.getInt(0) * (pw + 10.0F) / iw, ph - 8.0F - (float) point.getInt(1) * ph / ih);
+                // 对识别得分较低的字符添加方括号标记
+                if (0.9 > confidence)
+                {
+                    textContent = "[" + textContent + "]";
+                }
+                // 绘制文字
+                page.showText(textContent);
+            }
+            log.info("结束文本绘制");
+
+
+            // 结束文本绘制
+            page.endText();
+            // 关闭相关资源
+            stamper.close();
+            reader.close();
+            input.close();
+            output.close();
+        } catch (DocumentException | IOException | JSONException e)
+        {
+            log.info("OCR识别pdf文档合成失败！");
+            throw new RuntimeException(e);
+        }
     }
 
     /**
