@@ -18,8 +18,8 @@ public interface DocumentMapper
     /**
      * 分页查询
      *
-     * @param start     起始位置
-     * @param pageSize  每页显示条数
+     * @param start    起始位置
+     * @param pageSize 每页显示条数
      * @return 文档对象集合
      */
     @Select("select * from document limit #{start},#{pageSize}")
@@ -31,7 +31,8 @@ public interface DocumentMapper
      * @param document 文档对象
      */
     @Options(useGeneratedKeys = true, keyProperty = "document_id")
-    @Insert("insert into document(document_url,document_name,document_type,all_info) values(#{document_url},#{document_name},#{document_type},#{all_info})")
+    @Insert("insert into document(document_url,document_ocr_url,document_name,document_type,all_info) " +
+            "values(#{document_url},#{document_ocr_url},#{document_name},#{document_type},#{all_info})")
     public void insert(Document document);
 
     /**

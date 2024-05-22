@@ -7,6 +7,9 @@
             <if test="id_card_url != null">
                 id_card_url = #{id_card_url},
             </if>
+            <if test="id_card_ocr_url != null">
+                id_card_ocr_url = #{id_card_ocr_url},
+            </if>
             <if test="file_name != null">
                 file_name = #{file_name},
             </if>

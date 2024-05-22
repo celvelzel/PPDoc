@@ -12,6 +12,7 @@ public class Indictment {
     private Integer indictment_id;
     private Integer document_id;
     private String indictment_url;
+    private String indictment_ocr_url;
     private String file_name;
     private String case_type;
     private String plaintiff_name;

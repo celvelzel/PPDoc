@@ -7,6 +7,9 @@
             <if test="invoice_url != null">
                 invoice_url = #{invoice_url},
             </if>
+            <if test="invoice_ocr_url != null">
+                invoice_ocr_url = #{invoice_ocr_url},
+            </if>
             <if test="file_name != null">
                 file_name = #{file_name},
             </if>

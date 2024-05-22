@@ -204,6 +204,7 @@ export default {
         id: "",
         document_Id: "",
         id_card_url: this.pdfUrl,
+        id_card_ocr_url: this.ocrPdfUrl,
         file_name: this.fileName,
         name: this.userInfoForm.name,
         nation: this.userInfoForm.nation,

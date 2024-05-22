@@ -83,7 +83,7 @@ public class IdCardServiceImpl implements IdCardService
     @Override
     public Result add(IdCard idCard)
     {
-        Document document = new Document(null, idCard.getId_card_url(), idCard.getFile_name(), "身份证", idCard.getAll_info());
+        Document document = new Document(null, idCard.getId_card_url(), idCard.getId_card_ocr_url(), idCard.getFile_name(), "身份证", idCard.getAll_info());
         documentMapper.insert(document);
         idCard.setDocument_id(document.getDocument_id());
         idCardMapper.insert(idCard);

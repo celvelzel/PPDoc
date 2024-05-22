@@ -1,11 +1,14 @@
 <script>
 import axios from "axios";
+import PdfCompareViewer from "@/components/Utils/PdfCompareViewer.vue";
 
 export default {
+  components: {PdfCompareViewer},
   data() {
     return {
       // 在线上传文件相关
       userInfoForm: {
+        id: "",
         name: undefined,
         nation: undefined,
         address: undefined,
@@ -15,6 +18,7 @@ export default {
         allInfo: ''
       },
       licenseInfoForm: {  // 营业执照信息表单
+        license_id: "",
         licenseCode: '',
         licenseNumber: '',
         licenseEnterpriseName: '',
@@ -28,7 +32,9 @@ export default {
         licenseDomicile: '',
         allInfo: ''
       },
+      licenseOperationPeriod: [],
       invoiceInfoForm: {  // 发票信息表单
+        invoiceInfoForm: '',
         invoiceCode: '',
         invoiceNumber: '',
         invoiceAmount: '',
@@ -39,6 +45,8 @@ export default {
         projectName: ''
       },
       pdfUrl: "",
+      ocrPdfUrl: "",
+      isConverted: "",
       fileName: "",
       fullscreenLoading: false,
       limit: 1,
@@ -52,114 +60,13 @@ export default {
       tempMaterialData: [],
       fileList: [],
       materialType: "",
+      materialTypeName: "",
       submitOption: "",
       totalSteps: 4,
       tableData: [],
       total: 0,
       page: 1,
       pageSize: 10,
-      // 点集
-      nodes: [
-        {
-          id: '已完成', // String，该节点存在则必须，节点的唯一标识
-          x: 100, // Number，可选，节点位置的 x 值
-          y: 20, // Number，可选，节点位置的 y 值
-          label: '已完成', // 节点文本
-          class: 'c0',
-        },
-        {
-          id: '进行中', // String，该节点存在则必须，节点的唯一标识
-          x: 220, // Number，可选，节点位置的 x 值
-          y: 20, // Number，可选，节点位置的 y 值
-          label: '进行中', // 节点文本
-          class: 'c1',
-        },
-        {
-          id: '未开始', // String，该节点存在则必须，节点的唯一标识
-          x: 340, // Number，可选，节点位置的 x 值
-          y: 20, // Number，可选，节点位置的 y 值
-          label: '未开始', // 节点文本
-          class: 'c2',
-        },
-        {
-          id: 'node1', // String，该节点存在则必须，节点的唯一标识
-          x: 300, // Number，可选，节点位置的 x 值
-          y: 250, // Number，可选，节点位置的 y 值
-          label: '起诉状提交', // 节点文本
-          class: 'c0',
-          status: 'done',
-        },
-        {
-          id: 'node2', // String，该节点存在则必须，节点的唯一标识
-          x: 500, // Number，可选，节点位置的 x 值
-          y: 150, // Number，可选，节点位置的 y 值
-          label: '原告提交证据',
-        },
-        {
-          id: 'node3', // String，该节点存在则必须，节点的唯一标识
-          x: 500, // Number，可选，节点位置的 x 值
-          y: 250, // Number，可选，节点位置的 y 值
-          label: '被告提交证据', // 节点文本
-        },
-        {
-          id: 'node4', // String，该节点存在则必须，节点的唯一标识
-          x: 500, // Number，可选，节点位置的 x 值
-          y: 350, // Number，可选，节点位置的 y 值
-          label: '其他相关证据提交', // 节点文本
-        },
-        {
-          id: 'node5', // String，该节点存在则必须，节点的唯一标识
-          x: 700, // Number，可选，节点位置的 x 值
-          y: 150, // Number，可选，节点位置的 y 值
-          label: '证据送达', // 节点文本
-          class: 'c2',
-          status: 'undo',
-        },
-        {
-          id: 'node6', // String，该节点存在则必须，节点的唯一标识
-          x: 700, // Number，可选，节点位置的 x 值
-          y: 250, // Number，可选，节点位置的 y 值
-          label: '证据送达', // 节点文本
-          class: 'c2',
-          status: 'undo',
-        },
-        {
-          id: 'node7', // String，该节点存在则必须，节点的唯一标识
-          x: 700, // Number，可选，节点位置的 x 值
-          y: 350, // Number，可选，节点位置的 y 值
-          label: '证据送达', // 节点文本
-          class: 'c2',
-          status: 'undo',
-        },
-      ],
-      // 边集
-      edges: [
-        {
-          source: 'node1', // String，必须，起始点 id
-          target: 'node2', // String，必须，目标点 id
-          // label: '连线1', // 边的文本
-        },
-        {
-          source: 'node1', // String，必须，起始点 id
-          target: 'node3', // String，必须，目标点 id
-        },
-        {
-          source: 'node1', // String，必须，起始点 id
-          target: 'node4', // String，必须，目标点 id
-        },
-        {
-          source: 'node2',
-          target: 'node5',
-        },
-        {
-          source: 'node3',
-          target: 'node6',
-        },
-        {
-          source: 'node4',
-          target: 'node7',
-        },
-      ],
     }
   },
   props: {
@@ -186,12 +93,30 @@ export default {
     handleExit() {
       this.materialTypeDialogVisible = false;
       this.submitDialogVisible = false;
+      this.previewDialogVisible = false;
+      this.confirmDialogVisible = false;
       this.$emit('exit-dialog');
     },
     handleMaterialTypeSelected() {
       console.log("已选择材料类型：" + this.materialType)
+      switch (this.materialType) {
+        case 1:
+          this.materialTypeName = "身份证";
+          break;
+        case 2:
+          this.materialTypeName = "营业执照";
+          break;
+        case 3:
+          this.materialTypeName = "发票";
+          break;
+      }
       this.materialTypeDialogVisible = false;
       this.submitProcess += 1;
+      this.submitDialogVisible = true;
+    },
+    handlePreviewEnd() {
+      this.submitProcess += 1;
+      this.previewDialogVisible = false;
       this.submitDialogVisible = true;
     },
     handleIdCardSelect(index, row) {
@@ -206,14 +131,14 @@ export default {
         });
         //确定选择，处理逻辑
         this.tempMaterialData = row;
+        if (this.handleNode.getModel().label === "原告提交证据") {
+          this.caseInfoForm.plaintiff_id_card_id = row.id;
+        } else if (this.handleNode.getModel().label === "被告提交证据") {
+          this.caseInfoForm.defendant_id_card_id = row.id;
+        }
         this.submitProcess += 1;
         this.submitDialogVisible = false;
         this.previewDialogVisible = true;
-        // if (this.handleNode.getModel().label === "原告提交证据") {
-        //   this.caseInfoForm.plaintiff_id_card_id = row.id;
-        // } else if (this.handleNode.getModel().label === "被告提交证据") {
-        //   this.caseInfoForm.defendant_id_card_id = row.id;
-        // }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -233,6 +158,11 @@ export default {
         });
         //确定选择，处理逻辑
         this.tempMaterialData = row;
+        if (this.handleNode.getModel().label === "原告提交证据") {
+          this.caseInfoForm.plaintiff_license_id = row.id;
+        } else if (this.handleNode.getModel().label === "被告提交证据") {
+          this.caseInfoForm.defendant_license_id = row.id;
+        }
         this.submitProcess += 1;
         this.submitDialogVisible = false;
         this.previewDialogVisible = true;
@@ -256,6 +186,7 @@ export default {
         //确定选择，处理逻辑
         console.log(index, row);
         this.tempMaterialData = row;
+        this.caseInfoForm.invoice_id = row.id;
         this.submitProcess += 1;
         this.submitDialogVisible = false;
         this.previewDialogVisible = true;
@@ -324,8 +255,16 @@ export default {
           this.invoiceInfoForm = response.data.data;
           break;
       }
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
       // 获取文件的url
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
       //获取文档名
@@ -362,104 +301,138 @@ export default {
       this.submitDialogVisible = false;
       this.previewDialogVisible = true;
     },
-    submitIdCard() {
-      axios.post('http://localhost:8080/api/idcards', {
-        id: "",
-        document_Id: "",
-        id_card_url: this.pdfUrl,
-        file_name: this.fileName,
-        name: this.userInfoForm.name,
-        nation: this.userInfoForm.nation,
-        sex: this.userInfoForm.sex,
-        birthday: this.userInfoForm.birthday,
-        address: this.userInfoForm.address,
-        card_number: this.userInfoForm.cardNumber,
-        all_info: this.userInfoForm.allInfo
-      }).then(res => {
-            console.log(res);
-            if (res.data.code === 200) {
-              this.$message({
-                showClose: true,
-                message: '提交数据库成功',
-                type: 'success'
-              });
-            } else {
-              this.$message({
-                showClose: true,
-                message: '提交数据库失败',
-                type: 'error'
-              });
-            }
+    relateIdCard() {
+      // 绑定材料和案件
+      if (this.handleNode.getModel().label === "原告提交证据") {
+        axios.put('http://localhost:8080/api/cases', {
+          case_id: this.caseInfoForm.case_id,
+          plaintiff_id: this.userInfoForm.cardNumber,
+          plaintiff_name: this.userInfoForm.name,
+          plaintiff_id_card_id: this.userInfoForm.id,
+          is_plaintiff_submit: true,
+        }).then(res => {
+          if (res.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交成功',
+              type: 'success'
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交失败',
+              type: 'error'
+            });
           }
-      )
+          this.submitProcess = 1;
+          this.confirmDialogVisible = false;
+          this.$emit('exit-dialog');
+        })
+      } else if (this.handleNode.getModel().label === "被告提交证据") {
+        axios.put('http://localhost:8080/api/cases', {
+          case_id: this.caseInfoForm.case_id,
+          defendant_id: this.userInfoForm.cardNumber,
+          defendant_name: this.userInfoForm.name,
+          defendant_id_card_id: this.userInfoForm.id,
+          is_defendant_submit: true,
+        }).then(res => {
+          if (res.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交成功',
+              type: 'success'
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交失败',
+              type: 'error'
+            });
+          }
+          this.submitProcess = 1;
+          this.confirmDialogVisible = false;
+          this.$emit('exit-dialog');
+        })
+      }
     },
-    submitLicense() {
-      axios.post('http://localhost:8080/api/licenses', {
-        license_id: "",
-        document_Id: "",
-        license_url: this.pdfUrl,
-        file_name: this.fileName,
-        license_code: this.licenseInfoForm.licenseCode,
-        license_number: this.licenseInfoForm.licenseNumber,
-        license_enterprise_name: this.licenseInfoForm.licenseEnterpriseName,
-        license_enterprise_type: this.licenseInfoForm.licenseEnterpriseType,
-        license_legal_representative: this.licenseInfoForm.licenseLegalRepresentative,
-        license_business_scope: this.licenseInfoForm.licenseBusinessScope,
-        license_registered_capital: this.licenseInfoForm.licenseRegisteredCapital,
-        license_establish_date: this.licenseInfoForm.licenseEstablishDate,
-        license_operation_period: this.licenseInfoForm.licenseOperationPeriodStart.toString() +
-            "至" + this.licenseInfoForm.licenseOperationPeriodEnd.toString(),
-        license_domicile: this.licenseInfoForm.licenseDomicile,
-        all_info: this.licenseInfoForm.allInfo
-      }).then(res => {
-            console.log(res);
-            if (res.data.code === 200) {
-              this.$message({
-                showClose: true,
-                message: '提交数据库成功',
-                type: 'success'
-              });
-            } else {
-              this.$message({
-                showClose: true,
-                message: '提交数据库失败',
-                type: 'error'
-              });
-            }
+    relateLicense() {
+      // 绑定材料和案件
+      if (this.handleNode.getModel().label === "原告提交证据") {
+        axios.put('http://localhost:8080/api/cases', {
+          case_id: this.caseInfoForm.case_id,
+          plaintiff_id: this.licenseInfoForm.licenseCode,
+          plaintiff_name: this.licenseInfoForm.licenseEnterpriseName,
+          plaintiff_license_id: this.licenseInfoForm.license_id,
+          is_plaintiff_submit: true,
+        }).then(res => {
+          if (res.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交成功',
+              type: 'success'
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交失败',
+              type: 'error'
+            });
           }
-      )
+          this.submitProcess = 1;
+          this.confirmDialogVisible = false;
+          this.$emit('exit-dialog');
+        })
+      } else if (this.handleNode.getModel().label === "被告提交证据") {
+        axios.put('http://localhost:8080/api/cases', {
+          case_id: this.caseInfoForm.case_id,
+          defendant_id: this.licenseInfoForm.licenseCode,
+          defendant_name: this.licenseInfoForm.licenseEnterpriseName,
+          defendant_license_id: this.licenseInfoForm.license_id,
+          is_defendant_submit: true,
+        }).then(res => {
+          if (res.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交成功',
+              type: 'success'
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: '证据材料提交失败',
+              type: 'error'
+            });
+          }
+          this.submitProcess = 1;
+          this.confirmDialogVisible = false;
+          this.$emit('exit-dialog');
+        })
+      }
     },
-    submitInvoice() {
-      axios.post('http://localhost:8080/api/invoices', {
-        invoice_id: "",
-        document_Id: "",
-        invoice_url: this.pdfUrl,
-        file_name: this.fileName,
-        invoice_code: this.invoiceInfoForm.invoiceCode,
-        invoice_number: this.invoiceInfoForm.invoiceNumber,
-        invoice_amount: this.invoiceInfoForm.invoiceAmount,
-        invoice_date: this.invoiceInfoForm.invoiceDate,
-        purchaser_name: this.invoiceInfoForm.purchaserName,
-        seller_name: this.invoiceInfoForm.sellerName,
-        project_name: this.invoiceInfoForm.projectName,
-        all_info: this.invoiceInfoForm.allInfo
+    relateInvoice() {
+      // 绑定材料和案件
+      axios.put('http://localhost:8080/api/cases', {
+        case_id: this.caseInfoForm.case_id,
+        related_invoice_id: this.invoiceInfoForm.invoice_id,
+        is_related_submit: true,
       }).then(res => {
-            console.log(res);
-            if (res.data.code === 200) {
-              this.$message({
-                showClose: true,
-                message: '提交数据库成功',
-                type: 'success'
-              });
-            } else {
-              this.$message({
-                show: true,
-                message: '提交数据库失败',
-                type: 'error'
-              });
-            }
-          }
-      )
+        if (res.data.code === 200) {
+          this.$message({
+            showClose: true,
+            message: '证据材料提交成功',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            showClose: true,
+            message: '证据材料提交失败',
+            type: 'error'
+          });
+        }
+        this.submitProcess = 1;
+        this.confirmDialogVisible = false;
+        this.$emit('exit-dialog');
+      })
     },
     highLightLicenseRow({row}) {
       if (row.license_code === this.caseInfoForm.plaintiff_id) {
@@ -528,7 +501,7 @@ export default {
 </script>
 
 <template>
-  <!-- 证据类型选择对话框-->
+  <!-- 1证据类型选择对话框-->
   <div>
     <el-dialog
         :visible.sync="materialTypeDialogVisible"
@@ -549,13 +522,13 @@ export default {
         <el-button @click="handleExit">取 消</el-button>
         <el-button type="primary"
                    @click="handleMaterialTypeSelected">下一步</el-button>
-        </span>
+      </span>
     </el-dialog>
 
-    <!-- 证据提交对话框-->
+    <!-- 2证据提交对话框-->
     <el-dialog
         :visible.sync="submitDialogVisible"
-        title="证据提交"
+        :title="materialTypeName+'证据提交'"
         width="50%"
         :close-on-click-modal="false">
       <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
@@ -567,7 +540,6 @@ export default {
       <br>
       <!--从现有材料中上传-->
       <div v-if="submitOption === 1">
-
         <!--材料类型为身份证-->
         <div v-if="materialType === 1">
           <el-table :data="tableData"
@@ -698,13 +670,46 @@ export default {
       </span>
     </el-dialog>
 
-    <!-- 材料预览对话框-->
+    <!-- 材料预览对话框 previewDialog-->
     <el-dialog :visible.sync="previewDialogVisible"
                title="材料预览"
                width="50%"
                :close-on-click-modal="false">
       <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
       <br>
+      <!--选择已存在的材料-->
+      <span v-if="this.submitOption === 1">
+        <!--身份证-->
+        <span v-if="this.materialType === 1">
+          <pdf-compare-viewer :pdfUrl="this.tempMaterialData.id_card_url"
+                              :ocrPdfUrl="this.tempMaterialData.id_card_ocr_url"></pdf-compare-viewer>
+        </span>
+        <!--营业执照-->
+        <span v-if="this.materialType === 2">
+          <pdf-compare-viewer :pdfUrl="this.tempMaterialData.license_url"
+                              :ocrPdfUrl="this.tempMaterialData.license_ocr_url"></pdf-compare-viewer>
+        </span>
+        <!--发票-->
+        <span v-if="this.materialType === 3">
+          <pdf-compare-viewer :pdfUrl="this.tempMaterialData.invoice_url"
+                              :ocrPdfUrl="this.tempMaterialData.invoice_ocr_url"></pdf-compare-viewer>
+        </span>
+        <!--上传新材料-->
+      </span>
+      <span v-if="this.submitOption === 2 && this.isConverted === true">
+        <pdf-compare-viewer :pdfUrl="pdfUrl" :ocrPdfUrl="ocrPdfUrl"></pdf-compare-viewer>
+      </span>
+      <span v-if="this.submitOption === 2 && this.isConverted === false">
+         <h1>原文档</h1>
+        <!-- PDF预览组件-->
+      <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="800"></iframe>
+        <!-------------->
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleExit">取 消</el-button>
+        <el-button type="primary"
+                   @click="handlePreviewEnd">下一步</el-button>
+      </span>
     </el-dialog>
 
     <!-- 确认提交对话框-->
@@ -714,6 +719,122 @@ export default {
                :close-on-click-modal="false">
       <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
       <br>
+      <!--材料类型为身份证-->
+      <span v-if="this.materialType === 1">
+        <!--身份证信息表单-->
+            <el-form ref="form" :model="userInfoForm" label-width="80px">
+              <el-form-item label="姓名">
+                <el-input v-model="userInfoForm.name"></el-input>
+              </el-form-item>
+              <el-form-item label="民族">
+                <el-input v-model="userInfoForm.nation"></el-input>
+              </el-form-item>
+              <el-form-item label="性别">
+                <el-radio-group v-model="userInfoForm.sex">
+                  <el-radio label="男"></el-radio>
+                  <el-radio label="女"></el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="住址">
+                <el-input type="textarea" v-model="userInfoForm.address"></el-input>
+              </el-form-item>
+              <el-form-item label="身份证号">
+                <el-input v-model="userInfoForm.cardNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="userInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="relateIdCard">提交</el-button>
+                <el-button @click="handleExit">取消</el-button>
+              </el-form-item>
+            </el-form>
+      </span>
+
+      <!--材料类型为营业执照-->
+      <span v-if="this.materialType === 2">
+        <!-- 营业执照信息表单 -->
+            <el-form ref="form" label-width="auto" label-position="left">
+              <el-form-item label="统一社会信用代码">
+                <el-input v-model="licenseInfoForm.licenseCode"></el-input>
+              </el-form-item>
+              <el-form-item label="证照编号">
+                <el-input v-model="licenseInfoForm.licenseNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="名称">
+                <el-input v-model="licenseInfoForm.licenseEnterpriseName"></el-input>
+              </el-form-item>
+              <el-form-item label="类型">
+                <el-input v-model="licenseInfoForm.licenseEnterpriseType"></el-input>
+              </el-form-item>
+              <el-form-item label="法定代表人">
+                <el-input v-model="licenseInfoForm.licenseLegalRepresentative"></el-input>
+              </el-form-item>
+              <el-form-item label="经营范围">
+                <el-input v-model="licenseInfoForm.licenseBusinessScope"></el-input>
+              </el-form-item>
+              <el-form-item label="注册资本">
+                <el-input v-model="licenseInfoForm.licenseRegisteredCapital"></el-input>
+              </el-form-item>
+              <el-form-item label="成立日期">
+                <el-date-picker type="date" placeholder="选择日期" v-model="licenseInfoForm.licenseEstablishDate"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="营业期限">
+                <el-date-picker type="daterange" range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                v-model="licenseOperationPeriod"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="住所">
+                <el-input v-model="licenseInfoForm.licenseDomicile"></el-input>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="licenseInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="relateLicense">提交</el-button>
+                <el-button @click="handleExit">取消</el-button>
+              </el-form-item>
+            </el-form>
+      </span>
+
+      <!--材料类型为发票-->
+      <span v-if="this.materialType === 3">
+        <!-- 发票信息表单 -->
+            <el-form ref="form" :model="invoiceInfoForm" label-width="auto">
+              <el-form-item label="发票代码">
+                <el-input v-model="invoiceInfoForm.invoiceCode"></el-input>
+              </el-form-item>
+              <el-form-item label="发票号码">
+                <el-input v-model="invoiceInfoForm.invoiceNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="发票金额">
+                <el-input v-model="invoiceInfoForm.invoiceAmount"></el-input>
+              </el-form-item>
+              <el-form-item label="开票日期">
+                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceInfoForm.invoiceDate"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="购买方名称">
+                <el-input v-model="invoiceInfoForm.purchaserName"></el-input>
+              </el-form-item>
+              <el-form-item label="销售方名称">
+                <el-input v-model="invoiceInfoForm.sellerName"></el-input>
+              </el-form-item>
+              <el-form-item label="项目名称">
+                <el-input v-model="invoiceInfoForm.projectName"></el-input>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="invoiceInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="relateInvoice">提交</el-button>
+                <el-button @click="handleExit">取消</el-button>
+              </el-form-item>
+            </el-form>
+      </span>
     </el-dialog>
   </div>
 </template>

@@ -53,6 +53,7 @@ export default defineComponent({
         this.isSelected = true;
 
         this.showGraphDialog = true;
+        this.$message('请点击节点查看案件状态');
       })
     },
   }

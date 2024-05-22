@@ -14,6 +14,7 @@ public class License
     private Integer document_id;
     private String file_name;
     private String license_url;
+    private String license_ocr_url;
     private String license_code;
     private String license_number;
     private String license_enterprise_name;

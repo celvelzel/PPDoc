@@ -13,6 +13,9 @@
                 <if test="indictment_url != null">
                     indictment_url = #{indictment_url},
                 </if>
+                <if test="indictment_ocr_url != null">
+                    indictment_ocr_url = #{indictment_ocr_url},
+                </if>
                 <if test="file_name != null">
                     file_name = #{file_name},
                 </if>

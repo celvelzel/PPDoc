@@ -17,8 +17,8 @@ public interface LicenseMapper
      * @param license
      */
     @Options(useGeneratedKeys = true, keyProperty = "license_id")
-    @Insert("insert into license(document_id,license_url,file_name,license_code,license_number,license_enterprise_name,license_enterprise_type,license_legal_representative,license_business_scope,license_registered_capital,license_establish_date,license_operation_period,license_domicile,all_info) " +
-            "values(#{document_id},#{license_url},#{file_name},#{license_code},#{license_number},#{license_enterprise_name},#{license_enterprise_type},#{license_legal_representative},#{license_business_scope},#{license_registered_capital},#{license_establish_date},#{license_operation_period},#{license_domicile},#{all_info})")
+    @Insert("insert into license(document_id,license_url, license_ocr_url, file_name,license_code,license_number,license_enterprise_name,license_enterprise_type,license_legal_representative,license_business_scope,license_registered_capital,license_establish_date,license_operation_period,license_domicile,all_info) " +
+            "values(#{document_id},#{license_url}, #{license_ocr_url}, #{file_name},#{license_code},#{license_number},#{license_enterprise_name},#{license_enterprise_type},#{license_legal_representative},#{license_business_scope},#{license_registered_capital},#{license_establish_date},#{license_operation_period},#{license_domicile},#{all_info})")
     public void insert(License license);
 
     /**

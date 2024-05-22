@@ -12,6 +12,7 @@ public class IdCard
     private Integer id;
     private Integer document_id;
     private String id_card_url;
+    private String id_card_ocr_url;
     private String file_name;
     private String name;
     private String nation;

@@ -292,6 +292,7 @@ export default {
         indictment_id: "",
         document_id: "",
         indictment_url: this.pdfUrl,
+        indictment_ocr_url: this.ocrPdfUrl,
         file_name: this.fileName,
         case_type: this.indictmentInfoForm.caseType,
         plaintiff_name: this.indictmentInfoForm.plaintiffName,

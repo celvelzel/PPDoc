@@ -12,6 +12,7 @@ public class Invoice
     private Integer invoice_id;
     private Integer document_id;
     private String invoice_url;
+    private String invoice_ocr_url;
     private String file_name;
     private String invoice_code;
     private String invoice_number;

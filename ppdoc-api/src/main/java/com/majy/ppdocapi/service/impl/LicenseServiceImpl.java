@@ -76,7 +76,7 @@ public class LicenseServiceImpl implements LicenseService
     @Override
     public Result add(License license)
     {
-        Document document = new Document(null, license.getLicense_url(), license.getFile_name(), "营业执照", license.getAll_info());
+        Document document = new Document(null, license.getLicense_url(), license.getLicense_ocr_url(), license.getFile_name(), "营业执照", license.getAll_info());
         documentMapper.insert(document);
         license.setDocument_id(document.getDocument_id());
         licenseMapper.insert(license);

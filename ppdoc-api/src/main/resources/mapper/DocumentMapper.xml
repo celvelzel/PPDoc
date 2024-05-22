@@ -7,6 +7,9 @@
             <if test="document_url != null">
                 document_url = #{document_url},
             </if>
+            <if test="document_ocr_url != null">
+                document_ocr_url = #{document_ocr_url},
+            </if>
             <if test="document_name != null">
                 document_name = #{document_name},
             </if>

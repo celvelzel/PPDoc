@@ -7,6 +7,9 @@
             <if test="license_url != null">
                 license_url = #{license_url},
             </if>
+            <if test="license_ocr_url != null">
+                license_ocr_url = #{license_ocr_url},
+            </if>
             <if test="file_name != null">
                 file_name = #{file_name},
             </if>

@@ -76,7 +76,7 @@ public class InvoiceServiceImpl implements InvoiceService
     @Override
     public Result add(Invoice invoice)
     {
-        Document document = new Document(null, invoice.getInvoice_url(), invoice.getFile_name(), "发票", invoice.getAll_info());
+        Document document = new Document(null, invoice.getInvoice_url(), invoice.getInvoice_ocr_url(), invoice.getFile_name(), "发票", invoice.getAll_info());
         documentMapper.insert(document);
         invoice.setDocument_id(document.getDocument_id());
         invoiceMapper.insert(invoice);

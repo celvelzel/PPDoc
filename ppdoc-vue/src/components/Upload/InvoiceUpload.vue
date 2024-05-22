@@ -214,6 +214,7 @@ export default {
         invoice_id: "",
         document_Id: "",
         invoice_url: this.pdfUrl,
+        invoice_ocr_url: this.ocrPdfUrl,
         file_name: this.fileName,
         invoice_code: this.invoiceInfoForm.invoiceCode,
         invoice_number: this.invoiceInfoForm.invoiceNumber,

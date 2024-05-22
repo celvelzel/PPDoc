@@ -196,6 +196,7 @@ export default defineComponent({
       axios.post('http://localhost:8080/api/docs', {
         document_Id: "",
         document_url: this.pdfUrl,
+        document_ocr_url: this.ocrPdfUrl,
         document_name: this.fileName,
         document_type: "",
         all_info: this.docInfoForm.allInfo

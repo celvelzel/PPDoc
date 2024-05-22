@@ -74,7 +74,7 @@ public class IndictmentServiceImpl implements IndictmentService
     @Override
     public Result add(Indictment indictment)
     {
-        Document newDocument = new Document(indictment.getDocument_id(), indictment.getIndictment_url(),indictment.getFile_name(),"起诉状",indictment.getAll_info());
+        Document newDocument = new Document(indictment.getDocument_id(), indictment.getIndictment_url(),indictment.getIndictment_ocr_url(), indictment.getFile_name(),"起诉状",indictment.getAll_info());
         documentMapper.insert(newDocument);
         indictment.setDocument_id(newDocument.getDocument_id());
         indictmentMapper.insert(indictment);

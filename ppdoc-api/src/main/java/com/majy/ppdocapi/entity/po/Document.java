@@ -11,6 +11,7 @@ public class Document
 {
     private Integer document_id;
     private String document_url;
+    private String document_ocr_url;
     private String document_name;
     private String document_type;
     private String all_info;

@@ -248,6 +248,7 @@ export default {
         license_id: "",
         document_Id: "",
         license_url: this.pdfUrl,
+        license_ocr_url: this.ocrPdfUrl,
         file_name: this.fileName,
         license_code: this.licenseInfoForm.licenseCode,
         license_number: this.licenseInfoForm.licenseNumber,
