@@ -109,16 +109,19 @@ public class IndictmentServiceImpl implements IndictmentService
                 String originPdfPath = pdfFolder + System.getProperty("file.separator") + "originPdf.pdf";
                 // 最终生成的双层pdf文件存储路径
                 String finalPdfPath = pdfFolder + System.getProperty("file.separator") + "FinalDpdf.pdf";
+                // 合成的识别结果pdf文件存储路径
+                String ocrPdfPath = pdfFolder + System.getProperty("file.separator") + "FinalOcrPdf.pdf";
                 // 将上传的pdf文件保存到本地
                 file.transferTo(new File(originPdfPath));
                 // 调用工具类生成双层pdf
-                pdfToEditablePdfUtils.pdf2Dpdf(new File(originPdfPath), ocrResult, finalPdfPath);
+                pdfToEditablePdfUtils.pdf2Dpdf(new File(originPdfPath), ocrResult, finalPdfPath, ocrPdfPath);
                 // 上传双层pdf文件到对象存储，并返回URL
                 URL url = ossUtils.uploadFile(new File(finalPdfPath));
+                URL ocrPdfUrl = ossUtils.uploadFile(new File(ocrPdfPath));
 
                 // 关闭文件流
                 inputStream.close();
-                return Result.getSuccessResult(url, dataMap);
+                return Result.getSuccessResult(url, ocrPdfUrl, dataMap, "converted");
             } else
             {
                 //若pdf有可复制的文本，直接使用pdf中的文本
@@ -128,7 +131,7 @@ public class IndictmentServiceImpl implements IndictmentService
 
                 // 关闭文件流
                 inputStream.close();
-                return Result.getSuccessResult(fileUrl, dataMap);
+                return Result.getSuccessResult(fileUrl, dataMap, "unconverted");
             }
         } catch (IOException | DocumentException e)
         {

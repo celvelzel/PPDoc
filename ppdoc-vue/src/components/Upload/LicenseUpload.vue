@@ -5,7 +5,7 @@
       <el-row>
       </el-row>
       <el-row type="flex" justify="space-between">
-        <el-col :span="12">
+        <el-col>
           <!-- 营业执照pdf上传组件 -->
           <el-upload action="http://localhost:8080/api/licenses/upload"
                      :on-preview="handlePictureCardPreview"
@@ -27,16 +27,75 @@
             <!-- 发票图片预览组件 -->
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
-          <br>
+        </el-col>
+      </el-row>
+      <br>
+      <span v-if="this.isConverted === true">
+        <!-- 双层pdf对比组件-->
+        <pdf-compare-viewer :pdf-url="pdfUrl" :ocr-pdf-url="ocrPdfUrl"></pdf-compare-viewer>
+        <el-row style="margin-top: 20px;">
+          <el-col span="12">
+            <!-- 营业执照信息表单 -->
+            <el-form ref="form" label-width="auto" label-position="left">
+              <el-form-item label="统一社会信用代码">
+                <el-input v-model="licenseInfoForm.licenseCode"></el-input>
+              </el-form-item>
+              <el-form-item label="证照编号">
+                <el-input v-model="licenseInfoForm.licenseNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="名称">
+                <el-input v-model="licenseInfoForm.licenseEnterpriseName"></el-input>
+              </el-form-item>
+              <el-form-item label="类型">
+                <el-input v-model="licenseInfoForm.licenseEnterpriseType"></el-input>
+              </el-form-item>
+              <el-form-item label="法定代表人">
+                <el-input v-model="licenseInfoForm.licenseLegalRepresentative"></el-input>
+              </el-form-item>
+              <el-form-item label="经营范围">
+                <el-input v-model="licenseInfoForm.licenseBusinessScope"></el-input>
+              </el-form-item>
+              <el-form-item label="注册资本">
+                <el-input v-model="licenseInfoForm.licenseRegisteredCapital"></el-input>
+              </el-form-item>
+              <el-form-item label="成立日期">
+                <el-date-picker type="date" placeholder="选择日期" v-model="licenseInfoForm.licenseEstablishDate"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="营业期限">
+                <el-date-picker type="daterange" range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                v-model="licenseOperationPeriod"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="住所">
+                <el-input v-model="licenseInfoForm.licenseDomicile"></el-input>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="licenseInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col span="12">
+            <extract-info :allinfo="licenseInfoForm.allInfo"></extract-info>
+          </el-col>
+        </el-row>
+      </span>
+      <span v-if="this.isConverted === false">
+      <el-row>
+        <el-col span="12">
           <!-- PDF预览组件-->
           <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="750"></iframe>
           <!-------------->
           <br>
-          <GenerateSummary :allinfo="licenseInfoForm.allInfo"/>
         </el-col>
         <el-col :span="12">
           <el-row>
-            <!-- 发票信息表单 -->
+            <!-- 营业执照信息表单 -->
             <el-form ref="form" label-width="auto" label-position="left">
               <el-form-item label="统一社会信用代码">
                 <el-input v-model="licenseInfoForm.licenseCode"></el-input>
@@ -86,6 +145,7 @@
           </el-row>
         </el-col>
       </el-row>
+      </span>
     </el-main>
   </el-container>
 </template>
@@ -94,9 +154,10 @@
 import axios from "axios";
 import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
 import GenerateSummary from "@/components/Utils/GenerateSummary.vue";
+import PdfCompareViewer from "@/components/Utils/PdfCompareViewer.vue";
 
 export default {
-  components: {GenerateSummary, ExtractInfo},
+  components: {PdfCompareViewer, GenerateSummary, ExtractInfo},
   data() {
     return {
       imageUrl: '',
@@ -119,6 +180,8 @@ export default {
       },
       licenseOperationPeriod: [],
       pdfUrl: "",
+      ocrPdfUrl: "",
+      isConverted: true,
       fileName: "",
       fullscreenLoading: false
     }
@@ -130,12 +193,21 @@ export default {
     handleSuccessPdf(response, file) {
       // 假设服务器返回的响应数据中包含了营业执照的URL
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       console.log("营业执照的url是：" + response.data.url);
       this.licenseInfoForm = response.data.data;
       this.licenseOperationPeriod = [this.licenseInfoForm.licenseOperationPeriodStart,
         this.licenseInfoForm.licenseOperationPeriodEnd];
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
       //获取文档名
       this.fileName = file.name;
 

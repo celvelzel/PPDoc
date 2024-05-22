@@ -38,8 +38,38 @@
           </el-dialog>
         </el-col>
       </el-row>
+      <span v-if="isConverted === true">
+        <!-- 双层pdf对比组件-->
+        <pdf-compare-viewer :pdf-url="pdfUrl" :ocr-pdf-url="ocrPdfUrl"></pdf-compare-viewer>
 
-      <el-row :gutter="30" style="margin-top: 10px;">
+        <el-row :gutter="30" style="margin-top: 10px;">
+          <el-col :span="12">
+            <!-- OCR结果表单-->
+            <el-form ref="form" label-width="80px">
+              <el-form-item label="所有文本">
+                <el-input type="textarea"
+                          autosize
+                          :rows="10"
+                          v-model="docInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">提交</el-button>
+                <el-button>取消</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="12">
+            <!--          摘要生成组件-->
+            <GenerateSummary :allinfo="docInfoForm.allInfo"/>
+            <!--          ------------>
+            <!--          提取信息组件-->
+            <extract-info :allinfo="docInfoForm.allInfo"/>
+            <!--          ------------>
+          </el-col>
+        </el-row>
+      </span>
+      <span v-if="isConverted === false">
+        <el-row :gutter="30" style="margin-top: 10px;">
         <el-col :span="12">
 
           <!-- PDF预览组件-->
@@ -66,6 +96,7 @@
           <!--          ------------>
         </el-col>
       </el-row>
+      </span>
     </el-main>
   </el-container>
 </template>
@@ -75,9 +106,10 @@ import axios from 'axios'
 import {defineComponent} from "vue";
 import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
 import GenerateSummary from "@/components/Utils/GenerateSummary.vue";
+import PdfCompareViewer from "@/components/Utils/PdfCompareViewer.vue";
 
 export default defineComponent({
-  components: {GenerateSummary, ExtractInfo},
+  components: {PdfCompareViewer, GenerateSummary, ExtractInfo},
   data() {
     return {
       docInfoForm: {
@@ -88,22 +120,44 @@ export default defineComponent({
       dialogVisible: false,
       fileList: [],
       pdfUrl: "",
+      ocrPdfUrl: "",
+      isConverted: true,
       fileName: "",
       fullscreenLoading: false
     }
   },
   methods: {
     handleSuccessImage(response) {
-      console.log(response)
-      this.userInfoForm = response
+      this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
+      this.userInfoForm = response;
+      //表格收到数据后关闭加载动效
+      this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
     },
     handleSuccessPdf(response, file) {
       //后端返回结果的处理逻辑
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       console.log("文档的url是：" + response.data.url);
       this.docInfoForm = response.data.data;
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
       // 更新数据的操作
       this.$emit('dataUpdated');
       //获取文档名

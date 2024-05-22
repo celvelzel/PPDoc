@@ -42,7 +42,7 @@ public class PdfToEditablePdfUtils
 //    private String fontPath = "<LOCAL_PATH_REDACTED>";
 //    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
 
-    public void pdf2Dpdf(File pdfFile, List ocrResult, String dPdfFilePath) throws IOException, DocumentException
+    public void pdf2Dpdf(File pdfFile, List ocrResult, String dPdfFilePath, String ocrPdfFilePath) throws IOException, DocumentException
     {
         // 加载PDF文档
         PDDocument document = PDDocument.load(pdfFile);
@@ -70,9 +70,12 @@ public class PdfToEditablePdfUtils
 
             // 在 PDF 页面上绘制文本
             annotatePdf(imgSize, pdfSize, pageIndex, ocrResult);
+
+            // 绘制识别结果PDF页面
+            createPdf(imgSize, pdfSize, pageIndex, ocrResult);
         }
         // 合并并保存双层PDF文件
-        mergePdf(pageCount, dPdfFilePath);
+        mergePdf(pageCount, dPdfFilePath, ocrPdfFilePath);
         log.info("PDF文件已保存");
         document.close();
     }
@@ -344,29 +347,40 @@ public class PdfToEditablePdfUtils
      * @param pageCount 需要合并的PDF文件数量。
      * @throws IOException 如果在读取或保存PDF文件时发生IO异常。
      */
-    public void mergePdf(int pageCount, String finalPdfPath) throws IOException
+    public void mergePdf(int pageCount, String finalPdfPath, String ocrPdfPath) throws IOException
     {
         // 创建一个新的PDF文档
         PDDocument Dpdf = new PDDocument();
+        PDDocument ocrPdf = new PDDocument();
+
         for (int i = 1; i <= pageCount; i++)
         {
-            // 构建当前PDF文件的路径
-            File file = new File(pdfFolder + System.getProperty("file.separator") + "dpdf" + i + ".pdf");
-            if (file.exists()) // 检查文件是否存在
+            // 构建双层PDF文件的路径
+            File dPdfFile = new File(pdfFolder + System.getProperty("file.separator") + "dpdf" + i + ".pdf");
+            if (dPdfFile.exists()) // 检查文件是否存在
             {
-                FileInputStream input = new FileInputStream(file);
-                PDDocument tempPDF = PDDocument.load(file);
+                PDDocument tempPDF = PDDocument.load(dPdfFile);
                 // 将当前PDF页面添加到合并后的文档中
                 Dpdf.addPage(tempPDF.getPage(0));
+            }
+
+            // 构建OCR识别PDF文件的路径
+            File ocrPdfFile = new File(pdfFolder + System.getProperty("file.separator") + "ocr_pdf_" + i + ".pdf");
+            if (ocrPdfFile.exists())
+            {
+                PDDocument tempPDF = PDDocument.load(ocrPdfFile);
+                // 将当前PDF页面添加到合并后的文档中
+                ocrPdf.addPage(tempPDF.getPage(0));
             }
         }
         try
         {
             // 保存合并后的PDF文件
             Dpdf.save(new File(finalPdfPath));
+            ocrPdf.save(new File(ocrPdfPath));
         } catch (IOException e)
         {
-            log.error("保存合并后的双层PDF文件失败");
+            log.error("保存合并后的PDF文件失败");
             throw new RuntimeException(e);
         } finally
         {
@@ -374,6 +388,7 @@ public class PdfToEditablePdfUtils
             {
                 // 确保在方法退出前关闭PDF文档
                 Dpdf.close();
+                ocrPdf.close();
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
@@ -743,7 +758,7 @@ public class PdfToEditablePdfUtils
 
         List jsons = PaddleOcrUtils.pdfToOcrText(input);
 
-        pdf2Dpdf(pdfFile, jsons, "<LOCAL_PATH_REDACTED>");
+        //pdf2Dpdf(pdfFile, jsons, "<LOCAL_PATH_REDACTED>");
 
 //        System.out.println("OCR识别结果" + getPdfText(input));
 //        System.out.println("pdf可编辑检验结果：" + pdfCopyableChecker(input));

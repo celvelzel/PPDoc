@@ -36,44 +36,60 @@
           </el-dialog>
         </el-col>
       </el-row>
-      <!-- PDF预览组件-->
-      <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="350"></iframe>
-      <!-------------->
+      <span v-if="isConverted === true">
+        <el-row :gutter="30" style="margin-top: 10px;">
+          <el-col :span="12">
+            <!-- PDF预览组件-->
+            <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="350"></iframe>
+            <!-------------->
+          </el-col>
+          <el-col :span="12">
+            <!-- PDF预览组件-->
+            <iframe :src="`static/pdf/web/viewer.html?file=`+ocrPdfUrl" width="100%" height="350"></iframe>
+            <!-------------->
+          </el-col>
+        </el-row>
+      </span>
+      <span v-if="isConverted === false">
+        <!-- PDF预览组件-->
+        <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="350"></iframe>
+        <!-------------->
+      </span>
       <el-row :gutter="30" style="margin-top: 10px;">
-        <el-col :span="12">
-          <!-- 表单-->
-          <el-form ref="form" :model="userInfoForm" label-width="80px">
-            <el-form-item label="姓名">
-              <el-input v-model="userInfoForm.name"></el-input>
-            </el-form-item>
-            <el-form-item label="民族">
-              <el-input v-model="userInfoForm.nation"></el-input>
-            </el-form-item>
-            <el-form-item label="性别">
-              <el-radio-group v-model="userInfoForm.sex">
-                <el-radio label="男"></el-radio>
-                <el-radio label="女"></el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="住址">
-              <el-input type="textarea" v-model="userInfoForm.address"></el-input>
-            </el-form-item>
-            <el-form-item label="身份证号">
-              <el-input v-model="userInfoForm.cardNumber"></el-input>
-            </el-form-item>
-            <el-form-item label="所有文本">
-              <el-input v-model="userInfoForm.allInfo"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="onSubmit">提交</el-button>
-              <el-button>取消</el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-        <el-col :span="12">
-          <extract-info :allinfo="userInfoForm.allInfo"/>
-        </el-col>
-      </el-row>
+          <el-col :span="12">
+            <!-- 表单-->
+            <el-form ref="form" :model="userInfoForm" label-width="80px">
+              <el-form-item label="姓名">
+                <el-input v-model="userInfoForm.name"></el-input>
+              </el-form-item>
+              <el-form-item label="民族">
+                <el-input v-model="userInfoForm.nation"></el-input>
+              </el-form-item>
+              <el-form-item label="性别">
+                <el-radio-group v-model="userInfoForm.sex">
+                  <el-radio label="男"></el-radio>
+                  <el-radio label="女"></el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="住址">
+                <el-input type="textarea" v-model="userInfoForm.address"></el-input>
+              </el-form-item>
+              <el-form-item label="身份证号">
+                <el-input v-model="userInfoForm.cardNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="userInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">提交</el-button>
+                <el-button>取消</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="12">
+            <extract-info :allinfo="userInfoForm.allInfo"/>
+          </el-col>
+        </el-row>
     </el-main>
   </el-container>
 </template>
@@ -100,6 +116,8 @@ export default {
       dialogVisible: false,
       fileList: [],
       pdfUrl: "",
+      ocrPdfUrl: "",
+      isConverted: true,
       fileName: "",
       fullscreenLoading: false
     };
@@ -110,16 +128,34 @@ export default {
     handleSuccessImage(response) {
       console.log(response)
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       this.userInfoForm = response.data.data;
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
     },
     handleSuccessPdf(response, file) {
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       console.log("文档的url是：" + response.data.url);
       this.userInfoForm = response.data.data;
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
       //获取文档名
       this.fileName = file.name;
 

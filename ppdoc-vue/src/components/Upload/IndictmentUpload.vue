@@ -4,7 +4,7 @@
       <el-row>
       </el-row>
       <el-row type="flex" justify="space-between">
-        <el-col :span="12">
+        <el-col>
           <!-- 发票pdf上传组件 -->
           <el-upload action="http://localhost:8080/api/indictments/upload"
                      :on-preview="handlePictureCardPreview"
@@ -26,7 +26,91 @@
             <!-- 发票图片预览组件 -->
             <img v-if="imageUrl" :src="imageUrl" alt="起诉状预览" class="preview-image">
           </el-upload>
-          <br>
+        </el-col>
+      </el-row>
+      <br>
+      <span v-if="this.isConverted === true">
+        <!-- 双层pdf对比组件-->
+        <pdf-compare-viewer :pdf-url="pdfUrl" :ocr-pdf-url="ocrPdfUrl"></pdf-compare-viewer>
+        <el-row :gutter="30" style="margin-top: 10px;">
+          <el-col :span="12">
+            <!-- 起诉状信息表单 -->
+            <el-form ref="form" :model="indictmentInfoForm" label-width="auto" label-position="left">
+              <el-form-item label="案件类型">
+                <el-input v-model="indictmentInfoForm.caseType"></el-input>
+              </el-form-item>
+              <el-form-item label="原告名称">
+                <el-input v-model="indictmentInfoForm.plaintiffName"></el-input>
+              </el-form-item>
+              <el-form-item label="原告ID">
+                <el-input v-model="indictmentInfoForm.plaintiffId"></el-input>
+              </el-form-item>
+              <el-form-item label="原告类型" align="left">
+                <el-select v-model="indictmentInfoForm.plaintiffType" placeholder="请选择原告类型">
+                  <el-option label="企业" value="企业"></el-option>
+                  <el-option label="个人" value="个人"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="原告地址">
+                <el-input v-model="indictmentInfoForm.plaintiffAddress"></el-input>
+              </el-form-item>
+              <el-form-item label="原告联系方式">
+                <el-input v-model="indictmentInfoForm.plaintiffContact"></el-input>
+              </el-form-item>
+              <el-form-item label="被告名称">
+                <el-input v-model="indictmentInfoForm.defendantName"></el-input>
+              </el-form-item>
+              <el-form-item label="被告ID">
+                <el-input v-model="indictmentInfoForm.defendantId"></el-input>
+              </el-form-item>
+              <el-form-item label="被告类型" align="left">
+                <el-select v-model="indictmentInfoForm.defendantType" placeholder="请选择被告类型">
+                  <el-option label="企业" value="企业"></el-option>
+                  <el-option label="个人" value="个人"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="被告地址">
+                <el-input v-model="indictmentInfoForm.defendantAddress"></el-input>
+              </el-form-item>
+              <el-form-item label="被告联系方式">
+                <el-input v-model="indictmentInfoForm.defendantContact"></el-input>
+              </el-form-item>
+              <el-form-item label="诉讼请求">
+                <el-input v-model="indictmentInfoForm.litigationRequest"></el-input>
+              </el-form-item>
+              <el-form-item label="事实背景">
+                <el-input v-model="indictmentInfoForm.factsBackground"></el-input>
+              </el-form-item>
+              <el-form-item label="法律依据">
+                <el-input v-model="indictmentInfoForm.legalBasis"></el-input>
+              </el-form-item>
+              <el-form-item label="证据清单">
+                <el-input v-model="indictmentInfoForm.evidenceList"></el-input>
+              </el-form-item>
+              <el-form-item label="法院名称">
+                <el-input v-model="indictmentInfoForm.courtName"></el-input>
+              </el-form-item>
+              <el-form-item label="起诉状日期">
+                <el-date-picker type="date" placeholder="选择日期" v-model="indictmentInfoForm.indictmentDate"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="indictmentInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="12">
+            <GenerateSummary :allinfo="indictmentInfoForm.allInfo"/>
+            <extract-info :allinfo="indictmentInfoForm.allInfo"/>
+          </el-col>
+        </el-row>
+      </span>
+      <span v-if="this.isConverted === false">
+      <el-row>
+        <el-col span="12">
           <!-- PDF预览组件-->
           <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="1230"></iframe>
           <!-------------->
@@ -108,6 +192,7 @@
           </el-row>
         </el-col>
       </el-row>
+      </span>
     </el-main>
   </el-container>
 </template>
@@ -116,9 +201,10 @@
 import GenerateSummary from "@/components/Utils/GenerateSummary.vue";
 import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
 import axios from "axios";
+import PdfCompareViewer from "@/components/Utils/PdfCompareViewer.vue";
 
 export default {
-  components: {ExtractInfo, GenerateSummary},
+  components: {PdfCompareViewer, ExtractInfo, GenerateSummary},
   data() {
     return {
       indictmentInfoForm: {
@@ -142,6 +228,8 @@ export default {
         allInfo: "",
       },
       pdfUrl: "",
+      ocrPdfUrl: "",
+      isConverted: true,
       fileName: "",
       fullscreenLoading: false,
       fileList: [],
@@ -152,10 +240,19 @@ export default {
     handleSuccessPdf(response, file) {
       // 假设服务器返回的响应数据中包含了起诉状文档的URL
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       console.log("起诉状的url是：" + response.data.url);
       this.indictmentInfoForm = response.data.data;
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
       // 更新数据的操作
       this.$emit('dataUpdated');
       //获取文档名

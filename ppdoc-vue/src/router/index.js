@@ -68,7 +68,7 @@ const routes = [
         path: '/license/upload',
         name: 'licenseUpload',
         component: () => import('../views/Upload/LicenseUploadView.vue'),
-        meta: {title: "发票上传",},
+        meta: {title: "营业执照上传",},
     },
     {
         path:'/indictment/upload',

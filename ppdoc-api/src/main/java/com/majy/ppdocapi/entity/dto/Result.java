@@ -76,8 +76,7 @@ public class Result<T>
         {
             this.code = 200;
             this.msg = "success";
-        }
-        else
+        } else
         {
             this.code = 500;
             this.msg = msg;
@@ -114,16 +113,26 @@ public class Result<T>
      * @param dataMap   包含结果数据的键值对映射。
      * @return 返回一个封装了结果数据的成功响应对象。
      */
-    public static Result getSuccessResult(URL urlResult, Map<String, String> dataMap)
+    public static Result getSuccessResult(URL urlResult, Map<String, String> dataMap, String msg)
     {
         // 构建响应结果的映射
         Map<String, Object> responseMap = new HashMap();
         responseMap.put("url", urlResult); // 将URL对象放入响应映射中
         responseMap.put("data", dataMap); // 将数据映射放入响应映射中
         // 返回一个表示成功的Result对象，其中包含了构建的响应映射
-        return Result.success(responseMap);
+        return new Result(200, msg, responseMap);
     }
 
+    public static Result getSuccessResult(URL urlResult, URL ocrPdfUrl, Map<String, String> dataMap, String msg)
+    {
+        // 构建响应结果的映射
+        Map<String, Object> responseMap = new HashMap();
+        responseMap.put("url", urlResult); // 将URL对象放入响应映射中
+        responseMap.put("ocrPdfUrl", ocrPdfUrl); // 将OCR识别结果文档URL对象放入响应映射中
+        responseMap.put("data", dataMap); // 将数据映射放入响应映射中
+        // 返回一个表示成功的Result对象，其中包含了构建的响应映射
+        return new Result(200, msg, responseMap);
+    }
 }
 
 

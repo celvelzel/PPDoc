@@ -5,7 +5,7 @@
       <el-row>
       </el-row>
       <el-row type="flex" justify="space-between">
-        <el-col :span="12">
+        <el-col>
           <!-- 发票pdf上传组件 -->
           <el-upload action="http://localhost:8080/api/invoices/upload"
                      :on-preview="handlePictureCardPreview"
@@ -27,7 +27,54 @@
             <!-- 发票图片预览组件 -->
             <img v-if="imageUrl" :src="imageUrl" alt="发票预览" class="preview-image">
           </el-upload>
-          <br>
+        </el-col>
+      </el-row>
+      <br>
+      <span v-if="this.isConverted === true">
+        <!-- 双层pdf对比组件-->
+        <pdf-compare-viewer :pdf-url="pdfUrl" :ocr-pdf-url="ocrPdfUrl"></pdf-compare-viewer>
+        <el-row style="margin-top: 20px;">
+          <el-col :span="12">
+            <!-- 发票信息表单 -->
+            <el-form ref="form" :model="invoiceInfoForm" label-width="auto">
+              <el-form-item label="发票代码">
+                <el-input v-model="invoiceInfoForm.invoiceCode"></el-input>
+              </el-form-item>
+              <el-form-item label="发票号码">
+                <el-input v-model="invoiceInfoForm.invoiceNumber"></el-input>
+              </el-form-item>
+              <el-form-item label="发票金额">
+                <el-input v-model="invoiceInfoForm.invoiceAmount"></el-input>
+              </el-form-item>
+              <el-form-item label="开票日期">
+                <el-date-picker type="date" placeholder="选择日期" v-model="invoiceInfoForm.invoiceDate"
+                                style="margin-right: 500px;"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="购买方名称">
+                <el-input v-model="invoiceInfoForm.purchaserName"></el-input>
+              </el-form-item>
+              <el-form-item label="销售方名称">
+                <el-input v-model="invoiceInfoForm.sellerName"></el-input>
+              </el-form-item>
+              <el-form-item label="项目名称">
+                <el-input v-model="invoiceInfoForm.projectName"></el-input>
+              </el-form-item>
+              <el-form-item label="所有文本">
+                <el-input v-model="invoiceInfoForm.allInfo"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="12">
+            <extract-info :allinfo="invoiceInfoForm.allInfo"></extract-info>
+          </el-col>
+          </el-row>
+      </span>
+      <span v-if="this.isConverted === false">
+      <el-row>
+        <el-col span="12">
           <!-- PDF预览组件-->
           <iframe :src="`static/pdf/web/viewer.html?file=`+pdfUrl" width="100%" height="570"></iframe>
           <!-------------->
@@ -73,6 +120,7 @@
           </el-row>
         </el-col>
       </el-row>
+      </span>
     </el-main>
   </el-container>
 </template>
@@ -82,9 +130,10 @@ import axios from 'axios'
 
 import ExtractInfo from "@/components/Utils/ExtractInfo.vue";
 import GenerateSummary from "@/components/Utils/GenerateSummary.vue";
+import PdfCompareViewer from "@/components/Utils/PdfCompareViewer.vue";
 
 export default {
-  components: {GenerateSummary, ExtractInfo},
+  components: {PdfCompareViewer, GenerateSummary, ExtractInfo},
   data() {
     return {
       imageUrl: '',  // 发票图片预览地址
@@ -100,6 +149,8 @@ export default {
         projectName: ''
       },
       pdfUrl: "",
+      ocrPdfUrl: "",
+      isConverted: true,
       fileName: "",
       fullscreenLoading: false
     };
@@ -111,10 +162,19 @@ export default {
     handleSuccessPdf(response, file) {
       // 假设服务器返回的响应数据中包含了发票的URL
       this.pdfUrl = response.data.url;
+      this.ocrPdfUrl = response.data.ocrPdfUrl;
       console.log("发票的url是：" + response.data.url);
       this.invoiceInfoForm = response.data.data;
       //表格收到数据后关闭加载动效
       this.fullscreenLoading = false;
+      // 提示信息，展示系统处理流程
+      if (response.msg === "converted") {
+        this.$message("文档已转换为双层pdf文档");
+        this.isConverted = true;
+      } else {
+        this.$message("文档有可复制文本，未进行识别和转换");
+        this.isConverted = false;
+      }
       // 更新数据的操作
       this.$emit('dataUpdated');
       //获取文档名
