@@ -184,7 +184,7 @@ public class ModelServiceImpl implements ModelService
             if (modelName.equals("ERNIE-Bot"))
             {
                 // 调用百度文心ERNIE-Bot模型进行对话
-                return baiDuUTtils.invokeChatBySDK(systemPrompt, userPrompt);
+                return baiDuUTtils.invokeChatBySDK(finalPrompt);
             }
             else
             {

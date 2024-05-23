@@ -96,7 +96,7 @@ export default defineComponent({
               <el-step title="结案后"></el-step>
             </el-steps>
           </el-row>
-          <el-row v-show="isSelected">
+          <el-row v-if="isSelected === true">
             <!--            流程图组件-->
             <case-assistant :case-info-form="caseInfoForm"></case-assistant>
           </el-row>

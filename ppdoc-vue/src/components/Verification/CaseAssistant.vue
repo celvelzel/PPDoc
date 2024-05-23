@@ -1,6 +1,7 @@
 <script>
 import G6 from '@antv/g6';
 import caseAssistantDialog from "@/components/Verification/CaseAssistantDialog.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -134,10 +135,219 @@ export default {
       is_related_submit: "",
     },
   },
-  methods:{
+  methods: {
     hideDialog() {
       this.dialogVisible = false;
-    }
+    },
+    updateGraph(){
+      axios.get(`http://localhost:8080/api/cases/${this.caseInfoForm.case_id}`).then(res => {
+        console.log("刷新案件信息");
+        // 根据选择的案件，填入案件基本信息
+        this.caseInfoForm.indictment_id = res.data.data.indictment_id;
+        this.caseInfoForm.case_type = res.data.data.case_type;
+        this.caseInfoForm.plaintiff_name = res.data.data.plaintiff_name;
+        this.caseInfoForm.plaintiff_id = res.data.data.plaintiff_id;
+        this.caseInfoForm.defendant_name = res.data.data.defendant_name;
+        this.caseInfoForm.defendant_id = res.data.data.defendant_id;
+        this.caseInfoForm.defendant_type = res.data.data.defendant_type;
+        this.caseInfoForm.plaintiff_id_card_id = res.data.data.plaintiff_id_card_id;
+        this.caseInfoForm.defendant_id_card_id = res.data.data.defendant_id_card_id;
+        this.caseInfoForm.plaintiff_license_id = res.data.data.plaintiff_license_id;
+        this.caseInfoForm.is_plaintiff_submit = res.data.data.is_plaintiff_submit;
+        this.caseInfoForm.is_defendant_submit = res.data.data.is_defendant_submit;
+        this.caseInfoForm.is_related_submit = res.data.data.is_related_submit;
+
+        this.$message('请点击节点查看案件状态');
+      })
+      this.initGraph();
+    },
+    initGraph() {
+      //图实例化，至少需要为图设置容器、宽、高：
+      const graph = new G6.Graph({
+        container: 'mountNode', // 指定挂载容器, String | HTMLElement，必须，图画布的容器 id 或容器元素
+        width: 1200, // Number，必须，图的宽度
+        height: 500, // Number，必须，图的高度
+        modes: {
+          // 定义图形状态时的行为
+          default: ['drag-canvas', 'zoom-canvas', 'drag-node'],
+        },
+        defaultNode: {
+          size: 50, // Number | Array，可选，节点大小
+          style: {
+            fill: 'steelblue', // 节点填充色
+            stroke: '#666', // 节点描边色
+            lineWidth: 1, // 节点描边粗细
+          },
+          // 节点上的标签文本配置
+          labelCfg: {
+            // 节点上的标签文本样式配置
+            style: {
+              fill: '#000000', // 节点标签文字颜色
+            },
+          },
+        },
+        // 边在默认状态下的样式配置（style）和其他配置
+        defaultEdge: {
+          type: 'polyline',
+          // 边样式配置
+          style: {
+            opacity: 0.6, // 边透明度
+            stroke: 'grey', // 边描边颜色
+            endArrow: true, // 边是否显示尾部箭头
+          },
+          // 边上的标签文本配置
+          labelCfg: {
+            autoRotate: true, // 边上的标签文本根据边的方向旋转
+          },
+        },
+        //fitView: true, //设置是否将图适配到画布中
+        fitViewPadding: [5, 5, 5, 5], // 画布上四周的留白宽度。
+        animate: true, // 是否开启动画
+      });
+
+      this.nodes.forEach((node) => {
+        if (!node.style) {
+          node.style = {};
+        }
+
+        // 根据案件信息配置节点状态
+        if (this.caseInfoForm.is_plaintiff_submit === 1) {
+          if (node.label === '原告提交证据') {
+            console.log('原告已提交证据');
+            node.status = 'done';
+          } else if (node.id === 'node5') {
+            node.status = 'doing';
+          }
+        } else {
+          if (node.label === '原告提交证据') {
+            console.log('原告未提交证据');
+            node.status = 'doing';
+          } else if (node.id === 'node5') {
+            node.status = 'undo';
+          }
+        }
+
+        if (this.caseInfoForm.is_defendant_submit === 'true') {
+          if (node.label === '被告提交证据') {
+            console.log('被告已提交证据');
+            node.status = 'done';
+          } else if (node.id === 'node6') {
+            node.status = 'doing';
+          }
+        } else {
+          if (node.label === '被告提交证据') {
+            console.log('被告未提交证据');
+            node.status = 'doing';
+          } else if (node.id === 'node6') {
+            node.status = 'undo';
+          }
+        }
+
+        if (this.caseInfoForm.is_related_submit === 'true') {
+          if (node.label === '相关材料提交') {
+            console.log('相关材料已提交');
+            node.status = 'done';
+          } else if (node.id === 'node7') {
+            node.status = 'doing';
+          }
+        } else {
+          if (node.label === '其他相关证据提交') {
+            console.log('相关材料未提交');
+            node.status = 'doing';
+          } else if (node.id === 'node7') {
+            node.status = 'undo';
+          }
+        }
+
+        // 根据节点状态配置节点样式
+        switch (node.status) {
+          case 'done': {
+            node.class = 'c0';
+            break;
+          }
+          case 'doing': {
+            node.class = 'c1';
+            break;
+          }
+          case 'undo': {
+            node.class = 'c2';
+            break;
+          }
+        }
+
+
+        switch (
+            node.class // 根据节点数据中的 class 属性配置图形
+            ) {
+          case 'c0': {
+            node.type = 'rect';
+            node.size = [100, 30];
+            node.style.fill = '#67C23A';
+            node.style.stroke = '#333'; // 添加深色边框
+            node.style.strokeWidth = 2; // 边框宽度
+            node.style.radius = 10; // 圆角
+            node.style.shadowColor = 'rgba(0, 0, 0, 0.3)'; // 添加阴影
+            node.style.shadowBlur = 4;
+            node.style.shadowOffsetX = 2;
+            node.style.shadowOffsetY = 2;
+            break;
+          }
+          case 'c1': {
+            node.type = 'rect';
+            node.size = [100, 30]; // class = 'c1' 时节点大小
+            node.style.fill = '#E6A23C';
+            node.style.stroke = '#333'; // 添加深色边框
+            node.style.strokeWidth = 2; // 边框宽度
+            node.style.radius = 10;
+            node.style.shadowColor = 'rgba(0, 0, 0, 0.3)'; // 添加阴影
+            node.style.shadowBlur = 4;
+            node.style.shadowOffsetX = 2;
+            node.style.shadowOffsetY = 2;
+            break;
+          }
+          case 'c2': {
+            node.type = 'rect';
+            node.size = [100, 30]; // class = 'c1' 时节点大小
+            node.style.fill = '#ffffff';
+            node.style.stroke = '#333'; // 添加深色边框
+            node.style.strokeWidth = 2; // 边框宽度
+            node.style.radius = 10;
+            node.style.shadowColor = 'rgba(0, 0, 0, 0.3)'; // 添加阴影
+            node.style.shadowBlur = 4;
+            node.style.shadowOffsetX = 2;
+            node.style.shadowOffsetY = 2;
+            break;
+          }
+        }
+
+        graph.data({
+          nodes: this.nodes,
+          edges: this.edges,
+        }); // 加载数据
+
+        graph.on('node:click', (ev) => {
+          const node = ev.item; // 被点击的节点元素
+          const shape = ev.target; // 被点击的图形，可根据该信息作出不同响应，以达到局部响应效果
+          console.log("点击了节点：" + node._cfg.id)
+          if ((node.getModel().status === 'doing' && node.getModel().label === '原告提交证据')
+              || (node.getModel().label === '被告提交证据' && node.getModel().status === 'doing')
+              || (node.getModel().label === '其他相关证据提交' && node.getModel().status === 'doing')) {
+            console.log("打开弹窗");
+            this.dialogVisible = true;
+            this.submitProcess = 1;
+            this.handleNode = node;
+          }
+        });
+
+        graph.on('edge:click', (ev) => {
+          const edge = ev.item; // 被点击的边元素
+          const shape = ev.target; // 被点击的图形，可根据该信息作出不同响应，以达到局部响应效果
+          console.log("点击了边：" + edge._cfg.id);
+        });
+
+        graph.render(); // 渲染
+      });
+    },
   },
   mounted() {
     //图实例化，至少需要为图设置容器、宽、高：
@@ -189,7 +399,7 @@ export default {
       }
 
       // 根据案件信息配置节点状态
-      if (this.caseInfoForm.is_plaintiff_submit === 1) {
+      if (this.caseInfoForm.is_plaintiff_submit === true) {
         if (node.label === '原告提交证据') {
           console.log('原告已提交证据');
           node.status = 'done';
@@ -205,7 +415,7 @@ export default {
         }
       }
 
-      if (this.caseInfoForm.is_defendant_submit === 'true') {
+      if (this.caseInfoForm.is_defendant_submit === true) {
         if (node.label === '被告提交证据') {
           console.log('被告已提交证据');
           node.status = 'done';
@@ -221,8 +431,8 @@ export default {
         }
       }
 
-      if (this.caseInfoForm.is_related_submit === 'true') {
-        if (node.label === '相关材料提交') {
+      if (this.caseInfoForm.is_related_submit === true) {
+        if (node.label === '其他相关证据提交') {
           console.log('相关材料已提交');
           node.status = 'done';
         } else if (node.id === 'node7') {
@@ -337,7 +547,8 @@ export default {
     <div v-if="this.dialogVisible === true">
       <case-assistant-dialog :case-info-form="this.caseInfoForm"
                              :handle-node="this.handleNode"
-                             @exit-dialog="hideDialog"></case-assistant-dialog>
+                             @exit-dialog="hideDialog"
+                             @update-graph="updateGraph"></case-assistant-dialog>
     </div>
   </div>
 </template>

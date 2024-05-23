@@ -117,7 +117,7 @@ export default {
     handlePreviewEnd() {
       this.submitProcess += 1;
       this.previewDialogVisible = false;
-      this.submitDialogVisible = true;
+      this.confirmDialogVisible = true;
     },
     handleIdCardSelect(index, row) {
       this.$confirm('确认选择该记录?', '提示', {
@@ -244,12 +244,18 @@ export default {
     },
     // 文件上传成功回调函数
     handleSuccess(response, file) {
+      this.$message({
+        message: '上传成功',
+        type: 'success'
+      });
       switch (this.materialType) {
         case 1:
           this.userInfoForm = response.data.data;
           break;
         case 2:
           this.licenseInfoForm = response.data.data;
+          this.licenseOperationPeriod = [this.licenseInfoForm.licenseOperationPeriodStart,
+            this.licenseInfoForm.licenseOperationPeriodEnd];
           break;
         case 3:
           this.invoiceInfoForm = response.data.data;
@@ -300,8 +306,39 @@ export default {
       this.submitProcess += 1;
       this.submitDialogVisible = false;
       this.previewDialogVisible = true;
+      this.fullscreenLoading = true;
     },
     relateIdCard() {
+      axios.post('http://localhost:8080/api/idcards', {
+        id: "",
+        document_Id: "",
+        id_card_url: this.pdfUrl,
+        id_card_ocr_url: this.ocrPdfUrl,
+        file_name: this.fileName,
+        name: this.userInfoForm.name,
+        nation: this.userInfoForm.nation,
+        sex: this.userInfoForm.sex,
+        birthday: this.userInfoForm.birthday,
+        address: this.userInfoForm.address,
+        card_number: this.userInfoForm.cardNumber,
+        all_info: this.userInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
+          }
+      )
       // 绑定材料和案件
       if (this.handleNode.getModel().label === "原告提交证据") {
         axios.put('http://localhost:8080/api/cases', {
@@ -317,6 +354,7 @@ export default {
               message: '证据材料提交成功',
               type: 'success'
             });
+            this.$emit('update-graph');
           } else {
             this.$message({
               showClose: true,
@@ -342,6 +380,7 @@ export default {
               message: '证据材料提交成功',
               type: 'success'
             });
+            this.$emit('update-graph');
           } else {
             this.$message({
               showClose: true,
@@ -356,6 +395,41 @@ export default {
       }
     },
     relateLicense() {
+      axios.post('http://localhost:8080/api/licenses', {
+        license_id: "",
+        document_Id: "",
+        license_url: this.pdfUrl,
+        license_ocr_url: this.ocrPdfUrl,
+        file_name: this.fileName,
+        license_code: this.licenseInfoForm.licenseCode,
+        license_number: this.licenseInfoForm.licenseNumber,
+        license_enterprise_name: this.licenseInfoForm.licenseEnterpriseName,
+        license_enterprise_type: this.licenseInfoForm.licenseEnterpriseType,
+        license_legal_representative: this.licenseInfoForm.licenseLegalRepresentative,
+        license_business_scope: this.licenseInfoForm.licenseBusinessScope,
+        license_registered_capital: this.licenseInfoForm.licenseRegisteredCapital,
+        license_establish_date: this.licenseInfoForm.licenseEstablishDate,
+        license_operation_period: this.licenseInfoForm.licenseOperationPeriodStart.toString() +
+            "至" + this.licenseInfoForm.licenseOperationPeriodEnd.toString(),
+        license_domicile: this.licenseInfoForm.licenseDomicile,
+        all_info: this.licenseInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
+          }
+      )
       // 绑定材料和案件
       if (this.handleNode.getModel().label === "原告提交证据") {
         axios.put('http://localhost:8080/api/cases', {
@@ -371,6 +445,7 @@ export default {
               message: '证据材料提交成功',
               type: 'success'
             });
+            this.$emit('update-graph');
           } else {
             this.$message({
               showClose: true,
@@ -396,6 +471,7 @@ export default {
               message: '证据材料提交成功',
               type: 'success'
             });
+            this.$emit('update-graph');
           } else {
             this.$message({
               showClose: true,
@@ -410,6 +486,37 @@ export default {
       }
     },
     relateInvoice() {
+      axios.post('http://localhost:8080/api/invoices', {
+        invoice_id: "",
+        document_Id: "",
+        invoice_url: this.pdfUrl,
+        invoice_ocr_url: this.ocrPdfUrl,
+        file_name: this.fileName,
+        invoice_code: this.invoiceInfoForm.invoiceCode,
+        invoice_number: this.invoiceInfoForm.invoiceNumber,
+        invoice_amount: this.invoiceInfoForm.invoiceAmount,
+        invoice_date: this.invoiceInfoForm.invoiceDate,
+        purchaser_name: this.invoiceInfoForm.purchaserName,
+        seller_name: this.invoiceInfoForm.sellerName,
+        project_name: this.invoiceInfoForm.projectName,
+        all_info: this.invoiceInfoForm.allInfo
+      }).then(res => {
+            console.log(res);
+            if (res.data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '提交数据库成功',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                showClose: true,
+                message: '提交数据库失败',
+                type: 'error'
+              });
+            }
+          }
+      )
       // 绑定材料和案件
       axios.put('http://localhost:8080/api/cases', {
         case_id: this.caseInfoForm.case_id,
@@ -422,6 +529,7 @@ export default {
             message: '证据材料提交成功',
             type: 'success'
           });
+          this.$emit('update-graph');
         } else {
           this.$message({
             showClose: true,
@@ -627,7 +735,7 @@ export default {
         <br>
         <el-upload
             v-if="materialType ===1"
-            action="http://localhost:8080/api/idcards/upload"
+            action="http://localhost:8080/api/idcards/pdf/upload"
             :on-success="handleSuccess"
             :on-remove="handleRemove"
             :before-upload="beforeUpload"
@@ -673,7 +781,7 @@ export default {
     <!-- 材料预览对话框 previewDialog-->
     <el-dialog :visible.sync="previewDialogVisible"
                title="材料预览"
-               width="50%"
+               width="80%"
                :close-on-click-modal="false">
       <el-progress :percentage="(100 * submitProcess / totalSteps)  "></el-progress>
       <br>
