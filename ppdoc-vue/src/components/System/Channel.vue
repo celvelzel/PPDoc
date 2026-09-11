@@ -89,10 +89,10 @@ export default {
         channelModelName: [
           {required: true, message: '请选择模型', trigger: 'change'}
         ],
-        channelApiKey: <REDACTED_SECRET>
+        channelApiKey: [
           {required: true, message: '请输入API Key', trigger: 'blur'},
         ],
-        channelSecretKey: <REDACTED_SECRET>
+        channelSecretKey: [
           {required: true, message: '请输入Secret Key', trigger: 'blur'},
         ]
       },
@@ -104,8 +104,8 @@ export default {
         channelResponseTime: null,
         channelModelName: null,
         channelCreateTime: null,
-        channelApiKey: <REDACTED_SECRET>
-        channelSecretKey: <REDACTED_SECRET>
+        channelApiKey: null,
+        channelSecretKey: null,
       }
     }
   },
