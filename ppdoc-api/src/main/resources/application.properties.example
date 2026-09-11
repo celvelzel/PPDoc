@@ -1,0 +1,42 @@
+# Copy this file to application.properties and fill in local/private values.
+# application.properties is ignored by Git and must never be committed.
+
+# Project paths
+project.path=C:/path/to/PPDoc/ppdoc-api
+mybatis.mapper-locations=classpath:mapper/*xml
+mybatis.type-aliases-package=com.majy.ppdocapi.mybatis.entity
+
+# HTTP and upload limits
+server.port=8080
+spring.servlet.multipart.max-file-size=50MB
+spring.servlet.multipart.max-request-size=50MB
+
+# Aliyun OSS
+aliyun.oss.endpoint=https://oss-cn-shenzhen.aliyuncs.com
+aliyun.oss.accessKeyId=YOUR_ALIYUN_OSS_ACCESS_KEY_ID
+aliyun.oss.accessKeySecret=YOUR_ALIYUN_OSS_ACCESS_KEY_SECRET
+aliyun.oss.bucketName=YOUR_ALIYUN_OSS_BUCKET_NAME
+
+# MySQL
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/ppdoc
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+
+# MyBatis logging
+mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Local resource paths
+font.path=${project.path}/src/main/resources/font
+file.pdf.path=${project.path}/src/main/resources/file/pdf
+
+# Model providers
+baidu.api-key=YOUR_BAIDU_API_KEY
+baidu.secret-key=YOUR_BAIDU_SECRET_KEY
+zhipu.api-key=YOUR_ZHIPU_API_KEY
+kimi.api-key=YOUR_KIMI_API_KEY
+ali.api-key=YOUR_ALI_API_KEY
+
+# Date and time
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone=GMT+8

@@ -1,8 +1,5 @@
 @echo off
-@REM call <LOCAL_PATH_REDACTED>
-call <LOCAL_PATH_REDACTED>
-pause
-@REM cd <LOCAL_PATH_REDACTED>
-cd <LOCAL_PATH_REDACTED>
+@REM Activate the PaddleOCR environment before running this script.
+cd /d "%~dp0"
 hub serving start -c deploy\hubserving\ocr_system\config.json
 pause

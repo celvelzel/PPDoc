@@ -4,7 +4,7 @@
 <!--  file后携带需要展示的pdf链接-->
   <iframe :src="`static/pdf/web/viewer.html?file=`+url" width="800" height="1000"></iframe>
 
-  <!--  http://localhost:8080/pdf/example.pdf
+  <!--  Use a local synthetic PDF for demonstrations. -->
 <!--  <iframe id="pdfContainer" :src="`/static/pdf/web/viewer.html?file=https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf`" width="100%" height="100%" frameborder="0" />-->
   </div>
 </template>
@@ -15,7 +15,6 @@
 export default {
   data() {
     return {
-      // url: 'http://localhost:8080/pdf/test.pdf',
       url: "http://localhost:8080/pdf/example.pdf",
     };
   },

@@ -16,8 +16,7 @@ public class PdfEditableTest
     {
         try
         {
-            //String pdfPath = "<LOCAL_PATH_REDACTED>";
-            String pdfPath = "<LOCAL_PATH_REDACTED>";
+            String pdfPath = args.length > 0 ? args[0] : "path/to/example.pdf";
             InputStream inputStream = Files.newInputStream(new File(pdfPath).toPath());
             PDDocument document = PDDocument.load(inputStream);
             document.getClass();

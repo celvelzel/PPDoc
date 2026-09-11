@@ -39,8 +39,6 @@ public class DocumentServiceImpl implements DocumentService
 
     @Value("${file.pdf.path}")
     private String pdfFolder;
-//    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
-
     @Override
     public PageBean page(Integer start, Integer pageSize)
     {

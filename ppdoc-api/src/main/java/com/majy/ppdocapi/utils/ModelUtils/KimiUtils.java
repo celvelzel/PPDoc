@@ -18,6 +18,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -29,7 +30,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class KimiUtils
 {
-    private static String API_KEY = "<REDACTED_MODEL_API_KEY>";
+    @Value("${kimi.api-key}")
+    private String apiKey;
     private static final String MODELS_URL = "https://api.moonshot.cn/v1/models";
     private static final String FILES_URL = "https://api.moonshot.cn/v1/files";
     private static final String ESTIMATE_TOKEN_COUNT_URL = "https://api.moonshot.cn/v1/tokenizers/estimate-token-count";
@@ -82,7 +84,7 @@ public class KimiUtils
         Request okhttpRequest = new Request.Builder()
                 .url(CHAT_COMPLETION_URL)
                 .post(RequestBody.create(MediaType.get(ContentType.JSON.getValue()), requestBody))
-                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Authorization", "Bearer " + apiKey)
                 .build();
         Call call = client.newCall(okhttpRequest);
         Response okhttpResponse = call.execute();
@@ -319,6 +321,6 @@ public class KimiUtils
 
     private HttpRequest getCommonRequest(@NonNull String url)
     {
-        return HttpRequest.of(url).header(Header.AUTHORIZATION, "Bearer " + API_KEY);
+        return HttpRequest.of(url).header(Header.AUTHORIZATION, "Bearer " + apiKey);
     }
 }

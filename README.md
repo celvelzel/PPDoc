@@ -1,4 +1,13 @@
 ## 部署
+
+### 配置文件
+
+1. 复制 `ppdoc-api/src/main/resources/application.properties.example` 为同目录下的 `application.properties`。
+2. 在本地配置 MySQL、OSS 和模型服务参数。`application.properties` 已加入 Git 忽略规则，不要提交真实凭证。
+3. 公开仓库不包含后端 PDF 样例；需要演示时，请使用合成或脱敏的本地文件。
+
+### 启动 PaddleOCR
+
 运行paddleOCR
 ```
 cd .\ppdoc-api\src\main\resources\file

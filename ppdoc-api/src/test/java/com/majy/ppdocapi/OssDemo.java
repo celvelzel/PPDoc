@@ -18,21 +18,18 @@ public class OssDemo
     public static void main(String[] args) throws Exception {
         // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
         String endpoint = "https://oss-cn-shenzhen.aliyuncs.com";
-        String accesskeyid= "<REDACTED_ALIYUN_ACCESS_KEY_ID>";
-        String accesskeysecret= "<REDACTED_SECRET>";
         // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
         EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
         // 填写Bucket名称，例如examplebucket。
         String bucketName = "examplebucket";
         // 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
-        String objectName = "docs/pdfTestDouble.pdf";
-        // 填写本地文件的完整路径，例如<LOCAL_PATH_REDACTED>
+        String objectName = "exampledir/exampleobject.txt";
+        // 通过命令行参数传入本地文件路径，例如 path/to/examplefile.txt。
         // 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
-        String filePath= "<LOCAL_PATH_REDACTED>";
+        String filePath = args.length > 0 ? args[0] : "path/to/examplefile.txt";
 
         // 创建OSSClient实例。
-        //OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
-        OSS ossClient = new OSSClientBuilder().build(endpoint, accesskeyid, accesskeysecret);
+        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
 
         try {
             // 创建PutObjectRequest对象。

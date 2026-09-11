@@ -39,9 +39,6 @@ public class PdfToEditablePdfUtils
     @Value("${file.pdf.path}")
     private String pdfFolder;
 
-//    private String fontPath = "<LOCAL_PATH_REDACTED>";
-//    private String pdfFolder = "<LOCAL_PATH_REDACTED>";
-
     public void pdf2Dpdf(File pdfFile, List ocrResult, String dPdfFilePath, String ocrPdfFilePath) throws IOException, DocumentException
     {
         // 加载PDF文档
@@ -748,17 +745,17 @@ public class PdfToEditablePdfUtils
     @Test
     public void test() throws DocumentException, IOException
     {
-//        String jpgPath = "<LOCAL_PATH_REDACTED>";
-//        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
+//        String jpgPath = "path/to/input.jpg";
+//        String dpdfFolder = "path/to/output";
 //        requestPPOCR(jpgPath, dpdfFolder);
 
-        String pdfFolder = "<LOCAL_PATH_REDACTED>";
-        File pdfFile = new File(pdfFolder);
+        String inputPdfPath = System.getProperty("ppdoc.test.pdf", "path/to/example.pdf");
+        File pdfFile = new File(inputPdfPath);
         InputStream input = new FileInputStream(pdfFile);
 
         List jsons = PaddleOcrUtils.pdfToOcrText(input);
 
-        //pdf2Dpdf(pdfFile, jsons, "<LOCAL_PATH_REDACTED>");
+        //pdf2Dpdf(pdfFile, jsons, "path/to/output.pdf", "path/to/ocr.pdf");
 
 //        System.out.println("OCR识别结果" + getPdfText(input));
 //        System.out.println("pdf可编辑检验结果：" + pdfCopyableChecker(input));

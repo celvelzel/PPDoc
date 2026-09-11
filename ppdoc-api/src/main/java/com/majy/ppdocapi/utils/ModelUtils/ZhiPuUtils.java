@@ -17,8 +17,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ZhiPuUtils
 {
-    private static String API_SECRET_KEY = "<REDACTED_MODEL_API_KEY>";
+    @Value("${zhipu.api-key}")
+    private String apiSecretKey;
 
-    private static final ClientV4 client = new ClientV4.Builder(API_SECRET_KEY).build();
+    private ClientV4 client;
+
+    @PostConstruct
+    public void initClient()
+    {
+        client = new ClientV4.Builder(apiSecretKey).build();
+    }
 
     private static final ObjectMapper mapper = defaultObjectMapper();
 

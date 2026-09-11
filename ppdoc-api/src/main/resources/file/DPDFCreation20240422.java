@@ -685,6 +685,10 @@ public class DPDFCreation {
     }
 
     public static void main(String[] args) throws DocumentException, IOException {
-        img2pdf2("<LOCAL_PATH_REDACTED>", "<LOCAL_PATH_REDACTED>");
+        if (args.length < 2) {
+            System.err.println("Usage: DPDFCreation20240422 <input-image> <output-pdf>");
+            return;
+        }
+        img2pdf2(args[0], args[1]);
     }
 }

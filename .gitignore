@@ -37,3 +37,21 @@ target/
 ### Mac OS ###
 .DS_Store
 /ppdoc-api/src/main/resources/file/pdf/
+
+# Local configuration and credentials
+**/application.properties
+!**/application.properties.example
+**/application.yml
+!**/application.yml.example
+.env
+.env.*
+!.env.example
+
+# IDE metadata and private key material
+.idea/
+**/.idea/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks

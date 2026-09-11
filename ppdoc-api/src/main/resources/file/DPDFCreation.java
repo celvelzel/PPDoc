@@ -829,8 +829,11 @@ public static float[] img2pdf2(String imgPath, String pdfFolder)
 
     public static void main(String[] args) throws DocumentException, IOException
     {
-        String jpgPath = "<LOCAL_PATH_REDACTED>";
-        String dpdfFolder = "<LOCAL_PATH_REDACTED>";
-        requestHWOCR(jpgPath, dpdfFolder);
+        if (args.length < 2)
+        {
+            System.err.println("Usage: DPDFCreation <input-image> <output-directory>");
+            return;
+        }
+        requestHWOCR(args[0], args[1]);
     }
 }
